@@ -57,9 +57,9 @@ Surforecast is a static webpage that provides daily surf reports for NSW beaches
 
 | Beach | Aspect (° from North) | Notes |
 |-------|----------------------|-------|
-| Collaroy | 90° (East) | Exposed to east swells |
-| Freshwater | 80° (East-Northeast) | Semi-protected |
-| Manly | 70° (East-Northeast) | Very protected |
+| Collaroy | 90° (East) | Faces due east |
+| Freshwater | 100° (East-Southeast) | Slight southward orientation |
+| Manly | 110° (East-Southeast) | More southerly exposure |
 
 ### 4.3 Surf Rating Formula  
 

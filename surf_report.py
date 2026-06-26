@@ -18,9 +18,9 @@ from pathlib import Path
 LOCATION = {"latitude": -33.78, "longitude": 151.30}  # Sydney
 REPORT_TIME_HOUR = 6  # 6:00 AM report time
 BEACHES = {
-    "Collaroy": 25,   # degrees from North (approx)
-    "Freshwater": 35, 
-    "Manly": 45
+    "Collaroy": 90,   # degrees from North (due east)
+    "Freshwater": 100, # degrees from North (east-southeast)
+    "Manly": 110      # degrees from North (east-southeast)
 }
 BEACH_NOTES = {
     "Collaroy": "North end sheltered, south exposed",
