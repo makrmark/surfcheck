@@ -140,7 +140,7 @@ BEACHES = {
 For Sydney beaches, the current values are:
 - Collaroy: 90° (due east)
 - Freshwater: 100° (east-southeast)  
-- Manly: 110° (east-southeast)
+- North Steyne: 70° (east-northeast)
 
 ### Adjusting Rating Algorithm
 Modify the `calculate_surf_rating()` and `tide_factor()` functions in `sur_report.py`.

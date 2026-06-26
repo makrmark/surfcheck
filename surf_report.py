@@ -20,12 +20,12 @@ REPORT_TIME_HOUR = 6  # 6:00 AM report time
 BEACHES = {
     "Collaroy": 90,   # degrees from North (due east)
     "Freshwater": 100, # degrees from North (east-southeast)
-    "Manly": 110      # degrees from North (east-southeast)
+    "North Steyne": 70 # degrees from North (east-northeast)
 }
 BEACH_NOTES = {
     "Collaroy": "North end sheltered, south exposed",
     "Freshwater": "Protected by headland, consistent breaks",
-    "Manly": "Sheltered northeast, works on south swells"
+    "North Steyne": "Northern end of Manly Beach, exposed to northeast swells"
 }
 LOG_FILE = Path.home() / "surforecast.log"
 REPORT_FILE = Path("docs") / "index.html"  # GitHub Pages serves from /docs
