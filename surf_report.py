@@ -18,14 +18,20 @@ from pathlib import Path
 LOCATION = {"latitude": -33.78, "longitude": 151.30}  # Sydney
 REPORT_TIME_HOUR = 6  # 6:00 AM report time
 BEACHES = {
-    "Collaroy": 100,   # degrees from North (east-southeast)
-    "Freshwater": 110, # degrees from North (east-southeast)
-    "North Steyne": 60 # degrees from North (east-northeast)
+    "Long Reef": 135,   # degrees from North (southeast)
+    "Dee Why": 135,     # degrees from North (southeast)
+    "Curl Curl": 112,   # degrees from North (east-southeast)
+    "Freshwater": 135,  # degrees from North (southeast)
+    "North Steyne": 90, # degrees from North (east)
+    "South Steyne": 68  # degrees from North (east-northeast)
 }
 BEACH_NOTES = {
-    "Collaroy": "North end sheltered by point, south exposed to open ocean",
-    "Freshwater": "Protected by headland, consistent southeast swells",
-    "North Steyne": "Northern end of Manly Beach, exposed to northeast swells"
+    "Long Reef": "Northernmost beach, southeast exposure",
+    "Dee Why": "Southeast facing beach, sheltered by southern headland",
+    "Curl Curl": "East-southeast exposed beach with consistent swell",
+    "Freshwater": "Southeast facing beach, protected by northern headland",
+    "North Steyne": "Eastern end of Manly Beach, exposed to east swells",
+    "South Steyne": "East-northeast end of Manly Beach, NE swell exposure"
 }
 LOG_FILE = Path.home() / "surforecast.log"
 REPORT_FILE = Path("docs") / "index.html"  # GitHub Pages serves from /docs

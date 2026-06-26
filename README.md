@@ -137,10 +137,13 @@ BEACHES = {
     # Add more beaches as needed
 }
 ```
-For Sydney beaches, the current values are:
-- Collaroy: 100° (east-southeast)
-- Freshwater: 110° (east-southeast)  
-- North Steyne: 60° (east-northeast)
+For Sydney beaches (ordered north to south), the current values are:
+- Long Reef: 135° (southeast)
+- Dee Why: 135° (southeast)
+- Curl Curl: 112° (east-southeast)
+- Freshwater: 135° (southeast)
+- North Steyne: 90° (east)
+- South Steyne: 68° (east-northeast)
 
 ### Adjusting Rating Algorithm
 Modify the `calculate_surf_rating()` and `tide_factor()` functions in `sur_report.py`.

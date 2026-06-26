@@ -33,7 +33,7 @@ Surforecast is a static webpage that provides daily surf reports for NSW beaches
 | **FR-1** | **Data Acquisition** – Retrieve marine forecast (wave height, period, direction) and wind forecast (speed, direction) from Open-Meteo APIs for Sydney coordinates (-33.78, 151.30). | Successful HTTP 200 responses; parsed JSON contains required hourly fields. |
 | **FR-2** | **Tide Observation** – Query MHL Station 213470 (Sydney Level 1) for current water-level observation and timestamp. | Returns numeric tide height (metres) and valid ISO-8601 timestamp; on failure, logs warning and falls back to harmonic tide model. |
 | **FR-3** | **Tide Forecast** – Using observed tide height & timestamp, compute tide height and trend (rising/falling/high/low) for report time (06:00) and 3-hour forecast slots (06, 09, 12, 15, 18h). | Computed values within ±0.2m of reference tide table (when MHL data available); trend matches numerical derivative sign. |
-| **FR-4** | **Beach-Specific Wave Height** – For each beach (Collaroy, Freshwater, North Steyne), compute effective height = offshore height × cos(Δθ), where Δθ is absolute difference between beach aspect (° from N) and wave direction. | Effective height ≥ 0 and ≤ offshore height; exposure % = (90‑\|Δθ\|)/90 × 100 clamped to [0,100]. |
+| **FR-4** | **Beach-Specific Wave Height** – For each beach (Long Reef, Dee Why, Curl Curl, Freshwater, North Steyne, South Steyne), compute effective height = offshore height × cos(Δθ), where Δθ is absolute difference between beach aspect (° from N) and wave direction. | Effective height ≥ 0 and ≤ offshore height; exposure % = (90‑\|Δθ\|)/90 × 100 clamped to [0,100]. |
 | **FR-5** | **Surf Rating** – Calculate 0‑5 star rating based on effective wave height (scaled to 2m max) and wave period (scaled 6‑15s), multiplied by tide factor (optimal tide 0.5‑1.5m → 1.0; outside range reduces linearly). | Rating matches specification table (see Section 4.1). |
 | **FR-6** | **Board Recommendation** – Map effective height to board type (Log < 0.5m, Funboard 0.5‑1.0m, Shortboard 1.0‑2.0m, Gun > 2.0m) with dual‑option handling when height within 0.1m of threshold; adjust down one step if period < 8s. | Recommendation string follows rule set; examples: 0.45m → Log, 0.95m → Funboard/Shortboard, 2.2m → Gun. |
 | **FR-7** | **Wetsuit Recommendation** – Based on month-derived sea‑surface temperature (see Table 1) and Quiksilver guide, output textual recommendation (e.g., “Boardshorts or rash vest”, “Spring suit (2mm)”, “3/2 full wetsuit”, “4/3 full wetsuit with booties, gloves, hood”). | Recommendation matches decision table for given month. |
@@ -57,9 +57,12 @@ Surforecast is a static webpage that provides daily surf reports for NSW beaches
 
 | Beach | Aspect (° from North) | Notes |
 |-------|----------------------|-------|
-| Collaroy | 100° (East-Southeast) | North end sheltered by point, south exposed |
-| Freshwater | 110° (East-Southeast) | Protected by headland, consistent SE swells |
-| North Steyne | 60° (East-Northeast) | Northern end of Manly Beach, NE swell exposure |
+| Long Reef | 135° (Southeast) | Northernmost beach, southeast exposure |
+| Dee Why | 135° (Southeast) | Southeast facing beach, sheltered by southern headland |
+| Curl Curl | 112° (East-Southeast) | East-southeast exposed beach with consistent swell |
+| Freshwater | 135° (Southeast) | Southeast facing beach, protected by northern headland |
+| North Steyne | 90° (East) | Eastern end of Manly Beach, exposed to east swells |
+| South Steyne | 68° (East-Northeast) | East-northeast end of Manly Beach, NE swell exposure |
 
 ### 4.3 Surf Rating Formula  
 
