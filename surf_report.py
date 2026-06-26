@@ -18,7 +18,7 @@ from pathlib import Path
 LOCATION = {"latitude": -33.78, "longitude": 151.30}  # Sydney
 REPORT_TIME_HOUR = 6  # 6:00 AM report time
 BEACHES = {
-    "Long Reef": 135,   # degrees from North (southeast)
+    "Long Reef": 158,   # degrees from North (sse)
     "Dee Why": 135,     # degrees from North (southeast)
     "Curl Curl": 112,   # degrees from North (east-southeast)
     "Freshwater": 135,  # degrees from North (southeast)
@@ -26,7 +26,7 @@ BEACHES = {
     "South Steyne": 68  # degrees from North (east-northeast)
 }
 BEACH_NOTES = {
-    "Long Reef": "Northernmost beach, southeast exposure",
+    "Long Reef": "Northernmost beach, southeast-southeast exposure",
     "Dee Why": "Southeast facing beach, sheltered by southern headland",
     "Curl Curl": "East-southeast exposed beach with consistent swell",
     "Freshwater": "Southeast facing beach, protected by northern headland",
@@ -360,6 +360,17 @@ def generate_report(marine_data, wind_data, tide_data):
     past_tide = tide_lookup(past_time, tide_data)
     future_tide = tide_lookup(future_time, tide_data)
     tide_trend = get_tide_trend(past_tide, tide_height, future_tide)
+    # Determine display tide height (negative for low tide)
+    display_tide = -tide_height if tide_trend == "low" else tide_height
+    # Determine tide emoji
+    tide_emoji_map = {
+        "rising": "📈",
+        "falling": "📉",
+        "high": "🔺",
+        "low": "🔻",
+        "slack": "➖"
+    }
+    tide_emoji = tide_emoji_map.get(tide_trend, "")
     
     # Determine compass directions
     def degrees_to_compass(degrees):
@@ -643,30 +654,7 @@ def generate_report(marine_data, wind_data, tide_data):
         </div>
     </div>
 
-    <div class="section">
-        <h2>📊 Overall Summary</h2>
-        <div class="summary-section">
-            <div class="summary-item">
-                <div class="summary-value">{overall_rating:.1f}</div>
-                <div class="summary-label">Overall Rating</div>
-                <div class="stars">{generate_stars(overall_rating)}</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-value">{max_effective_height:.1f}m</div>
-                <div class="summary-label">Max Surf Height</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-value">{tide_height:.1f}m</div>
-                <div class="summary-label">Tide Height</div>
-                <div class="tide-trend">{tide_trend.title()}</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-value">{water_temp}°C</div>
-                <div class="summary-label">Water Temp</div>
-                <div class="wetsuit">Wetsuit: {wetsuit_rec}</div>
-            </div>
-        </div>
-    </div>
+    
 
     <div class="footer">
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
