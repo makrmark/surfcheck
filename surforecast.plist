@@ -13,7 +13,8 @@
     <dict>
         <key>Hour</key>
         <integer>5</integer>
-        <minute>45</minute>
+        <key>Minute</key>
+        <integer>45</integer>
     </dict>
     <key>WorkingDirectory</key>
     <string>/Users/markcowlishaw/surforecast</string>
@@ -21,7 +22,5 @@
     <string>/tmp/surforecast.out</string>
     <key>StandardErrorPath</key>
     <string>/tmp/surforecast.err</string>
-    <key>RunAtLoad</key>
-    <true/>
 </dict>
 </plist>
