@@ -397,7 +397,8 @@ def generate_report(marine_data, wind_data, tide_data):
             "exposure": exposure,
             "rating": adjusted_rating,
             "board": board,
-            "notes": BEACH_NOTES.get(beach_name, "")
+            "notes": BEACH_NOTES.get(beach_name, ""),
+            "period": current_wave_period
         })
     
     # Overall rating (average of beach ratings)
