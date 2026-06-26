@@ -57,9 +57,9 @@ Surforecast is a static webpage that provides daily surf reports for NSW beaches
 
 | Beach | Aspect (° from North) | Notes |
 |-------|----------------------|-------|
-| Collaroy | 90° (East) | Faces due east | 90° (East) |
-| Freshwater | Slight southward orientation | 100° (East-Southeast) |
-| North Steyne | Northern end of Manly Beach | 70° (East-Northeast) |
+| Collaroy | 100° (East-Southeast) | North end sheltered by point, south exposed |
+| Freshwater | 110° (East-Southeast) | Protected by headland, consistent SE swells |
+| North Steyne | 60° (East-Northeast) | Northern end of Manly Beach, NE swell exposure |
 
 ### 4.3 Surf Rating Formula  
 

@@ -18,13 +18,13 @@ from pathlib import Path
 LOCATION = {"latitude": -33.78, "longitude": 151.30}  # Sydney
 REPORT_TIME_HOUR = 6  # 6:00 AM report time
 BEACHES = {
-    "Collaroy": 90,   # degrees from North (due east)
-    "Freshwater": 100, # degrees from North (east-southeast)
-    "North Steyne": 70 # degrees from North (east-northeast)
+    "Collaroy": 100,   # degrees from North (east-southeast)
+    "Freshwater": 110, # degrees from North (east-southeast)
+    "North Steyne": 60 # degrees from North (east-northeast)
 }
 BEACH_NOTES = {
-    "Collaroy": "North end sheltered, south exposed",
-    "Freshwater": "Protected by headland, consistent breaks",
+    "Collaroy": "North end sheltered by point, south exposed to open ocean",
+    "Freshwater": "Protected by headland, consistent southeast swells",
     "North Steyne": "Northern end of Manly Beach, exposed to northeast swells"
 }
 LOG_FILE = Path.home() / "surforecast.log"
