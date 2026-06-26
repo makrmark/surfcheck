@@ -400,8 +400,9 @@ def generate_report(marine_data, wind_data, tide_data):
         # Apply tide factor to rating
         tide_factor_value = tide_factor(tide_height)
         adjusted_rating = rating * tide_factor_value
-        # Clamp rating to 0-5
+        # Clamp rating to 0-5 and round to nearest half star
         adjusted_rating = max(0, min(5, adjusted_rating))
+        adjusted_rating = round(adjusted_rating * 2) / 2
         board = get_board_recommendation(effective_height, current_wave_period)
         
         if effective_height > max_effective_height:
@@ -418,9 +419,10 @@ def generate_report(marine_data, wind_data, tide_data):
             "period": current_wave_period
         })
     
-    # Overall rating (average of beach ratings)
+    # Overall rating (average of beach ratings, rounded to nearest half star)
     overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
     overall_rating = max(0, min(5, overall_rating))
+    overall_rating = round(overall_rating * 2) / 2
     
     # Generate HTML
     html_content = f'''<!DOCTYPE html>
@@ -614,6 +616,31 @@ def generate_report(marine_data, wind_data, tide_data):
         <div class="condition-item">
             <span class="label">Wind:</span>
             <span class="value">{current_wind_speed:.0f} km/h {wind_compass}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📊 Overall Assessment</h2>
+        <div class="summary-section">
+            <div class="summary-item">
+                <div class="summary-value">{overall_rating:.1f}</div>
+                <div class="summary-label">Overall Rating</div>
+                <div class="stars">{generate_stars(overall_rating)}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{max_effective_height:.1f}m</div>
+                <div class="summary-label">Max Surf Height</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{display_tide:.1f}m</div>
+                <div class="summary-label">Tide Height</div>
+                <div class="tide-trend">{tide_emoji} {tide_trend.title()}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{water_temp}°C</div>
+                <div class="summary-label">Water Temp</div>
+                <div class="wetsuit">Wetsuit: {wetsuit_rec}</div>
+            </div>
         </div>
     </div>
 
