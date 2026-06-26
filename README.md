@@ -4,7 +4,7 @@ A automated surf report system that generates daily surf reports for Sydney beac
 
 ## Overview
 
-Surforecast fetches live marine and meteorological data from Open-Meteo APIs and tide observations from Manly Hydraulics Laboratory (MHL), processes it into a comprehensive surf report, and publishes it as a static HTML page. The system runs automatically each morning via a local scheduler and commits the updated page to trigger GitHub Pages deployment.
+Surforecast fetches live marine and meteorological data from Open-Meteo APIs and tide observations from Manly Hydraulics Laboratory (MHL), processes it into a comprehensive surf report, and publishes it as a static HTML page. The system runs automatically each morning via a local scheduler (launch agent on macOS) and commits the updated page to trigger GitHub Pages deployment.
 
 ## Features
 
@@ -29,9 +29,8 @@ Surforecast fetches live marine and meteorological data from Open-Meteo APIs and
 ### Prerequisites
 
 - Python 3.7+
-- pip (Python package manager)
 - git
-- Access to cron (Linux/macOS) or Task Scheduler (Windows)
+- macOS (for launch agent setup) or Linux (for cron)
 
 ### Setup
 
@@ -39,6 +38,8 @@ Surforecast fetches live marine and meteorological data from Open-Meteo APIs and
 
 2. **Install required Python packages**:
    ```bash
+   python3 -m venv venv
+   source venv/bin/activate
    pip install requests
    ```
 
@@ -54,27 +55,45 @@ Surforecast fetches live marine and meteorological data from Open-Meteo APIs and
    - Enable GitHub Pages in repository settings:
      - Source: `main` branch
      - Folder: `/docs` (root)
-   - Note: The script will automatically push to the `docs` folder
+   - Push initial commit:
+     ```bash
+     git add .
+     git commit -m "Initial commit"
+     git push -u origin main
+     ```
 
 5. **Set up automation**:
-   - **macOS/Linux (cron)**:
-     ```bash
-     # Edit crontab
-     crontab -e
-     
-     # Add this line to run daily at 5:45 AM
-     45 5 * * * cd /path/to/surforecast && /usr/bin/python3 surf_report.py >> surforecast.log 2>&1
-     ```
    
-   - **Alternative (launch agent on macOS)**:
-     See `surforecast.plist` example below
+   **macOS (using launch agent)**:
+   ```bash
+   # Copy the plist file to ~/Library/LaunchAgents/
+   cp surforecast.plist ~/Library/LaunchAgents/
+   
+   # Load the agent
+   launchctl load ~/Library/LaunchAgents/surforecast.plist
+   
+   # To start immediately:
+   launchctl start com.user.surforecast
+   
+   # To check status:
+   launchctl list | grep surforecast
+   ```
+   
+   **Linux (using cron)**:
+   ```bash
+   # Edit crontab
+   crontab -e
+   
+   # Add this line to run daily at 5:45 AM
+   45 5 * * * cd /path/to/surforecast && ./venv/bin/python surf_report.py >> surforecast.log 2>&1
+   ```
 
 ## How It Works
 
 1. **Data Collection**: The Python script fetches data from:
    - Open-Meteo marine endpoint for wave conditions
    - Open-Meteo forecast endpoint for wind conditions  
-   - MHL CSV endpoint for tide observations
+   - MHL CSV endpoint for tide observations (with harmonic model fallback)
 
 2. **Processing**: 
    - Calculates tide heights using observed data anchored to harmonic model
@@ -99,9 +118,12 @@ Surforecast fetches live marine and meteorological data from Open-Meteo APIs and
 ```
 surforecast/
 ├── surf_report.py          # Main report generation script
+├── surforecast.plist       # macOS launch agent configuration
+├── .gitignore              # Git ignore rules
+├── README.md               # This file
+├── venv/                   # Python virtual environment
 ├── docs/                   # GitHub Pages source (served live)
 │   └── index.html          # Generated surf report
-├── README.md               # This file
 └── .git/                   # Git repository data
 ```
 
@@ -120,27 +142,33 @@ BEACHES = {
 Modify the `calculate_surf_rating()` and `tide_factor()` functions in `sur_report.py`.
 
 ### Changing Update Time
-Modify the cron job time or launch agent schedule. The script itself uses report time of 6:00 AM for calculations.
+- **macOS**: Edit the `StartCalendarInterval` in `surforecast.plist`
+- **Linux**: Modify the cron job time
+- The script itself uses report time of 6:00 AM for calculations
 
 ## Maintenance
 
 ### Logs
-- Check `surforecast.log` for execution logs
+- Check terminal output when running manually
+- Review `~/Library/Logs/com.apple.launchd.peruser.*/com.user.surforecast.out.err` (macOS)
 - GitHub commit history shows deployment timeline
-- Review GitHub Pages build logs if deployment fails
+- GitHub Pages build logs available in repository settings
 
 ### Troubleshooting
-1. **No updates on GitHub Pages**: 
-   - Check if cron job is running: `grep CRON /var/log/syslog` (Linux) or check Mail.app (macOS)
-   - Verify git push is working: try manual run `python3 surf_report.py && git add . && git commit -m "Update" && git push`
+1. **No updates on GitHub Pages**:
+   - Verify launch agent/cron is running: `launchctl list | grep surforecast` (macOS) or check cron logs
+   - Test manual execution: `./venv/bin/python surf_report.py`
+   - Verify git push works: `git add . && git commit -m "Test" && git push`
 
 2. **Stale data**:
    - Check API status: Open-Meteo and MHL services
-   - Review error reports in `docs/index.html` if generation fails
+   - Review generated `docs/index.html` for error messages
+   - Verify script has internet access
 
 3. **Permission issues**:
    - Ensure script has write access to `docs/` directory
    - Verify git has access to push to remote repository
+   - For launch agent, check StandardOutPath and StandardErrorPath for logs
 
 ## License
 
