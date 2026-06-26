@@ -1,17 +1,17 @@
-# Surforecast - Automated Surf Report for GitHub Pages
+# Northern Beaches Surf Check - Automated Surf Report for GitHub Pages
 
-A automated surf report system that generates daily surf reports for Sydney beaches and publishes them as a static webpage using GitHub Pages.
+An automated surf report system that generates daily surf reports for Sydney beaches and publishes them as a static webpage using GitHub Pages.
 
 ## Overview
 
-Surforecast fetches live marine and meteorological data from Open-Meteo APIs and tide observations from Manly Hydraulics Laboratory (MHL), processes it into a comprehensive surf report, and publishes it as a static HTML page. The system runs automatically each morning via a local scheduler (launch agent on macOS) and commits the updated page to trigger GitHub Pages deployment.
+Northern Beaches Surf Check fetches live marine and meteorological data from Open-Meteo APIs and tide observations from Manly Hydraulics Laboratory (MHL), processes it into a comprehensive surf report, and publishes it as a static HTML page. The system runs automatically each morning via a local scheduler (launch agent on macOS) and commits the updated page to trigger GitHub Pages deployment.
 
 ## Features
 
 - 🌊 Fetches real-time wave height, period, and direction data
 - 💨 Retrieves current wind conditions
 - 🌊 Gets tide observations from MHL with harmonic model fallback
-- 🏖️ Calculates beach-specific conditions for Collaroy, Freshwater, and Manly
+- 🏖️ Calculates beach-specific conditions for the Northern Beaches (Long Reef, Dee Why, Curl Curl, Freshwater, North Steyne, South Steyne)
 - ⭐ Generates surf ratings based on wave height, period, and tide conditions
 - 🏄 Provides board and wetsuit recommendations
 - 📱 Responsive HTML design that works on mobile and desktop

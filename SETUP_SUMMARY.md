@@ -1,6 +1,6 @@
-# Surforecast Project Setup Complete! 🎉
+# Northern Beaches Surf Check Project Setup Complete! 🎉
 
-I've successfully created the "surforecast" project with all the components needed for an automated surf report that deploys to GitHub Pages every morning.
+I've successfully created the "Northern Beaches Surf Check" project with all the components needed for an automated surf report that deploys to GitHub Pages every morning.
 
 ## What's Been Created:
 

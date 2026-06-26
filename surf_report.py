@@ -417,7 +417,7 @@ def generate_report(marine_data, wind_data, tide_data):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surforecast - Sydney Surf Report</title>
+    <title>Northern Beaches Surf Check</title>
     <style>
         * {{
             margin: 0;
@@ -582,7 +582,7 @@ def generate_report(marine_data, wind_data, tide_data):
 </head>
 <body>
     <header>
-        <h1>🏄‍♂️ Surforecast</h1>
+        <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
         <p class="timestamp">Generated: {now.strftime('%Y-%m-%d %H:%M:%S')} AEST</p>
     </header>
 
@@ -669,12 +669,13 @@ def generate_report(marine_data, wind_data, tide_data):
     </div>
 
     <div class="footer">
-        <p>Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>
+        <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
+        Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>
         <p>Report generated automatically for GitHub Pages deployment</p>
     </div>
     
     <div class="watermark">
-        Surforecast v1.0
+        Northern Beaches Surf Check v1.0
     </div>
 </body>
 </html>'''
@@ -692,7 +693,7 @@ def generate_error_report(error_message):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surforecast - Service Temporarily Unavailable</title>
+    <title>Northern Beaches Surf Check - Service Temporarily Unavailable</title>
     <style>
         * {{
             margin: 0;
@@ -750,7 +751,7 @@ def generate_error_report(error_message):
             <p>The service will automatically retry on the next scheduled update.</p>
         </div>
         <div class="footer">
-            <p>Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>
+            <p>Northern Beaches Surf Check - Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>
             <p>This is an automated service - please try again later.</p>
         </div>
     </div>

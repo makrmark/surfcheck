@@ -1,4 +1,4 @@
-# Product Specification – Surforecast Static Webpage
+# Product Specification – Northern Beaches Surf Check Static Webpage
 
 **Version:** 1.0  
 **Date:** 2026-06-26  
@@ -8,7 +8,7 @@
 
 ## 1. Overview  
 
-Surforecast is a static webpage that provides daily surf reports for NSW beaches. The system runs automatically each morning, fetches live marine and meteorological data, processes it into a surf report, and publishes a static HTML page to GitHub Pages. The system runs via a local cron job that runs the generation script and commits/pushes the updated page to trigger GitHub Pages deployment.
+Northern Beaches Surf Check is a static webpage that provides daily surf reports for Sydney's Northern Beaches. The system runs automatically each morning, fetches live marine and meteorological data, processes it into a surf report, and publishes a static HTML page to GitHub Pages. The system runs via a local cron job that runs the generation script and commits/pushes the page to trigger GitHub Pages publishing.  
 
 ---  
 
@@ -36,7 +36,7 @@ Surforecast is a static webpage that provides daily surf reports for NSW beaches
 | **FR-4** | **Beach-Specific Wave Height** – For each beach (Long Reef, Dee Why, Curl Curl, Freshwater, North Steyne, South Steyne), compute effective height = offshore height × cos(Δθ), where Δθ is absolute difference between beach aspect (° from N) and wave direction. | Effective height ≥ 0 and ≤ offshore height; exposure % = (90‑\|Δθ\|)/90 × 100 clamped to [0,100]. |
 | **FR-5** | **Surf Rating** – Calculate 0‑5 star rating based on effective wave height (scaled to 2m max) and wave period (scaled 6‑15s), multiplied by tide factor (optimal tide 0.5‑1.5m → 1.0; outside range reduces linearly). | Rating matches specification table (see Section 4.1). |
 | **FR-6** | **Board Recommendation** – Map effective height to board type (Log < 0.5m, Funboard 0.5‑1.0m, Shortboard 1.0‑2.0m, Gun > 2.0m) with dual‑option handling when height within 0.1m of threshold; adjust down one step if period < 8s. | Recommendation string follows rule set; examples: 0.45m → Log, 0.95m → Funboard/Shortboard, 2.2m → Gun. |
-| **FR-7** | **Wetsuit Recommendation** – Based on month-derived sea‑surface temperature (see Table 1) and Quiksilver guide, output textual recommendation (e.g., “Boardshorts or rash vest”, “Spring suit (2mm)”, “3/2 full wetsuit”, “4/3 full wetsuit with booties, gloves, hood”). | Recommendation matches decision table for given month. |
+| **FR-7** | **Wetsuit Recommendation** – Based on month‑derived sea‑surface temperature (see Table 1) and Quiksilver guide, output textual recommendation (e.g., “Boardshorts or rash vest”, “Spring suit (2mm)”, “3/2 full wetsuit”, “4/3 full wetsuit with booties, gloves, hood”). | Recommendation matches decision table for given month. |
 | **FR-8** | **Report Generation** – Produce a static HTML surf report with sections: header, offshore swell, wind, per‑beach cards (beach [aspect° (dir)] Surf: X.Xm [Ys @ Z%] ★★☆☆☆ Board: A/B), overall summary, max expected tide, water temp & wetsuit recommendation, timestamp. | Generated HTML matches template in Section 5 and is valid HTML5. |
 | **FR-9** | **Automated Deployment** – Local cron job runs generation script daily at 05:45 LT, commits updated HTML to git repo, and pushes to origin to trigger GitHub Pages rebuild. | Job runs successfully each morning; GitHub Pages updates within minutes of push; commit history shows daily updates. |
 | **FR-10** | **Logging & Error Handling** – Script logs operations and errors to local log file; on critical failures, generates error HTML page indicating issue. | Logs contain timestamps and error details; fallback error page is valid HTML. |
@@ -72,10 +72,10 @@ The rating combines three normalized factors:
 3. **Tide Factor**:  
    - If 0.5 ≤ tide_height ≤ 1.5: factor = 1.0  
    - If tide_height < 0.5: factor = tide_height / 0.5  
-   - If tide_height > 1.5: factor = max(0, (3.0 - tide_height) / 1.5)  
+   - If tide_height > 1.5: max(0, (3.0 - tide_height) / 1.5)  
 
 Final Rating = 5 × (Height Factor × Period Factor × Tide Factor)  
-Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for integer part, half star for .5)
+Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for integer part, half star for .5)  
 
 ### 4.4 Wetsuit Guide (by Month)  
 
@@ -97,7 +97,7 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surforecast - Sydney Surf Report</title>
+    <title>Northern Beaches Surf Check - Sydney Surf Report</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f8ff; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -111,35 +111,54 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
         .rating { font-size: 1.2em; letter-spacing: 2px; }
         .board { font-weight: bold; color: #0066cc; }
         .tide-info, .wetsuit-info { background: #e3f2fd; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 0.9em; border-top: 1px solid #eee; padding-top: 10px; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 0.9em; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Surforecast - Sydney Surf Report</h1>
-        <div class="timestamp">Last updated: {timestamp}</div>
+        <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
+        <p class="timestamp">Last updated: {timestamp}</p>
         
         <div class="section">
-            <h2>Offshore Conditions</h2>
+            <h2>🌊 Offshore Conditions</h2>
             <div class="surf-info"><strong>Swell:</strong> {swell_height}m @ {swell_period}s from {swell_direction}°</div>
             <div class="surf-info"><strong>Wind:</strong> {wind_speed}km/h from {wind_direction}° ({wind_direction_text})</div>
         </div>
         
         <div class="section">
-            <h2>Beach Conditions</h2>
+            <h2>🏖️ Beach Conditions</h2>
             <div class="beach-grid">
                 {beach_cards}
             </div>
         </div>
         
         <div class="section">
-            <h2>Overall Assessment</h2>
-            <div class="surf-info"><strong>Overall Rating:</strong> {overall_rating}</div>
-            <div class="surf-info"><strong>Max Expected Tide:</strong> {max_tide}m ({tide_trend})</div>
+            <h2>📊 Overall Assessment</h2>
+            <div class="summary-section">
+                <div class="summary-item">
+                    <div class="summary-value">{overall_rating}</div>
+                    <div class="summary-label">Overall Rating</div>
+                    <div class="stars">{stars}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">{max_effective_height:.1f}m</div>
+                    <div class="summary-label">Max Surf Height</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">{tide_height:.1f}m</div>
+                    <div class="summary-label">Tide Height</div>
+                    <div class="tide-trend">{tide_trend.title()}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">{water_temp}°C</div>
+                    <div class="summary-label">Water Temp</div>
+                    <div class="wetsuit">Wetsuit: {wetsuit_rec}</div>
+                </div>
+            </div>
         </div>
         
         <div class="section">
-            <h2>Water Temperature & Wetsuit Guide</h2>
+            <h2>🌡️ Water Temperature & Wetsuit Guide</h2>
             <div class="wetsuit-info">
                 <strong>Water Temperature:</strong> {water_temp}°C<br>
                 <strong>Recommended Wetsuit:</strong> {wetsuit_recommendation}
@@ -147,8 +166,8 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
         </div>
         
         <div class="footer">
-            Surforecast - Automated surf report for Sydney beaches<br>
-            Data sources: Open-Meteo, MHL NSW<br>
+            Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
+            Data sources: Open-Meteo (marine & wind forecasts), MHL NSW<br>
             Generated daily at 05:45 AM for morning surf sessions
         </div>
     </div>
@@ -205,14 +224,14 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
 
 | Idea | Benefit |
 |------|---------|
-| **Interactive Elements** | Add tide charts or swell graphs using JavaScript libraries |
-| **Multiple Locations** | Expand to other Australian coastal regions |
-| **User Preferences** | Allow users to save preferred beaches via localStorage |
-| **Multi-language Support** | Add i18n for international visitors |
-| **API Caching** | Reduce API calls by caching responses for short periods |
-| **Docker Container** | Package script for easy deployment on any system |
-| **Email Newsletter Option** | Optional daily email delivery alongside web version |
+| **Dynamic Water Temperature** – Pull real‑time SST from NOAA or IMOS API instead of month‑lookup. | More precise wetsuit advice. |
+| **Multiple Forecast Horizons** – Offer 12‑hour and 24‑hour outlooks. | Better planning for later sessions. |
+| **Surf‑Quality Index** – Combine wave power, period, and wind into a single numeric score. | Simplifies decision making. |
+| **Rich Media Attachments** – Include a small tide‑graph or wave‑direction rose as an image attachment. | Visual enhancement. |
+| **User‑Configurable Beaches** – Allow per‑user beach list via Hermes memory or a JSON config file. | Personalisation without code change. |
+| **Unit‑Test Suite** – Add `pytest` tests for each function with CI integration. | Higher confidence in changes. |
+| **Dockerised Version** – Package script & dependencies for easy deployment on other hosts. | Portability. |
 
 ---  
 
-*This specification transforms the original Telegram-based surf report concept into a static webpage solution that leverages GitHub Pages for reliable, zero-maintenance hosting while maintaining all core surf reporting functionality.*
+*End of Specification*
