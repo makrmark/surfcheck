@@ -405,9 +405,11 @@ def generate_report(marine_data, wind_data, tide_data):
         # Apply tide factor to rating
         tide_factor_value = tide_factor(tide_height)
         adjusted_rating = rating * tide_factor_value
-        # Clamp rating to 0-5 and round to nearest half star
+        # Clamp rating to 0-5
         adjusted_rating = max(0, min(5, adjusted_rating))
-        adjusted_rating = round(adjusted_rating * 2) / 2
+        # Store precise rating for ranking, and star-rounded for display
+        precise_rating = adjusted_rating
+        star_rating = round(precise_rating * 2) / 2
         board = get_board_recommendation(effective_height, current_wave_period)
         
         if effective_height > max_effective_height:
@@ -418,13 +420,14 @@ def generate_report(marine_data, wind_data, tide_data):
             "aspect": aspect,
             "effective_height": effective_height,
             "exposure": exposure,
-            "rating": adjusted_rating,
+            "rating": star_rating,
+            "precise_rating": precise_rating,
             "board": board,
             "notes": BEACH_NOTES.get(beach_name, ""),
             "period": current_wave_period
         })
     
-    # Overall rating (average of beach ratings, rounded to nearest half star)
+    # Overall rating (average of beach star ratings, rounded to nearest half star)
     overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
     overall_rating = max(0, min(5, overall_rating))
     overall_rating = round(overall_rating * 2) / 2
@@ -438,13 +441,14 @@ def generate_report(marine_data, wind_data, tide_data):
     # quality: 1.0 = perfect offshore (opposite), 0.0 = onshore (same direction)
     wind_quality = 1.0 - abs(wind_wave_angle - 180) / 180
     
-    # Determine best beaches using composite score (surf rating × wind quality)
-    best_score = max(bc["rating"] * (0.7 + 0.3 * wind_quality) for bc in beach_conditions)
-    best_beaches = [
-        bc["name"] for bc in beach_conditions
-        if bc["rating"] * (0.7 + 0.3 * wind_quality) >= best_score - 0.5
-    ][:3]
-    best_beaches_str = ", ".join(best_beaches)
+    # Determine best beaches using precise composite score (precise rating × wind quality)
+    best_score = max(bc["precise_rating"] * (0.7 + 0.3 * wind_quality) for bc in beach_conditions)
+    best_beaches = sorted(
+        [bc for bc in beach_conditions if bc["precise_rating"] * (0.7 + 0.3 * wind_quality) >= best_score - 0.5],
+        key=lambda bc: bc["precise_rating"] * (0.7 + 0.3 * wind_quality),
+        reverse=True
+    )[:3]
+    best_beaches_str = ", ".join(bc["name"] for bc in best_beaches)
     
     # Generate HTML
     html_content = f'''<!DOCTYPE html>
@@ -695,7 +699,8 @@ def generate_report(marine_data, wind_data, tide_data):
     
     for beach in beach_conditions:
         stars = generate_stars(beach["rating"])
-        is_best = beach["name"] in best_beaches
+        best_names = {bc["name"] for bc in best_beaches}
+        is_best = beach["name"] in best_names
         best_card_class = " beach-card-best" if is_best else ""
         html_content += f'''
             <div class="beach-card{best_card_class}">
