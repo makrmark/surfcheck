@@ -275,35 +275,46 @@ def get_board_recommendation(effective_height, wave_period):
     """Get board recommendation(s) based on wave height and period.
     Returns a comma-separated list of suitable board types."""
     boards = []
-    
+
     if effective_height < 0.3:
         boards = ["Longboard", "Log"]
     elif effective_height < 0.6:
-        boards = ["Mid-Length", "Funboard", "Longboard"]
+        boards = ["Longboard", "Mid-Length", "Funboard", "Groveller"]
     elif effective_height < 1.0:
-        boards = ["Shortboard", "Fish", "Funboard"]
+        boards = ["Groveller", "Fish", "Funboard", "Shortboard"]
     elif effective_height < 1.5:
         boards = ["Shortboard", "Fish"]
     elif effective_height < 2.0:
-        boards = ["Shortboard", "Gun"]
+        boards = ["Shortboard", "Step-Up"]
     else:
-        boards = ["Gun"]
-    
-    # Adjust down if period is short (< 8s) — favour fatter boards
+        boards = ["Step-Up", "Shortboard"]
+
+    # Short period (< 8s) — weak/mushy swell, favour more volume
     if wave_period < 8:
-        if "Gun" in boards:
-            boards = ["Shortboard", "Fish"]
+        if "Step-Up" in boards:
+            boards = ["Shortboard", "Fish", "Groveller"]
         elif "Shortboard" in boards:
-            boards = ["Funboard", "Mid-Length"]
+            boards = ["Groveller", "Fish", "Funboard", "Mid-Length"]
         elif "Fish" in boards:
-            boards = ["Funboard"]
-        elif "Funboard" in boards:
-            boards = ["Longboard"]
-    
+            boards = ["Groveller", "Funboard"]
+        elif "Groveller" in boards or "Funboard" in boards or "Mid-Length" in boards:
+            boards = ["Longboard", "Mid-Length", "Funboard"]
+        else:
+            boards = ["Longboard", "Log"]
+
+    # Long period (>= 12s) — powerful ground swell, favour step-up when it's getting size
+    elif wave_period >= 12 and effective_height >= 1.2:
+        if effective_height < 1.5:
+            boards = ["Shortboard", "Step-Up"]
+        elif effective_height < 2.0:
+            boards = ["Step-Up", "Shortboard"]
+        else:
+            boards = ["Step-Up"]
+
     # Remove duplicates and sort by board size (smallest first)
     seen = set()
     ordered = []
-    for b in ["Shortboard", "Fish", "Gun", "Mid-Length", "Funboard", "Longboard", "Log"]:
+    for b in ["Shortboard", "Groveller", "Fish", "Step-Up", "Mid-Length", "Funboard", "Longboard", "Log"]:
         if b in boards and b not in seen:
             ordered.append(b)
             seen.add(b)
