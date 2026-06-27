@@ -279,15 +279,15 @@ def get_board_recommendation(effective_height, wave_period):
     if effective_height < 0.3:
         boards = ["Longboard", "Log"]
     elif effective_height < 0.6:
-        boards = ["Longboard", "Funboard"]
+        boards = ["Longboard", "Funboard", "Groveller"]
     elif effective_height < 1.0:
-        boards = ["Fish", "Funboard", "Mid-Length", "Groveller"]
+        boards = ["Fish", "Funboard", "Mid-Length"]
     elif effective_height < 1.5:
-        boards = ["Shortboard", "Fish"]
+        boards = ["Shortboard", "Fish", "Mid-Length"]
     elif effective_height < 2.0:
         boards = ["Shortboard", "Step-Up"]
     else:
-        boards = ["Step-Up", "Shortboard"]
+        boards = ["Step-Up"]
 
     # Short period (< 8s) — weak/mushy swell, favour more volume
     if wave_period < 8:
