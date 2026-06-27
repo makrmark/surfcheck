@@ -355,6 +355,7 @@ def generate_report(marine_data, wind_data, tide_data):
     current_wave_direction = wave_directions[marine_idx]
     current_wind_speed = wind_speeds[wind_idx]
     current_wind_direction = wind_directions[wind_idx]
+    wind_knots = current_wind_speed / 1.852
     
     # Get tide information
     tide_height = tide_lookup(now, tide_data)
@@ -428,10 +429,21 @@ def generate_report(marine_data, wind_data, tide_data):
     overall_rating = max(0, min(5, overall_rating))
     overall_rating = round(overall_rating * 2) / 2
     
-    # Determine best beaches (those with highest rating, up to 3)
-    beach_ratings = sorted(beach_conditions, key=lambda x: x["rating"], reverse=True)
-    top_rating = beach_ratings[0]["rating"]
-    best_beaches = [bc["name"] for bc in beach_ratings if bc["rating"] >= top_rating - 0.5][:3]
+    # Determine wind quality factor (offshore vs onshore wind)
+    # Offshore wind = wind opposite to wave direction (clean waves)
+    # Onshore wind = wind same as wave direction (choppy waves)
+    wind_wave_angle = abs(current_wind_direction - current_wave_direction)
+    if wind_wave_angle > 180:
+        wind_wave_angle = 360 - wind_wave_angle
+    # quality: 1.0 = perfect offshore (opposite), 0.0 = onshore (same direction)
+    wind_quality = 1.0 - abs(wind_wave_angle - 180) / 180
+    
+    # Determine best beaches using composite score (surf rating × wind quality)
+    best_score = max(bc["rating"] * (0.7 + 0.3 * wind_quality) for bc in beach_conditions)
+    best_beaches = [
+        bc["name"] for bc in beach_conditions
+        if bc["rating"] * (0.7 + 0.3 * wind_quality) >= best_score - 0.5
+    ][:3]
     best_beaches_str = ", ".join(best_beaches)
     
     # Generate HTML
@@ -647,7 +659,7 @@ def generate_report(marine_data, wind_data, tide_data):
         </div>
         <div class="condition-item">
             <span class="label">Wind:</span>
-            <span class="value">{current_wind_speed:.0f} km/h {wind_compass} {current_wind_direction:.0f}°</span>
+            <span class="value">{current_wind_speed:.0f} km/h ({wind_knots:.0f} kt) {wind_compass}</span>
         </div>
     </div>
 
@@ -657,10 +669,7 @@ def generate_report(marine_data, wind_data, tide_data):
             <div class="summary-item" style="grid-column: 1 / -1;">
                 <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
                 <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
-            </div>
-            <div class="summary-item">
-                <div class="stars" style="font-size: 1.8em;">{generate_stars(overall_rating)}</div>
-                <div class="summary-label">Overall Rating</div>
+                <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(overall_rating)}</div>
             </div>
             <div class="summary-item">
                 <div class="summary-value">{max_effective_height:.1f}m</div>
