@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Northern Beaches Surf Check</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 3px solid #0066cc;
+            margin-bottom: 30px;
+        }
+        h1 { color: #0066cc; font-size: 1.8em; margin-bottom: 5px; }
+        .back-link { margin-bottom: 20px; }
+        .back-link a { color: #0066cc; text-decoration: none; font-size: 0.95em; }
+        .back-link a:hover { text-decoration: underline; }
+        section {
+            background: white;
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #0066cc;
+            border-bottom: 2px solid #e6f2ff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        h3 {
+            color: #444;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        p, li { font-size: 0.95em; color: #555; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+        .formula {
+            text-align: center;
+            font-size: 1.15em;
+            padding: 10px;
+            background: #f0f8ff;
+            border-radius: 5px;
+            margin: 10px 0;
+            color: #333;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9em;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.4em; }
+            section { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏄‍♂️ About Northern Beaches Surf Check</h1>
+        <p class="back-link"><a href="./index.html">← Back to Surf Report</a></p>
+    </header>
+
+    <section>
+        <h2>🌊 Overview</h2>
+        <p>Northern Beaches Surf Check is an automated surf reporting system for Sydney's Northern Beaches. It runs daily at 5:45 AM via a macOS launch agent, fetches live marine and meteorological data, processes it into a detailed surf report, and deploys it as a static webpage via GitHub Pages.</p>
+        <p>This page explains how the surf report is generated — the data sources, calculations, and decisions behind every rating and recommendation.</p>
+    </section>
+
+    <section>
+        <h2>📡 Data Sources</h2>
+        <h3>Open-Meteo Marine API</h3>
+        <p>Provides hourly wave and wind forecasts for the Sydney coast (-33.78, 151.30):</p>
+        <ul>
+            <li><strong>Wave Height</strong> — Significant wave height in metres (H₀)</li>
+            <li><strong>Wave Period</strong> — Peak wave period in seconds (T)</li>
+            <li><strong>Wave Direction</strong> — Direction waves are coming from, in degrees from north</li>
+            <li><strong>Wind Speed & Direction</strong> — 10m wind speed and direction</li>
+        </ul>
+        <p>Open-Meteo provides free, no-registration-required access to global weather models.</p>
+
+        <h3>MHL (Manly Hydraulics Laboratory)</h3>
+        <p>Historically used for real-time tide observations from Station 213470 (Sydney / Port Jackson at HMAS Penguin). However, the MHL API endpoint is currently unavailable, so the system uses a harmonic tide model instead.</p>
+    </section>
+
+    <section>
+        <h2>🌊 Wave Height at Breaking</h2>
+        <p>Rather than simply displaying the offshore swell height, we estimate how high waves will be when they <em>break</em> at each beach, using the <strong>breaker index formula</strong> commonly used by oceanographers:</p>
+
+        <div class="formula">
+            H ≈ 0.44 · H₀ · (T / √H₀)^(2/5)
+        </div>
+
+        <p>Where:</p>
+        <ul>
+            <li><strong>H</strong> = Wave height at breaking (metres)</li>
+            <li><strong>H₀</strong> = Offshore deep-water swell height (metres)</li>
+            <li><strong>T</strong> = Swell period (seconds)</li>
+        </ul>
+
+        <p>This formula accounts for the fact that waves grow as they move into shallower water, with longer-period swells amplifying more than shorter-period swells. A 1m, 14s swell will break at about 1.4m, while a 1m, 8s swell will only reach about 1.0m.</p>
+
+        <h3>Directional Exposure</h3>
+        <p>Not all swell reaches every beach equally. Each beach has a known <strong>aspect</strong> — the direction it faces. The offshore swell energy is scaled by a directional exposure factor:</p>
+
+        <div class="formula">
+            exposure = cos(|swell_direction − beach_aspect|)
+        </div>
+
+        <p>A beach facing directly into the swell (Δθ = 0°) gets 100% exposure. A beach at 90° to the swell gets 0%. The directional factor is applied to the offshore height <em>before</em> the breaker formula.</p>
+    </section>
+
+    <section>
+        <h2>🌊 Tide Height Calculation</h2>
+        <p>Since the MHL tide API is unavailable, we use a <strong>harmonic tide model</strong> based on the two principal tidal constituents for Sydney Harbour:</p>
+
+        <div class="formula">
+            tide(t) = MSL + A_M2 · sin(2π · t/T_M2 − φ_M2) + A_S2 · sin(2π · t/T_S2 − φ_S2)
+        </div>
+
+        <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
+            <tr><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Parameter</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Value</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Description</th></tr>
+            <tr><td style="padding:4px 8px;">MSL</td><td style="padding:4px 8px;">0.9 m</td><td style="padding:4px 8px;">Mean Sea Level (relative to Chart Datum)</td></tr>
+            <tr><td style="padding:4px 8px;">A_M2</td><td style="padding:4px 8px;">0.57 m</td><td style="padding:4px 8px;">Principal lunar semi-diurnal amplitude</td></tr>
+            <tr><td style="padding:4px 8px;">T_M2</td><td style="padding:4px 8px;">12.42 h</td><td style="padding:4px 8px;">Lunar tidal period (12h 25m)</td></tr>
+            <tr><td style="padding:4px 8px;">A_S2</td><td style="padding:4px 8px;">0.16 m</td><td style="padding:4px 8px;">Principal solar semi-diurnal amplitude</td></tr>
+            <tr><td style="padding:4px 8px;">T_S2</td><td style="padding:4px 8px;">12.00 h</td><td style="padding:4px 8px;">Solar tidal period (exactly 12h)</td></tr>
+        </table>
+
+        <p>The model uses an <strong>epoch-based calculation</strong> (since Jan 1, 2000) so the lunar tide advances ~50 minutes each day, matching real-world behaviour. Phase angles are calibrated for Sydney Harbour (Port Jackson / Fort Denison).</p>
+
+        <h3>Tide Trend</h3>
+        <p>The trend (rising/falling) is determined by comparing the tide height now to predictions one hour before and after the current time. Low tide heights are displayed as negative values.</p>
+    </section>
+
+    <section>
+        <h2>⭐ Surf Rating Calculation</h2>
+        <p>The surf rating (0–5 stars) combines three normalized factors:</p>
+
+        <h3>1. Wave Height Factor (0–2.5 points)</h3>
+        <p>Linear up to 2.0m: <code>min(height / 2.0, 1.0) × 2.5</code></p>
+
+        <h3>2. Period Factor (0–2.5 points)</h3>
+        <p>Linear from 6s (0 points) to 16s (2.5 points): <code>max(0, min((T − 6) / 10, 1)) × 2.5</code></p>
+
+        <h3>3. Tide Factor (modifier)</h3>
+        <p>Optimal tide range is 0.5–1.5m (factor = 1.0). Outside this range the factor decreases linearly to 0.5 at 0m and 3.0m.</p>
+
+        <p>The final rating is the product of all three factors, rounded to the nearest half star.</p>
+    </section>
+
+    <section>
+        <h2>🏄 Board & Wetsuit Recommendations</h2>
+        <h3>Board Selection</h3>
+        <p>Based on wave height at breaking, with adjustment for short-period swell:</p>
+        <ul>
+            <li><strong>Log</strong> — &lt; 0.4m</li>
+            <li><strong>Funboard</strong> — 0.4–0.9m</li>
+            <li><strong>Shortboard</strong> — 0.9–1.5m</li>
+            <li><strong>Gun</strong> — 1.5m+</li>
+        </ul>
+        <p>If the swell period is less than 8 seconds, the recommendation is adjusted down one step (e.g. Shortboard → Funboard).</p>
+
+        <h3>Wetsuit Guide</h3>
+        <p>Based on month-derived sea-surface temperature for Sydney and the Quiksilver wetsuit guide:</p>
+        <ul>
+            <li><strong>Dec–Feb (Summer, 20–24°C):</strong> Boardshorts or rash vest</li>
+            <li><strong>Mar, Nov (18–20°C):</strong> Spring suit (2mm)</li>
+            <li><strong>Apr–May (16–18°C):</strong> 3/2 full wetsuit</li>
+            <li><strong>Jun–Aug (Winter, 14–16°C):</strong> 4/3 full wetsuit</li>
+            <li><strong>Sep–Oct (16–19°C):</strong> 3/2 full wetsuit</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>🏖️ Beach Orientations</h2>
+        <p>Each beach has a known <strong>aspect</strong> — the direction the beach face points towards the ocean (degrees from north). These were determined from geographic analysis of Sydney's Northern Beaches coastline:</p>
+
+        <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
+            <tr><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Beach</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Aspect (°)</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Direction</th></tr>
+            <tr><td style="padding:4px 8px;">Long Reef</td><td style="padding:4px 8px;">158°</td><td style="padding:4px 8px;">SSE (South-Southeast)</td></tr>
+            <tr><td style="padding:4px 8px;">Dee Why</td><td style="padding:4px 8px;">135°</td><td style="padding:4px 8px;">SE (Southeast)</td></tr>
+            <tr><td style="padding:4px 8px;">Curl Curl</td><td style="padding:4px 8px;">112°</td><td style="padding:4px 8px;">ESE (East-Southeast)</td></tr>
+            <tr><td style="padding:4px 8px;">Freshwater</td><td style="padding:4px 8px;">135°</td><td style="padding:4px 8px;">SE (Southeast)</td></tr>
+            <tr><td style="padding:4px 8px;">North Steyne</td><td style="padding:4px 8px;">90°</td><td style="padding:4px 8px;">E (East)</td></tr>
+            <tr><td style="padding:4px 8px;">South Steyne</td><td style="padding:4px 8px;">68°</td><td style="padding:4px 8px;">ENE (East-Northeast)</td></tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>🤖 Automation & Deployment</h2>
+        <p>The entire system runs automatically with no manual intervention:</p>
+        <ol>
+            <li><strong>5:45 AM daily</strong> — A macOS launch agent triggers <code>surf_report.py</code></li>
+            <li>Python script fetches live data from Open-Meteo APIs</li>
+            <li>Calculates beach-specific conditions, ratings, and recommendations</li>
+            <li>Generates a static HTML page (<code>docs/index.html</code>)</li>
+            <li>Commits the changes to the local git repository</li>
+            <li>Pushes to GitHub, which triggers GitHub Pages rebuild</li>
+            <li>The live site is updated within minutes at <code>https://makrmark.github.io/surforecast/</code></li>
+        </ol>
+        <p>All code is open source and available at <a href="https://github.com/makrmark/surfcheck" target="_blank">github.com/makrmark/surfcheck</a>.</p>
+    </section>
+
+    <section>
+        <h2>⚠️ Limitations & Notes</h2>
+        <ul>
+            <li>Tide data is from a harmonic model, not real-time observations. Accuracy is approximately ±0.2m under normal conditions.</li>
+            <li>The breaker formula is a generalized rule-of-thumb; actual breaking wave heights depend on local bathymetry, reef structure, and sandbar positions.</li>
+            <li>Wind data is for the offshore Sydney location, not beach-specific local wind conditions.</li>
+            <li>Wetsuit recommendations are based on monthly climatological averages, not real-time sea temperature.</li>
+        </ul>
+    </section>
+
+    <div class="footer">
+        <p><a href="./index.html">← Back to Surf Report</a></p>
+        <p>Northern Beaches Surf Check — Automated surf report for Sydney beaches</p>
+        <p>Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model (MHL-calibrated)</p>
+    </div>
+</body>
+</html>

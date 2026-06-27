@@ -458,18 +458,33 @@ def generate_report(marine_data, wind_data, tide_data):
         }}
         header {{
             text-align: center;
-            padding: 20px 0;
+            padding: 15px 0 10px;
             border-bottom: 3px solid #0066cc;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }}
         h1 {{
             color: #0066cc;
-            font-size: 2.2em;
-            margin-bottom: 10px;
+            font-size: 1.5em;
+            margin-bottom: 4px;
         }}
         .timestamp {{
             color: #666;
             font-style: italic;
+            font-size: 0.85em;
+            margin: 0;
+        }}
+        @media (min-width: 600px) {{
+            header {{
+                padding: 25px 0 15px;
+                margin-bottom: 30px;
+            }}
+            h1 {{
+                font-size: 2.2em;
+                margin-bottom: 10px;
+            }}
+            .timestamp {{
+                font-size: 1em;
+            }}
         }}
         .section {{
             background: white;
@@ -627,30 +642,25 @@ def generate_report(marine_data, wind_data, tide_data):
     <div class="section">
         <h2>🌊 Offshore Conditions</h2>
         <div class="condition-item">
-            <span class="label">Wave Height:</span>
-            <span class="value">{current_wave_height:.1f}m</span>
-        </div>
-        <div class="condition-item">
-            <span class="label">Wave Period:</span>
-            <span class="value">{current_wave_period:.0f}s</span>
-        </div>
-        <div class="condition-item">
-            <span class="label">Wave Direction:</span>
-            <span class="value">{current_wave_direction:.0f}° ({wave_compass})</span>
+            <span class="label">Swell:</span>
+            <span class="value">{current_wave_height:.1f}m @ {current_wave_period:.0f}s from {current_wave_direction:.0f}° ({wave_compass})</span>
         </div>
         <div class="condition-item">
             <span class="label">Wind:</span>
-            <span class="value">{current_wind_speed:.0f} km/h {wind_compass}</span>
+            <span class="value">{current_wind_speed:.0f} km/h {wind_compass} {current_wind_direction:.0f}°</span>
         </div>
     </div>
 
     <div class="section">
         <h2>📊 Overall Assessment</h2>
         <div class="summary-section">
+            <div class="summary-item" style="grid-column: 1 / -1;">
+                <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
+                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
+            </div>
             <div class="summary-item">
-                <div class="summary-value">{overall_rating:.1f}</div>
+                <div class="stars" style="font-size: 1.8em;">{generate_stars(overall_rating)}</div>
                 <div class="summary-label">Overall Rating</div>
-                <div class="stars">{generate_stars(overall_rating)}</div>
             </div>
             <div class="summary-item">
                 <div class="summary-value">{max_effective_height:.1f}m</div>
@@ -665,10 +675,6 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="summary-value">{water_temp}°C</div>
                 <div class="summary-label">Water Temp</div>
                 <div class="wetsuit">Wetsuit: {wetsuit_rec}</div>
-            </div>
-            <div class="summary-item" style="grid-column: 1 / -1;">
-                <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
-                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
             </div>
         </div>
     </div>
@@ -738,6 +744,7 @@ def generate_report(marine_data, wind_data, tide_data):
     
 
     <div class="footer">
+        <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>
         <p>Report generated automatically for GitHub Pages deployment</p>

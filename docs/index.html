@@ -21,18 +21,33 @@
         }
         header {
             text-align: center;
-            padding: 20px 0;
+            padding: 15px 0 10px;
             border-bottom: 3px solid #0066cc;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         h1 {
             color: #0066cc;
-            font-size: 2.2em;
-            margin-bottom: 10px;
+            font-size: 1.5em;
+            margin-bottom: 4px;
         }
         .timestamp {
             color: #666;
             font-style: italic;
+            font-size: 0.85em;
+            margin: 0;
+        }
+        @media (min-width: 600px) {
+            header {
+                padding: 25px 0 15px;
+                margin-bottom: 30px;
+            }
+            h1 {
+                font-size: 2.2em;
+                margin-bottom: 10px;
+            }
+            .timestamp {
+                font-size: 1em;
+            }
         }
         .section {
             background: white;
@@ -184,43 +199,38 @@
 <body>
     <header>
         <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
-        <p class="timestamp">Generated: 2026-06-27 11:21:58 AEST</p>
+        <p class="timestamp">Generated: 2026-06-27 12:07:56 AEST</p>
     </header>
 
     <div class="section">
         <h2>🌊 Offshore Conditions</h2>
         <div class="condition-item">
-            <span class="label">Wave Height:</span>
-            <span class="value">1.0m</span>
-        </div>
-        <div class="condition-item">
-            <span class="label">Wave Period:</span>
-            <span class="value">9s</span>
-        </div>
-        <div class="condition-item">
-            <span class="label">Wave Direction:</span>
-            <span class="value">124° (SE)</span>
+            <span class="label">Swell:</span>
+            <span class="value">1.0m @ 9s from 124° (SE)</span>
         </div>
         <div class="condition-item">
             <span class="label">Wind:</span>
-            <span class="value">9 km/h WSW</span>
+            <span class="value">9 km/h WSW 253°</span>
         </div>
     </div>
 
     <div class="section">
         <h2>📊 Overall Assessment</h2>
         <div class="summary-section">
+            <div class="summary-item" style="grid-column: 1 / -1;">
+                <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
+                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Long Reef, Dee Why, Curl Curl</div>
+            </div>
             <div class="summary-item">
-                <div class="summary-value">2.0</div>
+                <div class="stars" style="font-size: 1.8em;">★★☆☆☆</div>
                 <div class="summary-label">Overall Rating</div>
-                <div class="stars">★★☆☆☆</div>
             </div>
             <div class="summary-item">
                 <div class="summary-value">1.0m</div>
                 <div class="summary-label">Max Surf Height</div>
             </div>
             <div class="summary-item">
-                <div class="summary-value">1.2m</div>
+                <div class="summary-value">1.0m</div>
                 <div class="summary-label">Tide Height</div>
                 <div class="tide-trend">🔺 High</div>
             </div>
@@ -228,10 +238,6 @@
                 <div class="summary-value">16°C</div>
                 <div class="summary-label">Water Temp</div>
                 <div class="wetsuit">Wetsuit: 4/3 full wetsuit</div>
-            </div>
-            <div class="summary-item" style="grid-column: 1 / -1;">
-                <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
-                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Long Reef, Dee Why, Curl Curl</div>
             </div>
         </div>
     </div>
@@ -387,6 +393,7 @@
     
 
     <div class="footer">
+        <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>
         <p>Report generated automatically for GitHub Pages deployment</p>
