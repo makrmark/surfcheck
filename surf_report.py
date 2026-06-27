@@ -672,7 +672,7 @@ def generate_report(marine_data, wind_data, tide_data):
     </header>
 
     <div class="section">
-        <h2>🌊 Offshore Conditions</h2>
+        <h2>🌊 Overall Conditions</h2>
         <div class="condition-item">
             <span class="label">Swell:</span>
             <span class="value">{current_wave_height:.1f}m @ {current_wave_period:.0f}s from {current_wave_direction:.0f}° ({wave_compass})</span>
@@ -680,6 +680,14 @@ def generate_report(marine_data, wind_data, tide_data):
         <div class="condition-item">
             <span class="label">Wind:</span>
             <span class="value">{current_wind_speed:.0f} km/h ({wind_knots:.0f} kt) {wind_compass}</span>
+        </div>
+        <div class="condition-item">
+            <span class="label">Tide:</span>
+            <span class="value">{display_tide:.1f}m {tide_emoji} {tide_trend.title()}</span>
+        </div>
+        <div class="condition-item">
+            <span class="label">Water:</span>
+            <span class="value">{water_temp}°C — {wetsuit_rec}</span>
         </div>
     </div>
 
@@ -690,20 +698,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
                 <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
                 <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(overall_rating)}</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-value">{max_effective_height:.1f}m</div>
-                <div class="summary-label">Max Surf Height</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-value">{display_tide:.1f}m</div>
-                <div class="summary-label">Tide Height</div>
-                <div class="tide-trend">{tide_emoji} {tide_trend.title()}</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-value">{water_temp}°C</div>
-                <div class="summary-label">Water Temp</div>
-                <div class="wetsuit">Wetsuit: {wetsuit_rec}</div>
+                <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{max_effective_height:.1f}m</strong></div>
             </div>
         </div>
     </div>
