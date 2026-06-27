@@ -485,28 +485,41 @@ def generate_report(marine_data, wind_data, tide_data):
             color: #333;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 50px 20px 20px;
             background-color: #f0f8ff;
         }}
         header {{
-            text-align: center;
-            padding: 15px 0 10px;
-            border-bottom: 3px solid #0066cc;
-            margin-bottom: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: #f0f8ff;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-bottom: 2px solid #0066cc;
         }}
         h1 {{
             color: #0066cc;
-            font-size: 1.5em;
-            margin-bottom: 4px;
+            font-size: 1.0em;
+            margin: 0;
         }}
         .timestamp {{
             color: #666;
             font-style: italic;
-            font-size: 0.85em;
+            font-size: 0.65em;
             margin: 0;
         }}
         @media (min-width: 600px) {{
+            body {{
+                padding: 20px;
+            }}
             header {{
+                position: static;
+                display: block;
                 padding: 25px 0 15px;
                 margin-bottom: 30px;
             }}
