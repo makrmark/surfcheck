@@ -14,6 +14,8 @@ import sys
 import logging
 from pathlib import Path
 
+import imos_sst
+
 # Configuration
 LOCATION = {"latitude": -33.78, "longitude": 151.30}  # Sydney
 REPORT_TIME_HOUR = 6  # 6:00 AM report time
@@ -37,8 +39,8 @@ LOG_FILE = Path.home() / "surforecast.log"
 REPORT_FILE = Path("docs") / "index.html"  # GitHub Pages serves from /docs
 ERROR_REPORT_FILE = Path("docs") / "error.html"
 
-# Wetsuit guide by month (Southern Hemisphere)
-WETSUIT_GUIDE = {
+# Fallback wetsuit guide by month (used only when real SST is unavailable)
+FALLBACK_WETSUIT_GUIDE = {
     12: "Boardshorts or rash vest",
     1: "Boardshorts or rash vest", 
     2: "Boardshorts or rash vest",
@@ -52,14 +54,6 @@ WETSUIT_GUIDE = {
     10: "3/2 full wetsuit",
     11: "Spring suit (2mm)",
     12: "Boardshorts or rash vest"
-}
-
-# Sea temperature by month (Southern Hemisphere, approximate)
-SEA_TEMPERATURE = {
-    12: 22, 1: 22, 2: 22,  # Summer
-    3: 20, 4: 20, 5: 20,   # Autumn
-    6: 16, 7: 16, 8: 16,   # Winter
-    9: 21, 10: 21, 11: 21  # Spring
 }
 
 # Setup logging
@@ -323,13 +317,13 @@ def get_board_recommendation(effective_height, wave_period):
 
 
 def get_wetsuit_recommendation(month):
-    """Get wetsuit recommendation based on month."""
-    return WETSUIT_GUIDE.get(month, "Check local conditions")
+    """Get wetsuit recommendation based on month (fallback when real SST unavailable)."""
+    return FALLBACK_WETSUIT_GUIDE.get(month, "Check local conditions")
 
 
 def get_water_temperature(month):
-    """Get approximate water temperature for month."""
-    return SEA_TEMPERATURE.get(month, "Unknown")
+    """Get approximate water temperature for month (fallback when real SST unavailable)."""
+    return imos_sst.MONTHLY_SST.get(month, "Unknown")
 
 
 def generate_stars(rating):
@@ -415,10 +409,12 @@ def generate_report(marine_data, wind_data, tide_data):
     wave_compass = degrees_to_compass(current_wave_direction)
     wind_compass = degrees_to_compass(current_wind_direction)
     
-    # Get month for wetsuit recommendation
-    month = now.month
-    wetsuit_rec = get_wetsuit_recommendation(month)
-    water_temp = get_water_temperature(month)
+    # Get real-time water temperature from IMOS satellite SST (fallback to monthly climatology)
+    sst_data = imos_sst.get_water_temperature()
+    water_temp = sst_data["temp"]
+    sst_source = sst_data["source"]
+    sst_date = sst_data["date"]
+    wetsuit_rec = imos_sst.get_wetsuit_recommendation(water_temp)
     
     # Calculate beach-specific conditions
     beach_conditions = []
@@ -740,6 +736,10 @@ def generate_report(marine_data, wind_data, tide_data):
         <div class="condition-item">
             <span class="label">Water:</span>
             <span class="value">{water_temp}°C — {wetsuit_rec}</span>
+        </div>
+        <div class="condition-item">
+            <span class="label">SST Source:</span>
+            <span class="value">{sst_source}{' (' + sst_date + ')' if sst_date else ''}</span>
         </div>
     </div>
 

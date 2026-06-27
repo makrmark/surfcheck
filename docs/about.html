@@ -104,6 +104,18 @@
 
     <section>
         <h2>📡 Data Sources</h2>
+        <h3>IMOS Satellite SST (Real-Time Water Temperature)</h3>
+        <p>Instead of relying on monthly averages, the system fetches <strong>real-time sea surface temperature</strong> from the <strong>Integrated Marine Observing System (IMOS)</strong> via their public S3 bucket:</p>
+        <ul>
+            <li><strong>Product:</strong> RAMSSA L4 — Regional Australian Multi-Sensor SST Analysis (9 km resolution, gap-free)</li>
+            <li><strong>Bucket:</strong> <code>s3://imos-data/IMOS/SRS/SST/ghrsst/L4/RAMSSA/</code></li>
+            <li><strong>Access:</strong> Public bucket, accessed via <code>aws s3 cp --no-sign-request</code></li>
+            <li><strong>Query:</strong> Downloads the latest NetCDF file, extracts SST for the Northern Beaches coastal edge (first ocean pixel offshore, ~19 km east of the coastline)</li>
+            <li><strong>Coverage:</strong> Daily 12:00 UTC analyses, typically available by ~17:00 UTC the same day</li>
+            <li><strong>Variables:</strong> <code>analysed_sst</code> — foundation sea surface temperature (Kelvin, auto-scaled)</li>
+        </ul>
+        <p>If the S3 endpoint is unreachable or the NetCDF file cannot be parsed, the system falls back to monthly climatological averages.</p>
+
         <h3>Open-Meteo Marine API</h3>
         <p>Provides hourly wave and wind forecasts for the Sydney coast (-33.78, 151.30):</p>
         <ul>
@@ -232,14 +244,15 @@
         <p><strong>Long period (&gt;= 12s) with size (&gt;= 1.2m):</strong> Favour a Step-Up for powerful ground swell.</p>
 
         <h3>Wetsuit Guide</h3>
-        <p>Based on month-derived sea-surface temperature for Sydney and the Quiksilver wetsuit guide:</p>
+        <p>Wetsuit recommendations are based on <strong>real-time sea surface temperature</strong> from the IMOS RAMSSA L4 satellite analysis, queried daily from the IMOS S3 bucket. The recommendation uses standard temperature thresholds:</p>
         <ul>
-            <li><strong>Dec–Feb</strong> (Summer, 20–24°C): Boardshorts or rash vest</li>
-            <li><strong>Mar, Nov</strong> (18–20°C): Spring suit (2mm)</li>
-            <li><strong>Apr–May</strong> (16–18°C): 3/2 full wetsuit</li>
-            <li><strong>Jun–Aug</strong> (Winter, 14–16°C): 4/3 full wetsuit</li>
-            <li><strong>Sep–Oct</strong> (16–19°C): 3/2 full wetsuit</li>
+            <li><strong>≥ 22°C:</strong> Boardshorts or rash vest</li>
+            <li><strong>20–21°C:</strong> Spring suit (2 mm)</li>
+            <li><strong>17–19°C:</strong> 3/2 full wetsuit</li>
+            <li><strong>14–16°C:</strong> 4/3 full wetsuit</li>
+            <li><strong>&lt; 14°C:</strong> 5/4 full wetsuit with booties, gloves, hood</li>
         </ul>
+        <p>If the IMOS satellite data is unavailable (network error, S3 outage, etc.), the system falls back to monthly climatological averages for Sydney waters.</p>
     </section>
 
     <section>
@@ -278,7 +291,8 @@
             <li>Tide data is from a harmonic model, not real-time observations. Accuracy is approximately ±0.2m.</li>
             <li>The breaker formula is a generalised rule-of-thumb; actual breaking heights depend on local bathymetry, reef structure, and sandbars.</li>
             <li>Wind data is for the offshore Sydney location, not beach-specific local conditions.</li>
-            <li>Wetsuit recommendations are based on monthly climatological averages, not live sea temperature.</li>
+            <li>Wetsuit recommendations are based on real-time IMOS satellite SST, falling back to monthly averages if satellite data is unavailable.</li>
+            <li>The IMOS SST query requires AWS CLI and network access to the S3 bucket.</li>
         </ul>
     </section>
 

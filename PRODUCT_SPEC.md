@@ -50,8 +50,12 @@ Northern Beaches Surf Check is a static webpage that provides daily surf reports
   Parameters: latitude=-33.78, longitude=151.30, hourly=wave_height,wave_period,wave_direction,wind_speed,wind_direction  
 - **Open-Meteo Weather API**: https://api.open-meteo.com/v1/forecast  
   Parameters: latitude=-33.78, longitude=151.30, hourly=temperature_2m,weathercode  
+- **IMOS S3 Bucket (RAMSSA L4 SST)**: s3://imos-data/IMOS/SRS/SST/ghrsst/L4/RAMSSA/  
+  Real-time sea surface temperature from satellite analysis, queried daily via `aws s3 cp --no-sign-request`.  
+  Public bucket, no credentials required. Falls back to monthly climatology on error.
 - **Manly Hydraulics Laboratory (MHL) API**: https://mhl.nsw.gov.au/Data/SeaLevel/Data/TimeSeries/213470.csv  
   Returns CSV with timestamp and sea level values  
+  *(Currently unavailable; uses harmonic tide model as fallback)*  
 
 ### 4.2 Beach Definitions  
 
@@ -86,6 +90,8 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
 | Apr-May | 16-18°C | 3/2 full wetsuit |
 | Jun-Aug | 14-16°C | 4/3 full wetsuit |
 | Sep-Oct | 16-19°C | 3/2 full wetsuit |
+
+*Note: Monthly table is the fallback only. Real-time SST from IMOS RAMSSA L4 is queried daily via S3 and used preferentially, with temperature-based thresholds (≥22°C rash vest, 20–21°C spring suit, 17–19°C 3/2, 14–16°C 4/3, <14°C 5/4+hood).*
 
 ---  
 
@@ -222,9 +228,10 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
 
 ## 8. Future Enhancements  
 
-| Idea | Benefit |
-|------|---------|
-| **Dynamic Water Temperature** – Pull real‑time SST from NOAA or IMOS API instead of month‑lookup. | More precise wetsuit advice. |
+| Idea | Benefit | Status |
+|------|---------|--------|
+| **Dynamic Water Temperature** – Pull real‑time SST from IMOS S3 bucket (RAMSSA L4) instead of month‑lookup. | More precise wetsuit advice. | ✅ **Implemented** |
+| **Multiple Forecast Horizons** – Offer 12‑hour and 24‑hour outlooks. | Better planning for later sessions. | ⬜ Planned |
 | **Multiple Forecast Horizons** – Offer 12‑hour and 24‑hour outlooks. | Better planning for later sessions. |
 | **Surf‑Quality Index** – Combine wave power, period, and wind into a single numeric score. | Simplifies decision making. |
 | **Rich Media Attachments** – Include a small tide‑graph or wave‑direction rose as an image attachment. | Visual enhancement. |
