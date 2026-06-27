@@ -164,12 +164,27 @@
             color: #999;
             opacity: 0.7;
         }
+        .beach-card-best {
+            border-color: #ffd700;
+            border-width: 3px;
+            background: linear-gradient(135deg, #fffde7 0%, #fff8e1 100%);
+        }
+        .best-beach-badge {
+            display: inline-block;
+            background: #ffd700;
+            color: #8b6914;
+            font-size: 0.75em;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
-        <p class="timestamp">Generated: 2026-06-27 10:08:02 AEST</p>
+        <p class="timestamp">Generated: 2026-06-27 11:21:58 AEST</p>
     </header>
 
     <div class="section">
@@ -188,7 +203,7 @@
         </div>
         <div class="condition-item">
             <span class="label">Wind:</span>
-            <span class="value">7 km/h WSW</span>
+            <span class="value">9 km/h WSW</span>
         </div>
     </div>
 
@@ -205,7 +220,7 @@
                 <div class="summary-label">Max Surf Height</div>
             </div>
             <div class="summary-item">
-                <div class="summary-value">1.4m</div>
+                <div class="summary-value">1.2m</div>
                 <div class="summary-label">Tide Height</div>
                 <div class="tide-trend">🔺 High</div>
             </div>
@@ -214,6 +229,10 @@
                 <div class="summary-label">Water Temp</div>
                 <div class="wetsuit">Wetsuit: 4/3 full wetsuit</div>
             </div>
+            <div class="summary-item" style="grid-column: 1 / -1;">
+                <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
+                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Long Reef, Dee Why, Curl Curl</div>
+            </div>
         </div>
     </div>
 
@@ -221,7 +240,7 @@
         <h2>🏖️ Beach Conditions</h2>
         <div class="beach-grid">
 
-            <div class="beach-card">
+            <div class="beach-card beach-card-best">
                 <div class="beach-name">
                     <span>Long Reef</span>
                     <span class="beach-aspect">158° (SSE)</span>
@@ -242,10 +261,10 @@
                 </div>
                 <div class="stars">★★☆☆☆</div>
                 <div class="board">Board: Funboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
                 <div class="notes">Northernmost beach, southeast-southeast exposure</div>
             </div>
-
-            <div class="beach-card">
+            <div class="beach-card beach-card-best">
                 <div class="beach-name">
                     <span>Dee Why</span>
                     <span class="beach-aspect">135° (SE)</span>
@@ -266,10 +285,10 @@
                 </div>
                 <div class="stars">★★☆☆☆</div>
                 <div class="board">Board: Shortboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
                 <div class="notes">Southeast facing beach, sheltered by southern headland</div>
             </div>
-
-            <div class="beach-card">
+            <div class="beach-card beach-card-best">
                 <div class="beach-name">
                     <span>Curl Curl</span>
                     <span class="beach-aspect">112° (ESE)</span>
@@ -290,9 +309,9 @@
                 </div>
                 <div class="stars">★★☆☆☆</div>
                 <div class="board">Board: Shortboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
                 <div class="notes">East-southeast exposed beach with consistent swell</div>
             </div>
-
             <div class="beach-card">
                 <div class="beach-name">
                     <span>Freshwater</span>
@@ -316,7 +335,6 @@
                 <div class="board">Board: Shortboard</div>
                 <div class="notes">Southeast facing beach, protected by northern headland</div>
             </div>
-
             <div class="beach-card">
                 <div class="beach-name">
                     <span>North Steyne</span>
@@ -340,7 +358,6 @@
                 <div class="board">Board: Funboard</div>
                 <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
             </div>
-
             <div class="beach-card">
                 <div class="beach-name">
                     <span>South Steyne</span>
@@ -364,7 +381,6 @@
                 <div class="board">Board: Funboard</div>
                 <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
             </div>
-
         </div>
     </div>
 

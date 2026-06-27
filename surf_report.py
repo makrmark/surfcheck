@@ -428,6 +428,12 @@ def generate_report(marine_data, wind_data, tide_data):
     overall_rating = max(0, min(5, overall_rating))
     overall_rating = round(overall_rating * 2) / 2
     
+    # Determine best beaches (those with highest rating, up to 3)
+    beach_ratings = sorted(beach_conditions, key=lambda x: x["rating"], reverse=True)
+    top_rating = beach_ratings[0]["rating"]
+    best_beaches = [bc["name"] for bc in beach_ratings if bc["rating"] >= top_rating - 0.5][:3]
+    best_beaches_str = ", ".join(best_beaches)
+    
     # Generate HTML
     html_content = f'''<!DOCTYPE html>
 <html lang="en">
@@ -595,6 +601,21 @@ def generate_report(marine_data, wind_data, tide_data):
             color: #999;
             opacity: 0.7;
         }}
+        .beach-card-best {{
+            border-color: #ffd700;
+            border-width: 3px;
+            background: linear-gradient(135deg, #fffde7 0%, #fff8e1 100%);
+        }}
+        .best-beach-badge {{
+            display: inline-block;
+            background: #ffd700;
+            color: #8b6914;
+            font-size: 0.75em;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 8px;
+        }}
     </style>
 </head>
 <body>
@@ -645,6 +666,10 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="summary-label">Water Temp</div>
                 <div class="wetsuit">Wetsuit: {wetsuit_rec}</div>
             </div>
+            <div class="summary-item" style="grid-column: 1 / -1;">
+                <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
+                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
+            </div>
         </div>
     </div>
 
@@ -655,8 +680,10 @@ def generate_report(marine_data, wind_data, tide_data):
     
     for beach in beach_conditions:
         stars = generate_stars(beach["rating"])
+        is_best = beach["name"] in best_beaches
+        best_card_class = " beach-card-best" if is_best else ""
         html_content += f'''
-            <div class="beach-card">
+            <div class="beach-card{best_card_class}">
                 <div class="beach-name">
                     <span>{beach["name"]}</span>
                     <span class="beach-aspect">{beach["aspect"]}° ({degrees_to_compass(beach["aspect"])})</span>
@@ -678,8 +705,31 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="stars">{stars}</div>
                 <div class="board">Board: {beach["board"]}</div>
                 <div class="notes">{beach["notes"]}</div>
-            </div>
-'''
+            </div>''' if not is_best else f'''
+            <div class="beach-card{best_card_class}">
+                <div class="beach-name">
+                    <span>{beach["name"]}</span>
+                    <span class="beach-aspect">{beach["aspect"]}° ({degrees_to_compass(beach["aspect"])})</span>
+                </div>
+                <div class="surf-info">
+                    <div class="surf-detail">
+                        <div class="surf-value">{beach["effective_height"]:.1f}m</div>
+                        <div class="surf-label">Surf Height</div>
+                    </div>
+                    <div class="surf-detail">
+                        <div class="surf-value">{beach["period"]:.0f}s</div>
+                        <div class="surf-label">Period</div>
+                    </div>
+                    <div class="surf-detail">
+                        <div class="surf-value">{beach["exposure"]:.0f}%</div>
+                        <div class="surf-label">Exposure</div>
+                    </div>
+                </div>
+                <div class="stars">{stars}</div>
+                <div class="board">Board: {beach["board"]}</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
+                <div class="notes">{beach["notes"]}</div>
+            </div>'''
     
     html_content += f'''
         </div>
