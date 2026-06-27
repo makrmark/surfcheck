@@ -46,7 +46,7 @@
             font-size: 1.1em;
         }
         p, li { font-size: 0.95em; color: #555; }
-        ul { padding-left: 20px; }
+        ul, ol { padding-left: 20px; }
         li { margin-bottom: 6px; }
         code {
             background: #f0f0f0;
@@ -72,7 +72,10 @@
             border-radius: 5px;
             margin: 10px 0;
             color: #333;
+            font-family: serif;
         }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid #ddd; }
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -107,12 +110,12 @@
             <li><strong>Wave Height</strong> — Significant wave height in metres (H₀)</li>
             <li><strong>Wave Period</strong> — Peak wave period in seconds (T)</li>
             <li><strong>Wave Direction</strong> — Direction waves are coming from, in degrees from north</li>
-            <li><strong>Wind Speed & Direction</strong> — 10m wind speed and direction</li>
+            <li><strong>Wind Speed & Direction</strong> — 10m wind speed and direction in km/h and knots</li>
         </ul>
         <p>Open-Meteo provides free, no-registration-required access to global weather models.</p>
 
-        <h3>MHL (Manly Hydraulics Laboratory)</h3>
-        <p>Historically used for real-time tide observations from Station 213470 (Sydney / Port Jackson at HMAS Penguin). However, the MHL API endpoint is currently unavailable, so the system uses a harmonic tide model instead.</p>
+        <h3>Tide Data — Harmonic Tide Model</h3>
+        <p>Rather than relying on an external tide API (the MHL endpoint is currently unavailable), the system uses a <strong>harmonic tide model</strong> calibrated for Sydney Harbour. See the Tide section below for full details.</p>
     </section>
 
     <section>
@@ -120,20 +123,20 @@
         <p>Rather than simply displaying the offshore swell height, we estimate how high waves will be when they <em>break</em> at each beach, using the <strong>breaker index formula</strong> commonly used by oceanographers:</p>
 
         <div class="formula">
-            H ≈ 0.44 · H₀ · (T / √H₀)^(2/5)
+            H ≈ 0.44 · H₀ · (T / √H₀)<sup>2/5</sup>
         </div>
 
         <p>Where:</p>
         <ul>
             <li><strong>H</strong> = Wave height at breaking (metres)</li>
-            <li><strong>H₀</strong> = Offshore deep-water swell height (metres)</li>
+            <li><strong>H₀</strong> = Offshore deep-water swell height after directional exposure (metres)</li>
             <li><strong>T</strong> = Swell period (seconds)</li>
         </ul>
 
-        <p>This formula accounts for the fact that waves grow as they move into shallower water, with longer-period swells amplifying more than shorter-period swells. A 1m, 14s swell will break at about 1.4m, while a 1m, 8s swell will only reach about 1.0m.</p>
+        <p>A 1m, 14s swell will break at about 1.4m, while a 1m, 8s swell only reaches about 1.0m. Longer-period swells amplify more.</p>
 
         <h3>Directional Exposure</h3>
-        <p>Not all swell reaches every beach equally. Each beach has a known <strong>aspect</strong> — the direction it faces. The offshore swell energy is scaled by a directional exposure factor:</p>
+        <p>Each beach has a known <strong>aspect</strong> — the direction it faces. The offshore swell energy is scaled by a directional exposure factor:</p>
 
         <div class="formula">
             exposure = cos(|swell_direction − beach_aspect|)
@@ -144,41 +147,73 @@
 
     <section>
         <h2>🌊 Tide Height Calculation</h2>
-        <p>Since the MHL tide API is unavailable, we use a <strong>harmonic tide model</strong> based on the two principal tidal constituents for Sydney Harbour:</p>
+        <p>Using a <strong>harmonic tide model</strong> based on the two principal tidal constituents for Sydney Harbour (Port Jackson / Fort Denison):</p>
 
         <div class="formula">
-            tide(t) = MSL + A_M2 · sin(2π · t/T_M2 − φ_M2) + A_S2 · sin(2π · t/T_S2 − φ_S2)
+            tide(t) = MSL + A<sub>M2</sub>·sin(2π·t/T<sub>M2</sub>−φ<sub>M2</sub>) + A<sub>S2</sub>·sin(2π·t/T<sub>S2</sub>−φ<sub>S2</sub>)
         </div>
 
-        <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
-            <tr><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Parameter</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Value</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Description</th></tr>
-            <tr><td style="padding:4px 8px;">MSL</td><td style="padding:4px 8px;">0.9 m</td><td style="padding:4px 8px;">Mean Sea Level (relative to Chart Datum)</td></tr>
-            <tr><td style="padding:4px 8px;">A_M2</td><td style="padding:4px 8px;">0.57 m</td><td style="padding:4px 8px;">Principal lunar semi-diurnal amplitude</td></tr>
-            <tr><td style="padding:4px 8px;">T_M2</td><td style="padding:4px 8px;">12.42 h</td><td style="padding:4px 8px;">Lunar tidal period (12h 25m)</td></tr>
-            <tr><td style="padding:4px 8px;">A_S2</td><td style="padding:4px 8px;">0.16 m</td><td style="padding:4px 8px;">Principal solar semi-diurnal amplitude</td></tr>
-            <tr><td style="padding:4px 8px;">T_S2</td><td style="padding:4px 8px;">12.00 h</td><td style="padding:4px 8px;">Solar tidal period (exactly 12h)</td></tr>
+        <table>
+            <tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+            <tr><td>MSL</td><td>0.9 m</td><td>Mean Sea Level (relative to Chart Datum)</td></tr>
+            <tr><td>A<sub>M2</sub></td><td>0.57 m</td><td>Principal lunar semi-diurnal amplitude</td></tr>
+            <tr><td>T<sub>M2</sub></td><td>12.42 h</td><td>Lunar tidal period (12h 25m)</td></tr>
+            <tr><td>A<sub>S2</sub></td><td>0.16 m</td><td>Principal solar semi-diurnal amplitude</td></tr>
+            <tr><td>T<sub>S2</sub></td><td>12.00 h</td><td>Solar tidal period (exactly 12h)</td></tr>
         </table>
 
-        <p>The model uses an <strong>epoch-based calculation</strong> (since Jan 1, 2000) so the lunar tide advances ~50 minutes each day, matching real-world behaviour. Phase angles are calibrated for Sydney Harbour (Port Jackson / Fort Denison).</p>
+        <p>The model uses an <strong>epoch-based calculation</strong> (since Jan 1, 2000) so the lunar tide advances ~50 minutes each day. Phase angles are calibrated for Sydney Harbour.</p>
 
         <h3>Tide Trend</h3>
-        <p>The trend (rising/falling) is determined by comparing the tide height now to predictions one hour before and after the current time. Low tide heights are displayed as negative values.</p>
+        <p>The trend (rising/falling/high/low/slack) is determined by comparing the tide height now to predictions one hour before and after. Low tide heights are displayed as negative values with a trend emoji (📈, 📉, 🔺, 🔻, ➖).</p>
     </section>
 
     <section>
-        <h2>⭐ Surf Rating Calculation</h2>
-        <p>The surf rating (0–5 stars) combines three normalized factors:</p>
+        <h2>🌊 Wind & Tide Effects on Surf Quality</h2>
+        <p>The best beach selection goes beyond raw wave height — it considers how wind and tide conditions shape wave quality.</p>
 
-        <h3>1. Wave Height Factor (0–2.5 points)</h3>
-        <p>Linear up to 2.0m: <code>min(height / 2.0, 1.0) × 2.5</code></p>
+        <h3>Wind Quality — Offshore vs Onshore</h3>
+        <p>The angle between the wind direction and the swell direction determines wave quality:</p>
+        <ul>
+            <li><strong>Offshore wind</strong> (wind opposite to waves, ≈180° apart) — clean, well-shaped waves. <strong>Score boosted.</strong></li>
+            <li><strong>Onshore wind</strong> (wind in the same direction as waves) — choppy, messy waves. <strong>Score reduced.</strong></li>
+            <li><strong>Cross-shore wind</strong> (wind perpendicular to waves) — neutral.</li>
+        </ul>
+        <p>The wind quality factor ranges from 0.0 (onshore) to 1.0 (offshore) and adjusts the composite score by up to 25%.</p>
 
-        <h3>2. Period Factor (0–2.5 points)</h3>
-        <p>Linear from 6s (0 points) to 16s (2.5 points): <code>max(0, min((T − 6) / 10, 1)) × 2.5</code></p>
+        <h3>Tide Stage Quality</h3>
+        <p>Where the tide is in its cycle significantly affects how waves break:</p>
+        <ul>
+            <li><strong>📈 Rising tide (incoming)</strong> — Acts as a natural "push" that organises the swell and improves wave consistency. <strong>Best time for surfing — bonus applied.</strong></li>
+            <li><strong>📉 Falling tide (outgoing)</strong> — Can generate strong rip currents, sometimes degrading wave shape. Slight penalty.</li>
+            <li><strong>🔺 High tide</strong> — More water over sandbars; waves can become soft, fat, and slow. If too high, waves may "drown out" entirely. Penalty.</li>
+            <li><strong>🔻 Low tide</strong> — Shallow water, steeper/hollower waves. Great for advanced surfers but harder paddle-out. Slight penalty for danger.</li>
+            <li><strong>➖ Slack tide</strong> — Neutral.</li>
+        </ul>
+        <p>The tide stage quality factor adjusts the composite score by up to 25%.</p>
 
-        <h3>3. Tide Factor (modifier)</h3>
-        <p>Optimal tide range is 0.5–1.5m (factor = 1.0). Outside this range the factor decreases linearly to 0.5 at 0m and 3.0m.</p>
+        <div class="formula">
+            composite = precise_rating × (0.5 + 0.25 × wind_quality + 0.25 × tide_quality)
+        </div>
+    </section>
 
-        <p>The final rating is the product of all three factors, rounded to the nearest half star.</p>
+    <section>
+        <h2>⭐ Surf Rating & Best Beaches</h2>
+        <h3>Star Rating (0–5 ★)</h3>
+        <p>The surf rating combines three normalized factors, then rounds to the nearest half star for display:</p>
+        <ul>
+            <li><strong>Wave Height Factor</strong> (0–2.5 pts): <code>min(height/2.0, 1.0) × 2.5</code></li>
+            <li><strong>Period Factor</strong> (0–2.5 pts): <code>max(0, min((T-6)/10, 1)) × 2.5</code></li>
+            <li><strong>Tide Height Factor</strong> (modifier): 1.0 at optimal tide (0.5–1.5m), decreases linearly outside that range</li>
+        </ul>
+        <p>The precise (unrounded) rating is used internally for rankings — so a beach with 2.05 ranks above one with 1.89, even though both display as ★★☆☆☆.</p>
+
+        <h3>🏆 Best Beaches Selection</h3>
+        <p>The top 3 beaches are selected using a composite score that combines the precise surf rating with wind and tide quality:</p>
+        <div class="formula">
+            composite = precise_rating × (0.5 + 0.25 × wind_quality + 0.25 × tide_quality)
+        </div>
+        <p>This rewards beaches with good wave height <em>and</em> favourable conditions (offshore wind, rising tide) while penalising those with onshore wind or poor tide stage.</p>
     </section>
 
     <section>
@@ -191,31 +226,31 @@
             <li><strong>Shortboard</strong> — 0.9–1.5m</li>
             <li><strong>Gun</strong> — 1.5m+</li>
         </ul>
-        <p>If the swell period is less than 8 seconds, the recommendation is adjusted down one step (e.g. Shortboard → Funboard).</p>
+        <p>If the swell period is less than 8 seconds, the recommendation steps down one (e.g. Shortboard → Funboard).</p>
 
         <h3>Wetsuit Guide</h3>
         <p>Based on month-derived sea-surface temperature for Sydney and the Quiksilver wetsuit guide:</p>
         <ul>
-            <li><strong>Dec–Feb (Summer, 20–24°C):</strong> Boardshorts or rash vest</li>
-            <li><strong>Mar, Nov (18–20°C):</strong> Spring suit (2mm)</li>
-            <li><strong>Apr–May (16–18°C):</strong> 3/2 full wetsuit</li>
-            <li><strong>Jun–Aug (Winter, 14–16°C):</strong> 4/3 full wetsuit</li>
-            <li><strong>Sep–Oct (16–19°C):</strong> 3/2 full wetsuit</li>
+            <li><strong>Dec–Feb</strong> (Summer, 20–24°C): Boardshorts or rash vest</li>
+            <li><strong>Mar, Nov</strong> (18–20°C): Spring suit (2mm)</li>
+            <li><strong>Apr–May</strong> (16–18°C): 3/2 full wetsuit</li>
+            <li><strong>Jun–Aug</strong> (Winter, 14–16°C): 4/3 full wetsuit</li>
+            <li><strong>Sep–Oct</strong> (16–19°C): 3/2 full wetsuit</li>
         </ul>
     </section>
 
     <section>
         <h2>🏖️ Beach Orientations</h2>
-        <p>Each beach has a known <strong>aspect</strong> — the direction the beach face points towards the ocean (degrees from north). These were determined from geographic analysis of Sydney's Northern Beaches coastline:</p>
+        <p>Each beach has a known <strong>aspect</strong> — the direction the beach face points towards the ocean (degrees from north):</p>
 
-        <table style="width:100%; border-collapse: collapse; margin: 10px 0;">
-            <tr><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Beach</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Aspect (°)</th><th style="text-align:left; padding:4px 8px; border-bottom:1px solid #ddd;">Direction</th></tr>
-            <tr><td style="padding:4px 8px;">Long Reef</td><td style="padding:4px 8px;">158°</td><td style="padding:4px 8px;">SSE (South-Southeast)</td></tr>
-            <tr><td style="padding:4px 8px;">Dee Why</td><td style="padding:4px 8px;">135°</td><td style="padding:4px 8px;">SE (Southeast)</td></tr>
-            <tr><td style="padding:4px 8px;">Curl Curl</td><td style="padding:4px 8px;">112°</td><td style="padding:4px 8px;">ESE (East-Southeast)</td></tr>
-            <tr><td style="padding:4px 8px;">Freshwater</td><td style="padding:4px 8px;">135°</td><td style="padding:4px 8px;">SE (Southeast)</td></tr>
-            <tr><td style="padding:4px 8px;">North Steyne</td><td style="padding:4px 8px;">90°</td><td style="padding:4px 8px;">E (East)</td></tr>
-            <tr><td style="padding:4px 8px;">South Steyne</td><td style="padding:4px 8px;">68°</td><td style="padding:4px 8px;">ENE (East-Northeast)</td></tr>
+        <table>
+            <tr><th>Beach</th><th>Aspect (°)</th><th>Direction</th></tr>
+            <tr><td>Long Reef</td><td>158°</td><td>SSE (South-Southeast)</td></tr>
+            <tr><td>Dee Why</td><td>135°</td><td>SE (Southeast)</td></tr>
+            <tr><td>Curl Curl</td><td>112°</td><td>ESE (East-Southeast)</td></tr>
+            <tr><td>Freshwater</td><td>135°</td><td>SE (Southeast)</td></tr>
+            <tr><td>North Steyne</td><td>90°</td><td>E (East)</td></tr>
+            <tr><td>South Steyne</td><td>68°</td><td>ENE (East-Northeast)</td></tr>
         </table>
     </section>
 
@@ -223,24 +258,24 @@
         <h2>🤖 Automation & Deployment</h2>
         <p>The entire system runs automatically with no manual intervention:</p>
         <ol>
-            <li><strong>5:45 AM daily</strong> — A macOS launch agent triggers <code>surf_report.py</code></li>
+            <li><strong>5:45 AM daily</strong> — macOS launch agent triggers <code>surf_report.py</code></li>
             <li>Python script fetches live data from Open-Meteo APIs</li>
             <li>Calculates beach-specific conditions, ratings, and recommendations</li>
             <li>Generates a static HTML page (<code>docs/index.html</code>)</li>
-            <li>Commits the changes to the local git repository</li>
-            <li>Pushes to GitHub, which triggers GitHub Pages rebuild</li>
-            <li>The live site is updated within minutes at <code>https://makrmark.github.io/surforecast/</code></li>
+            <li>Commits changes to the local git repository</li>
+            <li>Pushes to GitHub, which triggers automatic GitHub Pages rebuild</li>
+            <li>Live site updates within minutes</li>
         </ol>
-        <p>All code is open source and available at <a href="https://github.com/makrmark/surfcheck" target="_blank">github.com/makrmark/surfcheck</a>.</p>
+        <p>All code is open source at <a href="https://github.com/makrmark/surfcheck" target="_blank">github.com/makrmark/surfcheck</a>.</p>
     </section>
 
     <section>
         <h2>⚠️ Limitations & Notes</h2>
         <ul>
-            <li>Tide data is from a harmonic model, not real-time observations. Accuracy is approximately ±0.2m under normal conditions.</li>
-            <li>The breaker formula is a generalized rule-of-thumb; actual breaking wave heights depend on local bathymetry, reef structure, and sandbar positions.</li>
-            <li>Wind data is for the offshore Sydney location, not beach-specific local wind conditions.</li>
-            <li>Wetsuit recommendations are based on monthly climatological averages, not real-time sea temperature.</li>
+            <li>Tide data is from a harmonic model, not real-time observations. Accuracy is approximately ±0.2m.</li>
+            <li>The breaker formula is a generalised rule-of-thumb; actual breaking heights depend on local bathymetry, reef structure, and sandbars.</li>
+            <li>Wind data is for the offshore Sydney location, not beach-specific local conditions.</li>
+            <li>Wetsuit recommendations are based on monthly climatological averages, not live sea temperature.</li>
         </ul>
     </section>
 
