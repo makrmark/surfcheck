@@ -187,18 +187,39 @@ def get_tide_trend(current_height, past_height, future_height):
         return "changing"
 
 
-def calculate_effective_height(offshore_height, wave_direction, beach_aspect):
+def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period):
     """
-    Calculate effective wave height at beach considering aspect.
-    effective_height = offshore_height * cos(Δθ)
-    where Δθ is the absolute difference between wave direction and beach aspect
+    Calculate wave height at breaking using the breaker index formula:
+    H ≈ 0.44 · H₀ · (T / √H₀)^(2/5)
+    
+    First computes the directional exposure (effective offshore height),
+    then estimates the wave height right before breaking.
+    
+    Parameters:
+    - offshore_height: deep-water swell height in metres (H₀)
+    - wave_direction: direction of swell in degrees from north
+    - beach_aspect: direction the beach faces in degrees from north
+    - wave_period: swell period in seconds (T)
+    
+    Returns:
+    - estimated breaker wave height in metres
     """
-    # Convert to radians for cos function
+    # Step 1: Calculate directional exposure factor
     delta_theta = math.radians(abs(wave_direction - beach_aspect))
-    # Cosine of the angle difference
-    effective_height = offshore_height * math.cos(delta_theta)
-    # Ensure non-negative
-    return max(0, effective_height)
+    exposure_factor = max(0, math.cos(delta_theta))
+    
+    # Step 2: Effective offshore height at the beach
+    h0_effective = offshore_height * exposure_factor
+    
+    # Step 3: If there's no significant wave energy, return 0
+    if h0_effective < 0.01 or wave_period < 1:
+        return 0.0
+    
+    # Step 4: Apply the breaker formula
+    # H = 0.44 · H₀ · (T / √H₀)^(2/5)
+    h_breaker = 0.44 * h0_effective * (wave_period / (h0_effective ** 0.5)) ** 0.4
+    
+    return h_breaker
 
 
 def calculate_exposure_percent(wave_direction, beach_aspect):
@@ -376,7 +397,7 @@ def generate_report(marine_data, wind_data, tide_data):
     
     for beach_name, aspect in BEACHES.items():
         effective_height = calculate_effective_height(
-            current_wave_height, current_wave_direction, aspect
+            current_wave_height, current_wave_direction, aspect, current_wave_period
         )
         exposure = calculate_exposure_percent(current_wave_direction, aspect)
         rating = calculate_surf_rating(effective_height, current_wave_period)
