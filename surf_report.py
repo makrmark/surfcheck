@@ -18,7 +18,16 @@ import imos_sst
 
 # Configuration
 LOCATION = {"latitude": -33.78, "longitude": 151.30}  # Sydney
-REPORT_TIME_HOUR = 6  # 6:00 AM report time
+REPORT_TIME_HOUR = 6  # 6:00 AM report time (kept for reference)
+
+# Timeframes shown on the page — midpoint hour used for data lookup
+TIMEFRAMES = [
+    {"label": "6–9am",   "hour": 7,  "emoji": "🌅"},
+    {"label": "9–12pm",  "hour": 10, "emoji": "☀️"},
+    {"label": "12–3pm",  "hour": 13, "emoji": "🌤️"},
+    {"label": "3–6pm",   "hour": 16, "emoji": "🌇"},
+]
+
 BEACHES = {
     "Long Reef": 158,   # degrees from North (sse)
     "Dee Why": 135,     # degrees from North (southeast)
@@ -352,158 +361,260 @@ def metres_to_feet_range(metres):
     return f"{lower}-{upper} ft"
 
 
-def generate_report(marine_data, wind_data, tide_data):
-    """Generate the complete surf report HTML."""
-    if not marine_data or not wind_data:
-        return generate_error_report("Failed to fetch essential weather data")
+def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour, today, sydney_tz, degrees_to_compass):
+    """
+    Compute all surf conditions for a single target hour.
     
-    # Get current time in Sydney timezone
-    sydney_tz = datetime.timezone(datetime.timedelta(hours=10))  # AEST
-    now = datetime.datetime.now(sydney_tz)
-    today = now.date()
-    
-    # Extract marine data
+    Returns a dict with:
+      - label, emoji, hour
+      - wave_height, wave_period, wave_direction, wave_compass
+      - wind_speed, wind_direction, wind_compass, wind_knots
+      - tide_height, display_tide, tide_trend, tide_emoji
+      - beach_conditions: list of per-beach dicts
+      - overall_rating, best_beaches_str, max_effective_height
+      - wind_quality, tide_quality
+    """
+    # Extract hourly arrays
     marine_times = marine_data['hourly']['time']
     wave_heights = marine_data['hourly']['wave_height']
     wave_periods = marine_data['hourly']['wave_period']
     wave_directions = marine_data['hourly']['wave_direction']
-    
-    # Extract wind data
+
     wind_times = wind_data['hourly']['time']
     wind_speeds = wind_data['hourly']['windspeed']
     wind_directions = wind_data['hourly']['winddirection']
-    
-    # Find indices for report time (6:00 AM today)
-    target_hour_str = f"{today}T{REPORT_TIME_HOUR:02d}:00"
+
+    # Find indices for the target hour
+    target_hour_str = f"{today}T{target_hour:02d}:00"
     try:
         marine_idx = marine_times.index(target_hour_str)
         wind_idx = wind_times.index(target_hour_str)
     except ValueError:
-        # Fallback to current hour if exact time not available
-        current_hour_str = f"{today}T{now.hour:02d}:00"
-        marine_idx = marine_times.index(current_hour_str) if current_hour_str in marine_times else 0
-        wind_idx = wind_times.index(current_hour_str) if current_hour_str in wind_times else 0
-    
-    # Get current conditions
-    current_wave_height = wave_heights[marine_idx]
-    current_wave_period = wave_periods[marine_idx]
-    current_wave_direction = wave_directions[marine_idx]
-    current_wind_speed = wind_speeds[wind_idx]
-    current_wind_direction = wind_directions[wind_idx]
-    wind_knots = current_wind_speed / 1.852
-    
-    # Get tide information
-    tide_height = tide_lookup(now, tide_data)
-    # Get tide trend by checking a few hours before and after
-    past_time = now - datetime.timedelta(hours=1)
-    future_time = now + datetime.timedelta(hours=1)
-    past_tide = tide_lookup(past_time, tide_data)
-    future_tide = tide_lookup(future_time, tide_data)
+        marine_idx = 0
+        wind_idx = 0
+        logger.warning(f"Hour {target_hour}:00 not found in forecast data, using index 0")
+
+    # Current conditions at this hour
+    wave_height = wave_heights[marine_idx]
+    wave_period = wave_periods[marine_idx]
+    wave_direction = wave_directions[marine_idx]
+    wind_speed = wind_speeds[wind_idx]
+    wind_dir = wind_directions[wind_idx]
+    wind_knots = wind_speed / 1.852
+
+    # Tide at target hour
+    target_dt = datetime.datetime(today.year, today.month, today.day, target_hour, 0, 0, tzinfo=sydney_tz)
+    tide_height = tide_lookup(target_dt, tide_data)
+    past_tide = tide_lookup(target_dt - datetime.timedelta(hours=1), tide_data)
+    future_tide = tide_lookup(target_dt + datetime.timedelta(hours=1), tide_data)
     tide_trend = get_tide_trend(past_tide, tide_height, future_tide)
-    # Determine display tide height (negative for low tide)
-    display_tide = -tide_height if tide_trend == "low" else tide_height
-    # Determine tide emoji
+
     tide_emoji_map = {
-        "rising": "📈",
-        "falling": "📉",
-        "high": "🔺",
-        "low": "🔻",
-        "slack": "➖"
+        "rising": "📈", "falling": "📉", "high": "🔺", "low": "🔻", "slack": "➖"
     }
     tide_emoji = tide_emoji_map.get(tide_trend, "")
-    
-    # Determine compass directions
+    display_tide = -tide_height if tide_trend == "low" else tide_height
+
+    wave_compass = degrees_to_compass(wave_direction)
+    wind_compass = degrees_to_compass(wind_dir)
+
+    # Calculate beach-specific conditions
+    beach_conditions = []
+    max_effective_height = 0
+
+    for beach_name, aspect in BEACHES.items():
+        effective_height = calculate_effective_height(wave_height, wave_direction, aspect, wave_period)
+        exposure = calculate_exposure_percent(wave_direction, aspect)
+        rating = calculate_surf_rating(effective_height, wave_period)
+        tide_factor_value = tide_factor(tide_height)
+        adjusted_rating = rating * tide_factor_value
+        adjusted_rating = max(0, min(5, adjusted_rating))
+        precise_rating = adjusted_rating
+        star_rating = round(precise_rating * 2) / 2
+        board = get_board_recommendation(effective_height, wave_period)
+
+        if effective_height > max_effective_height:
+            max_effective_height = effective_height
+
+        beach_conditions.append({
+            "name": beach_name,
+            "aspect": aspect,
+            "effective_height": effective_height,
+            "exposure": exposure,
+            "rating": star_rating,
+            "precise_rating": precise_rating,
+            "board": board,
+            "notes": BEACH_NOTES.get(beach_name, ""),
+            "period": wave_period
+        })
+
+    # Overall rating
+    overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
+    overall_rating = max(0, min(5, overall_rating))
+    overall_rating = round(overall_rating * 2) / 2
+
+    # Wind quality
+    wind_wave_angle = abs(wind_dir - wave_direction)
+    if wind_wave_angle > 180:
+        wind_wave_angle = 360 - wind_wave_angle
+    wind_quality = 1.0 - abs(wind_wave_angle - 180) / 180
+
+    # Tide quality
+    tide_quality_map = {
+        "rising": 1.1, "falling": 0.95, "high": 0.85, "low": 0.95, "slack": 1.0, "changing": 1.0
+    }
+    tide_quality = tide_quality_map.get(tide_trend, 1.0)
+
+    # Best beaches
+    composite_for_beach = lambda bc: bc["precise_rating"] * (0.5 + 0.25 * wind_quality + 0.25 * tide_quality)
+    best_score = max(composite_for_beach(bc) for bc in beach_conditions)
+    best_beaches = sorted(
+        [bc for bc in beach_conditions if composite_for_beach(bc) >= best_score - 0.5],
+        key=composite_for_beach, reverse=True
+    )[:3]
+    best_beaches_str = ", ".join(bc["name"] for bc in best_beaches)
+
+    return {
+        "label": None,  # caller sets this
+        "emoji": None,  # caller sets this
+        "hour": target_hour,
+        "wave_height": wave_height,
+        "wave_period": wave_period,
+        "wave_direction": wave_direction,
+        "wave_compass": wave_compass,
+        "wind_speed": wind_speed,
+        "wind_direction": wind_dir,
+        "wind_compass": wind_compass,
+        "wind_knots": wind_knots,
+        "tide_height": tide_height,
+        "display_tide": display_tide,
+        "tide_trend": tide_trend,
+        "tide_emoji": tide_emoji,
+        "beach_conditions": beach_conditions,
+        "overall_rating": overall_rating,
+        "best_beaches": best_beaches,
+        "best_beaches_str": best_beaches_str,
+        "max_effective_height": max_effective_height,
+        "wind_quality": wind_quality,
+        "tide_quality": tide_quality,
+    }
+
+
+def generate_report(marine_data, wind_data, tide_data):
+    """Generate the complete multi-timeframe surf report HTML."""
+    if not marine_data or not wind_data:
+        return generate_error_report("Failed to fetch essential weather data")
+
+    sydney_tz = datetime.timezone(datetime.timedelta(hours=10))  # AEST
+    now = datetime.datetime.now(sydney_tz)
+    today = now.date()
+
+    # Define degrees_to_compass locally (used by compute_timeframe_conditions and template)
     def degrees_to_compass(degrees):
         directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
                      "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
         index = round(degrees / 22.5) % 16
         return directions[index]
-    
-    wave_compass = degrees_to_compass(current_wave_direction)
-    wind_compass = degrees_to_compass(current_wind_direction)
-    
-    # Get real-time water temperature from IMOS satellite SST (fallback to monthly climatology)
+
+    # Compute conditions for each timeframe
+    all_timeframes = []
+    for tf in TIMEFRAMES:
+        cond = compute_timeframe_conditions(marine_data, wind_data, tide_data, tf["hour"], today, sydney_tz, degrees_to_compass)
+        cond["label"] = tf["label"]
+        cond["emoji"] = tf["emoji"]
+        all_timeframes.append(cond)
+
+    # Get SST data (shared across all timeframes)
     sst_data = imos_sst.get_water_temperature()
     water_temp = sst_data["temp"]
     sst_source = sst_data["source"]
-    sst_date = sst_data["date"]
     wetsuit_rec = imos_sst.get_wetsuit_recommendation(water_temp)
-    
-    # Calculate beach-specific conditions
-    beach_conditions = []
-    max_effective_height = 0
-    
-    for beach_name, aspect in BEACHES.items():
-        effective_height = calculate_effective_height(
-            current_wave_height, current_wave_direction, aspect, current_wave_period
-        )
-        exposure = calculate_exposure_percent(current_wave_direction, aspect)
-        rating = calculate_surf_rating(effective_height, current_wave_period)
-        # Apply tide factor to rating
-        tide_factor_value = tide_factor(tide_height)
-        adjusted_rating = rating * tide_factor_value
-        # Clamp rating to 0-5
-        adjusted_rating = max(0, min(5, adjusted_rating))
-        # Store precise rating for ranking, and star-rounded for display
-        precise_rating = adjusted_rating
-        star_rating = round(precise_rating * 2) / 2
-        board = get_board_recommendation(effective_height, current_wave_period)
-        
-        if effective_height > max_effective_height:
-            max_effective_height = effective_height
 
-        beach_conditions.append({
-        "name": beach_name,
-        "aspect": aspect,
-        "effective_height": effective_height,
-        "exposure": exposure,
-        "rating": star_rating,
-        "precise_rating": precise_rating,
-        "board": board,
-        "notes": BEACH_NOTES.get(beach_name, ""),
-        "period": current_wave_period
-    })
-    
-    # Overall rating (average of beach star ratings, rounded to nearest half star)
-    overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
-    overall_rating = max(0, min(5, overall_rating))
-    overall_rating = round(overall_rating * 2) / 2
-    
-    # Determine wind quality factor (offshore vs onshore wind)
-    # Offshore wind = wind opposite to wave direction (clean waves)
-    # Onshore wind = wind same as wave direction (choppy waves)
-    wind_wave_angle = abs(current_wind_direction - current_wave_direction)
-    if wind_wave_angle > 180:
-        wind_wave_angle = 360 - wind_wave_angle
-    # quality: 1.0 = perfect offshore (opposite), 0.0 = onshore (same direction)
-    wind_quality = 1.0 - abs(wind_wave_angle - 180) / 180
-    
-    # Determine tide quality factor (how tide stage affects surf quality)
-    # Rising tide acts as a "push", organizing swell -> bonus
-    # High tide can drown out waves -> penalty
-    # Low tide = steeper/faster waves but harder paddle out -> slight penalty
-    # Falling tide can generate rips -> slight penalty
-    tide_quality_map = {
-        "rising": 1.1,   # incoming tide organizes swell
-        "falling": 0.95,  # outgoing can create rips
-        "high": 0.85,     # high tide can drown out waves
-        "low": 0.95,      # steeper waves but dangerous shore break
-        "slack": 1.0,     # neutral
-        "changing": 1.0   # neutral
-    }
-    tide_quality = tide_quality_map.get(tide_trend, 1.0)
-    
-    # Determine best beaches using composite score (precise rating × wind quality × tide quality)
-    composite_for_beach = lambda bc: bc["precise_rating"] * (0.5 + 0.25 * wind_quality + 0.25 * tide_quality)
-    best_score = max(composite_for_beach(bc) for bc in beach_conditions)
-    best_beaches = sorted(
-        [bc for bc in beach_conditions if composite_for_beach(bc) >= best_score - 0.5],
-        key=composite_for_beach,
-        reverse=True
-    )[:3]
-    best_beaches_str = ", ".join(bc["name"] for bc in best_beaches)
-    
-    # Generate HTML
+    # Build the timeframe section HTML blocks
+    def build_tf_section(tf, is_first):
+        display = "" if is_first else "display:none;"
+        html = f'<div class="timeframe-content" data-tf="{tf["label"]}" style="{display}">'
+
+        # Best Beaches section
+        html += f'''
+        <div class="section">
+            <h2>🏆 Best Beaches</h2>
+            <div class="summary-section">
+                <div class="summary-item" style="grid-column: 1 / -1;">
+                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{tf["best_beaches_str"]}</div>
+                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(tf["overall_rating"])}</div>
+                    <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{metres_to_feet_range(tf["max_effective_height"])}</strong></div>
+                </div>
+            </div>
+        </div>'''
+
+        # Overall Conditions section
+        html += f'''
+        <div class="section">
+            <h2>🌊 Overall Conditions</h2>
+            <div class="condition-item">
+                <span class="label">Swell:</span>
+                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">{tf["wave_height"]:.1f}m @ {tf["wave_period"]:.0f}s from {tf["wave_direction"]:.0f}° ({tf["wave_compass"]}) <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Wind:</span>
+                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]} <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Tide:</span>
+                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">{tf["display_tide"]:.1f}m {tf["tide_emoji"]} {tf["tide_trend"].title()} <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Water:</span>
+                <span class="value" title="{sst_source} — coastal edge SST off Northern Beaches">{water_temp}°C — {wetsuit_rec} <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+        </div>'''
+
+        # Beach Conditions section
+        html += '''
+        <div class="section">
+            <h2>🏖️ Beach Conditions</h2>
+            <div class="beach-grid">'''
+
+        best_names = {bc["name"] for bc in tf["best_beaches"]}
+        for beach in tf["beach_conditions"]:
+            stars = generate_stars(beach["rating"])
+            is_best = beach["name"] in best_names
+            card_class = " beach-card-best" if is_best else ""
+            badge = f'\n                <div class="best-beach-badge">⭐ Best Beach Today</div>' if is_best else ""
+            html += f'''
+                <div class="beach-card{card_class}">
+                    <div class="beach-name">
+                        <span>{beach["name"]}</span>
+                        <span class="beach-aspect">{beach["aspect"]}° ({degrees_to_compass(beach["aspect"])})</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">{metres_to_feet_range(beach["effective_height"])}</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">{beach["period"]:.0f}s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">{beach["exposure"]:.0f}%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                    </div>
+                    <div class="stars">{stars}</div>
+                    <div class="board">🏄 {beach["board"]}</div>{badge}
+                    <div class="notes">{beach["notes"]}</div>
+                </div>'''
+
+        html += '''
+            </div>
+        </div>'''
+        html += '</div>\n'
+        return html
+
+    # Build the full HTML page
+    first_tf_label = TIMEFRAMES[0]["label"]
     html_content = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -533,21 +644,47 @@ def generate_report(marine_data, wind_data, tide_data):
             z-index: 100;
             background: #f0f8ff;
             display: flex;
-            align-items: baseline;
-            justify-content: center;
-            gap: 8px;
-            padding: 8px 10px;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
             border-bottom: 2px solid #0066cc;
         }}
         h1 {{
             color: #0066cc;
-            font-size: 1.0em;
+            font-size: 0.95em;
             margin: 0;
+        }}
+        .timeframe-nav {{
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }}
+        .tf-btn {{
+            padding: 4px 10px;
+            border: 1.5px solid #0066cc;
+            border-radius: 20px;
+            background: white;
+            color: #0066cc;
+            font-size: 0.75em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }}
+        .tf-btn:hover {{
+            background: #e6f2ff;
+        }}
+        .tf-btn.active {{
+            background: #0066cc;
+            color: white;
         }}
         .timestamp {{
             color: #666;
             font-style: italic;
-            font-size: 0.65em;
+            font-size: 0.6em;
             margin: 0;
         }}
         @media (min-width: 600px) {{
@@ -556,16 +693,25 @@ def generate_report(marine_data, wind_data, tide_data):
             }}
             header {{
                 position: static;
-                display: block;
-                padding: 25px 0 15px;
+                display: flex;
+                flex-direction: column;
+                padding: 20px 0 15px;
                 margin-bottom: 30px;
             }}
             h1 {{
-                font-size: 2.2em;
-                margin-bottom: 10px;
+                font-size: 2.0em;
+                margin-bottom: 8px;
+            }}
+            .timeframe-nav {{
+                gap: 8px;
+                margin-bottom: 6px;
+            }}
+            .tf-btn {{
+                padding: 6px 18px;
+                font-size: 0.9em;
             }}
             .timestamp {{
-                font-size: 1em;
+                font-size: 0.9em;
             }}
         }}
         .section {{
@@ -598,6 +744,16 @@ def generate_report(marine_data, wind_data, tide_data):
         .value {{
             font-weight: 500;
             color: #333;
+            cursor: help;
+        }}
+        .tooltip-icon {{
+            font-size: 0.8em;
+            color: #999;
+            margin-left: 3px;
+            opacity: 0.5;
+        }}
+        .value:hover .tooltip-icon {{
+            opacity: 1.0;
         }}
         .beach-grid {{
             display: grid;
@@ -715,123 +871,68 @@ def generate_report(marine_data, wind_data, tide_data):
             border-radius: 10px;
             margin-top: 8px;
         }}
+        @media (max-width: 599px) {{
+            .timeframe-content {{
+                margin-top: 10px;
+            }}
+        }}
     </style>
 </head>
 <body>
     <header>
-        <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
-    </header>
+        <h1>🏄‍♂️ Northern Beaches Surf Check</h1>'''
 
-    <div class="section">
-        <h2>🏆 Best Beaches</h2>
-        <div class="summary-section">
-            <div class="summary-item" style="grid-column: 1 / -1;">
-                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
-                <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(overall_rating)}</div>
-                <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{metres_to_feet_range(max_effective_height)}</strong></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>🌊 Overall Conditions</h2>
-        <div class="condition-item" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">
-            <span class="label">Swell:</span>
-            <span class="value">{current_wave_height:.1f}m @ {current_wave_period:.0f}s from {current_wave_direction:.0f}° ({wave_compass})</span>
-        </div>
-        <div class="condition-item" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">
-            <span class="label">Wind:</span>
-            <span class="value">{current_wind_speed:.0f} km/h ({wind_knots:.0f} kt) {wind_compass}</span>
-        </div>
-        <div class="condition-item" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">
-            <span class="label">Tide:</span>
-            <span class="value">{display_tide:.1f}m {tide_emoji} {tide_trend.title()}</span>
-        </div>
-        <div class="condition-item" title="{sst_source} — coastal edge SST off Northern Beaches">
-            <span class="label">Water:</span>
-            <span class="value">{water_temp}°C — {wetsuit_rec}</span>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>🏖️ Beach Conditions</h2>
-        <div class="beach-grid">
-'''
-    
-    for beach in beach_conditions:
-        stars = generate_stars(beach["rating"])
-        best_names = {bc["name"] for bc in best_beaches}
-        is_best = beach["name"] in best_names
-        best_card_class = " beach-card-best" if is_best else ""
+    # Timeframe navigation buttons
+    html_content += '''
+        <nav class="timeframe-nav">'''
+    for i, tf in enumerate(TIMEFRAMES):
+        active_class = ' active' if i == 0 else ''
         html_content += f'''
-            <div class="beach-card{best_card_class}">
-                <div class="beach-name">
-                    <span>{beach["name"]}</span>
-                    <span class="beach-aspect">{beach["aspect"]}° ({degrees_to_compass(beach["aspect"])})</span>
-                </div>
-                <div class="surf-info">
-                    <div class="surf-detail">
-                        <div class="surf-value">{metres_to_feet_range(beach["effective_height"])}</div>
-                        <div class="surf-label">Surf Height</div>
-                    </div>
-                    <div class="surf-detail">
-                        <div class="surf-value">{beach["period"]:.0f}s</div>
-                        <div class="surf-label">Period</div>
-                    </div>
-                    <div class="surf-detail">
-                        <div class="surf-value">{beach["exposure"]:.0f}%</div>
-                        <div class="surf-label">Exposure</div>
-                    </div>
-                </div>
-                <div class="stars">{stars}</div>
-                <div class="board">🏄 {beach["board"]}</div>
-                <div class="notes">{beach["notes"]}</div>
-            </div>''' if not is_best else f'''
-            <div class="beach-card{best_card_class}">
-                <div class="beach-name">
-                    <span>{beach["name"]}</span>
-                    <span class="beach-aspect">{beach["aspect"]}° ({degrees_to_compass(beach["aspect"])})</span>
-                </div>
-                <div class="surf-info">
-                    <div class="surf-detail">
-                        <div class="surf-value">{metres_to_feet_range(beach["effective_height"])}</div>
-                        <div class="surf-label">Surf Height</div>
-                    </div>
-                    <div class="surf-detail">
-                        <div class="surf-value">{beach["period"]:.0f}s</div>
-                        <div class="surf-label">Period</div>
-                    </div>
-                    <div class="surf-detail">
-                        <div class="surf-value">{beach["exposure"]:.0f}%</div>
-                        <div class="surf-label">Exposure</div>
-                    </div>
-                </div>
-                <div class="stars">{stars}</div>
-                <div class="board">🏄 {beach["board"]}</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                <div class="notes">{beach["notes"]}</div>
-            </div>'''
-    
+            <button class="tf-btn{active_class}" data-btn="{tf['label']}" onclick="showTimeframe('{tf['label']}')">{tf['emoji']} {tf['label']}</button>'''
+    html_content += '''
+        </nav>'''
+
     html_content += f'''
-        </div>
-    </div>
+    </header>'''
 
-    
+    # All timeframe content blocks
+    for i, tf in enumerate(all_timeframes):
+        html_content += build_tf_section(tf, i == 0)
 
+    # Footer, watermark, and JavaScript
+    html_content += f'''
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px;">Generated: {now.strftime('%Y-%m-%d %H:%M:%S')} AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: {now.strftime('%Y-%m-%d %H:%M:%S')} AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
-        Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>
+        Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>
         <p>Report generated automatically for GitHub Pages deployment</p>
     </div>
     
     <div class="watermark">
-        Northern Beaches Surf Check v1.0
+        Northern Beaches Surf Check v2.0
     </div>
+
+    <script>
+        function showTimeframe(label) {{
+            document.querySelectorAll('.timeframe-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.tf-btn').forEach(el => el.classList.remove('active'));
+            const content = document.querySelector('.timeframe-content[data-tf="' + label + '"]');
+            if (content) content.style.display = 'block';
+            const btn = document.querySelector('.tf-btn[data-btn="' + label + '"]');
+            if (btn) btn.classList.add('active');
+            try {{ localStorage.setItem('surfcheckTimeframe', label); }} catch(e) {{}}
+        }}
+        document.addEventListener('DOMContentLoaded', function() {{
+            const saved = (function(){{ try {{ return localStorage.getItem('surfcheckTimeframe'); }} catch(e){{ return null; }} }})();
+            if (saved && document.querySelector('.timeframe-content[data-tf="' + saved + '"]')) {{
+                showTimeframe(saved);
+            }}
+        }});
+    </script>
 </body>
 </html>'''
-    
+
     return html_content
 
 
