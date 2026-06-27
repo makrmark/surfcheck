@@ -441,11 +441,27 @@ def generate_report(marine_data, wind_data, tide_data):
     # quality: 1.0 = perfect offshore (opposite), 0.0 = onshore (same direction)
     wind_quality = 1.0 - abs(wind_wave_angle - 180) / 180
     
-    # Determine best beaches using precise composite score (precise rating × wind quality)
-    best_score = max(bc["precise_rating"] * (0.7 + 0.3 * wind_quality) for bc in beach_conditions)
+    # Determine tide quality factor (how tide stage affects surf quality)
+    # Rising tide acts as a "push", organizing swell -> bonus
+    # High tide can drown out waves -> penalty
+    # Low tide = steeper/faster waves but harder paddle out -> slight penalty
+    # Falling tide can generate rips -> slight penalty
+    tide_quality_map = {
+        "rising": 1.1,   # incoming tide organizes swell
+        "falling": 0.95,  # outgoing can create rips
+        "high": 0.85,     # high tide can drown out waves
+        "low": 0.95,      # steeper waves but dangerous shore break
+        "slack": 1.0,     # neutral
+        "changing": 1.0   # neutral
+    }
+    tide_quality = tide_quality_map.get(tide_trend, 1.0)
+    
+    # Determine best beaches using composite score (precise rating × wind quality × tide quality)
+    composite_for_beach = lambda bc: bc["precise_rating"] * (0.5 + 0.25 * wind_quality + 0.25 * tide_quality)
+    best_score = max(composite_for_beach(bc) for bc in beach_conditions)
     best_beaches = sorted(
-        [bc for bc in beach_conditions if bc["precise_rating"] * (0.7 + 0.3 * wind_quality) >= best_score - 0.5],
-        key=lambda bc: bc["precise_rating"] * (0.7 + 0.3 * wind_quality),
+        [bc for bc in beach_conditions if composite_for_beach(bc) >= best_score - 0.5],
+        key=composite_for_beach,
         reverse=True
     )[:3]
     best_beaches_str = ", ".join(bc["name"] for bc in best_beaches)
