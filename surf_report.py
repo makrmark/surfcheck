@@ -46,12 +46,12 @@ FALLBACK_WETSUIT_GUIDE = {
     2: "Boardshorts or rash vest",
     3: "Spring suit (2mm)",
     4: "Spring suit (2mm)",
-    5: "3/2 full wetsuit",
-    6: "4/3 full wetsuit",
-    7: "4/3 full wetsuit",
-    8: "4/3 full wetsuit",
-    9: "3/2 full wetsuit",
-    10: "3/2 full wetsuit",
+    5: "3/2 steamer",
+    6: "4/3 steamer",
+    7: "4/3 steamer",
+    8: "4/3 steamer",
+    9: "3/2 steamer",
+    10: "3/2 steamer",
     11: "Spring suit (2mm)",
     12: "Boardshorts or rash vest"
 }
@@ -339,6 +339,19 @@ def generate_stars(rating):
     return stars
 
 
+def metres_to_feet_range(metres):
+    """Convert metres to a display string in feet with range for in-between values.
+    
+    e.g. 0.6m -> 1-2 ft, 1.0m -> 3-4 ft, 2.0m -> 6-7 ft
+    """
+    feet = metres * 3.28084
+    lower = int(feet)
+    upper = lower + 1
+    if lower == 0:
+        lower = 1
+    return f"{lower}-{upper} ft"
+
+
 def generate_report(marine_data, wind_data, tide_data):
     """Generate the complete surf report HTML."""
     if not marine_data or not wind_data:
@@ -438,18 +451,18 @@ def generate_report(marine_data, wind_data, tide_data):
         
         if effective_height > max_effective_height:
             max_effective_height = effective_height
-            
+
         beach_conditions.append({
-            "name": beach_name,
-            "aspect": aspect,
-            "effective_height": effective_height,
-            "exposure": exposure,
-            "rating": star_rating,
-            "precise_rating": precise_rating,
-            "board": board,
-            "notes": BEACH_NOTES.get(beach_name, ""),
-            "period": current_wave_period
-        })
+        "name": beach_name,
+        "aspect": aspect,
+        "effective_height": effective_height,
+        "exposure": exposure,
+        "rating": star_rating,
+        "precise_rating": precise_rating,
+        "board": board,
+        "notes": BEACH_NOTES.get(beach_name, ""),
+        "period": current_wave_period
+    })
     
     # Overall rating (average of beach star ratings, rounded to nearest half star)
     overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
@@ -707,7 +720,6 @@ def generate_report(marine_data, wind_data, tide_data):
 <body>
     <header>
         <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
-        <p class="timestamp">Generated: {now.strftime('%Y-%m-%d %H:%M:%S')} AEST</p>
     </header>
 
     <div class="section">
@@ -716,7 +728,7 @@ def generate_report(marine_data, wind_data, tide_data):
             <div class="summary-item" style="grid-column: 1 / -1;">
                 <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
                 <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(overall_rating)}</div>
-                <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{max_effective_height:.1f}m</strong></div>
+                <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{metres_to_feet_range(max_effective_height)}</strong></div>
             </div>
         </div>
     </div>
@@ -724,7 +736,7 @@ def generate_report(marine_data, wind_data, tide_data):
     <div class="section">
         <h2>🌊 Overall Conditions</h2>
         <div class="condition-item" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">
-            <span class="label">Offshore Swell:</span>
+            <span class="label">Swell:</span>
             <span class="value">{current_wave_height:.1f}m @ {current_wave_period:.0f}s from {current_wave_direction:.0f}° ({wave_compass})</span>
         </div>
         <div class="condition-item" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">
@@ -759,7 +771,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 </div>
                 <div class="surf-info">
                     <div class="surf-detail">
-                        <div class="surf-value">{beach["effective_height"]:.1f}m</div>
+                        <div class="surf-value">{metres_to_feet_range(beach["effective_height"])}</div>
                         <div class="surf-label">Surf Height</div>
                     </div>
                     <div class="surf-detail">
@@ -782,7 +794,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 </div>
                 <div class="surf-info">
                     <div class="surf-detail">
-                        <div class="surf-value">{beach["effective_height"]:.1f}m</div>
+                        <div class="surf-value">{metres_to_feet_range(beach["effective_height"])}</div>
                         <div class="surf-label">Surf Height</div>
                     </div>
                     <div class="surf-detail">
@@ -807,6 +819,7 @@ def generate_report(marine_data, wind_data, tide_data):
     
 
     <div class="footer">
+        <p class="timestamp" style="margin-bottom: 12px;">Generated: {now.strftime('%Y-%m-%d %H:%M:%S')} AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), MHL (tide observations)</p>

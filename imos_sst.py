@@ -72,20 +72,20 @@ def get_wetsuit_recommendation(temp_celsius: float) -> str:
     Based on standard surfing wetsuit temperature ranges:
         ≥ 22°C:  Boardshorts / rash vest
         20–21°C: Spring suit (2 mm)
-        17–19°C: 3/2 full wetsuit
-        14–16°C: 4/3 full wetsuit
-        < 14°C:  5/4 full wetsuit + boots/gloves/hood
+        17–19°C: 3/2 steamer
+        14–16°C: 4/3 steamer
+        < 14°C:  5/4 steamer + boots/gloves/hood
     """
     if temp_celsius >= 22:
         return "Boardshorts or rash vest"
     elif temp_celsius >= 20:
         return "Spring suit (2 mm)"
     elif temp_celsius >= 17:
-        return "3/2 full wetsuit"
+        return "3/2 steamer"
     elif temp_celsius >= 14:
-        return "4/3 full wetsuit"
+        return "4/3 steamer"
     else:
-        return "5/4 full wetsuit with booties, gloves, hood"
+        return "5/4 steamer with booties, gloves, hood"
 
 
 def get_wetsuit_recommendation_by_month(month: int) -> str:
