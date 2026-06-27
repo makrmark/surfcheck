@@ -281,7 +281,7 @@ def get_board_recommendation(effective_height, wave_period):
     elif effective_height < 0.6:
         boards = ["Longboard", "Funboard"]
     elif effective_height < 1.0:
-        boards = ["Fish", "Funboard", "Shortboard"]
+        boards = ["Fish", "Funboard", "Mid-Length", "Groveller"]
     elif effective_height < 1.5:
         boards = ["Shortboard", "Fish"]
     elif effective_height < 2.0:
@@ -297,8 +297,8 @@ def get_board_recommendation(effective_height, wave_period):
             boards = ["Fish", "Funboard", "Mid-Length"]
         elif "Fish" in boards:
             boards = ["Mid-Length", "Funboard"]
-        elif "Groveller" in boards or "Funboard" in boards or "Mid-Length" in boards:
-            boards = ["Longboard", "Funboard"]
+        elif "Funboard" in boards or "Mid-Length" in boards:
+            boards = ["Longboard", "Groveller"]
         else:
             boards = ["Longboard", "Log"]
 
