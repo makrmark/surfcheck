@@ -279,9 +279,9 @@ def get_board_recommendation(effective_height, wave_period):
     if effective_height < 0.3:
         boards = ["Longboard", "Log"]
     elif effective_height < 0.6:
-        boards = ["Longboard", "Mid-Length", "Funboard", "Groveller"]
+        boards = ["Longboard", "Funboard"]
     elif effective_height < 1.0:
-        boards = ["Groveller", "Fish", "Funboard", "Shortboard"]
+        boards = ["Fish", "Funboard", "Shortboard"]
     elif effective_height < 1.5:
         boards = ["Shortboard", "Fish"]
     elif effective_height < 2.0:
@@ -292,13 +292,13 @@ def get_board_recommendation(effective_height, wave_period):
     # Short period (< 8s) — weak/mushy swell, favour more volume
     if wave_period < 8:
         if "Step-Up" in boards:
-            boards = ["Shortboard", "Fish", "Groveller"]
+            boards = ["Shortboard", "Fish"]
         elif "Shortboard" in boards:
-            boards = ["Groveller", "Fish", "Funboard", "Mid-Length"]
+            boards = ["Fish", "Funboard", "Mid-Length"]
         elif "Fish" in boards:
-            boards = ["Groveller", "Funboard"]
+            boards = ["Mid-Length", "Funboard"]
         elif "Groveller" in boards or "Funboard" in boards or "Mid-Length" in boards:
-            boards = ["Longboard", "Mid-Length", "Funboard"]
+            boards = ["Longboard", "Funboard"]
         else:
             boards = ["Longboard", "Log"]
 
@@ -774,7 +774,7 @@ def generate_report(marine_data, wind_data, tide_data):
                     </div>
                 </div>
                 <div class="stars">{stars}</div>
-                <div class="board">Board: {beach["board"]}</div>
+                <div class="board">🏄 {beach["board"]}</div>
                 <div class="notes">{beach["notes"]}</div>
             </div>''' if not is_best else f'''
             <div class="beach-card{best_card_class}">
@@ -797,7 +797,7 @@ def generate_report(marine_data, wind_data, tide_data):
                     </div>
                 </div>
                 <div class="stars">{stars}</div>
-                <div class="board">Board: {beach["board"]}</div>
+                <div class="board">🏄 {beach["board"]}</div>
                 <div class="best-beach-badge">⭐ Best Beach Today</div>
                 <div class="notes">{beach["notes"]}</div>
             </div>'''
