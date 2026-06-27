@@ -272,26 +272,43 @@ def tide_factor(tide_height):
 
 
 def get_board_recommendation(effective_height, wave_period):
-    """Get board recommendation based on wave height and period."""
-    if effective_height < 0.4:  # Less than 0.4m
-        base_board = "Log"
-    elif effective_height < 0.9:  # 0.4-0.9m
-        base_board = "Funboard"
-    elif effective_height < 1.5:  # 0.9-1.5m
-        base_board = "Shortboard"
-    else:  # 1.5m+
-        base_board = "Gun"
+    """Get board recommendation(s) based on wave height and period.
+    Returns a comma-separated list of suitable board types."""
+    boards = []
     
-    # Adjust down if period is short (< 8s)
-    if wave_period < 8 and base_board != "Log":
-        if base_board == "Funboard":
-            base_board = "Log"
-        elif base_board == "Shortboard":
-            base_board = "Funboard"
-        elif base_board == "Gun":
-            base_board = "Shortboard"
+    if effective_height < 0.3:
+        boards = ["Longboard", "Log"]
+    elif effective_height < 0.6:
+        boards = ["Mid-Length", "Funboard", "Longboard"]
+    elif effective_height < 1.0:
+        boards = ["Shortboard", "Fish", "Funboard"]
+    elif effective_height < 1.5:
+        boards = ["Shortboard", "Fish"]
+    elif effective_height < 2.0:
+        boards = ["Shortboard", "Gun"]
+    else:
+        boards = ["Gun"]
     
-    return base_board
+    # Adjust down if period is short (< 8s) — favour fatter boards
+    if wave_period < 8:
+        if "Gun" in boards:
+            boards = ["Shortboard", "Fish"]
+        elif "Shortboard" in boards:
+            boards = ["Funboard", "Mid-Length"]
+        elif "Fish" in boards:
+            boards = ["Funboard"]
+        elif "Funboard" in boards:
+            boards = ["Longboard"]
+    
+    # Remove duplicates and sort by board size (smallest first)
+    seen = set()
+    ordered = []
+    for b in ["Shortboard", "Fish", "Gun", "Mid-Length", "Funboard", "Longboard", "Log"]:
+        if b in boards and b not in seen:
+            ordered.append(b)
+            seen.add(b)
+    
+    return ", ".join(ordered)
 
 
 def get_wetsuit_recommendation(month):
@@ -685,6 +702,17 @@ def generate_report(marine_data, wind_data, tide_data):
     </header>
 
     <div class="section">
+        <h2>🏆 Best Beaches</h2>
+        <div class="summary-section">
+            <div class="summary-item" style="grid-column: 1 / -1;">
+                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
+                <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(overall_rating)}</div>
+                <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{max_effective_height:.1f}m</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
         <h2>🌊 Overall Conditions</h2>
         <div class="condition-item">
             <span class="label">Swell:</span>
@@ -701,18 +729,6 @@ def generate_report(marine_data, wind_data, tide_data):
         <div class="condition-item">
             <span class="label">Water:</span>
             <span class="value">{water_temp}°C — {wetsuit_rec}</span>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>📊 Overall Assessment</h2>
-        <div class="summary-section">
-            <div class="summary-item" style="grid-column: 1 / -1;">
-                <div style="font-size: 0.9em; color: #555;">🏆 Best Beaches Today</div>
-                <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{best_beaches_str}</div>
-                <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(overall_rating)}</div>
-                <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{max_effective_height:.1f}m</strong></div>
-            </div>
         </div>
     </div>
 
