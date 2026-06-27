@@ -575,6 +575,8 @@ def generate_report(marine_data, wind_data, tide_data):
             padding: 10px;
             background-color: #f8f9fa;
             border-radius: 5px;
+            cursor: help;
+            border-bottom: 1px dashed #ccc;
         }}
         .label {{
             font-weight: 600;
@@ -721,25 +723,21 @@ def generate_report(marine_data, wind_data, tide_data):
 
     <div class="section">
         <h2>🌊 Overall Conditions</h2>
-        <div class="condition-item">
-            <span class="label">Swell:</span>
+        <div class="condition-item" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">
+            <span class="label">Offshore Swell:</span>
             <span class="value">{current_wave_height:.1f}m @ {current_wave_period:.0f}s from {current_wave_direction:.0f}° ({wave_compass})</span>
         </div>
-        <div class="condition-item">
+        <div class="condition-item" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">
             <span class="label">Wind:</span>
             <span class="value">{current_wind_speed:.0f} km/h ({wind_knots:.0f} kt) {wind_compass}</span>
         </div>
-        <div class="condition-item">
+        <div class="condition-item" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">
             <span class="label">Tide:</span>
             <span class="value">{display_tide:.1f}m {tide_emoji} {tide_trend.title()}</span>
         </div>
-        <div class="condition-item">
+        <div class="condition-item" title="{sst_source} — coastal edge SST off Northern Beaches">
             <span class="label">Water:</span>
             <span class="value">{water_temp}°C — {wetsuit_rec}</span>
-        </div>
-        <div class="condition-item">
-            <span class="label">SST Source:</span>
-            <span class="value">{sst_source}{' (' + sst_date + ')' if sst_date else ''}</span>
         </div>
     </div>
 
