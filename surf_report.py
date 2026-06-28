@@ -252,6 +252,41 @@ def _diffraction_coefficient(shadow_angle):
     return max(0.0, result)
 
 
+def _angle_of_attack_factor(attack_angle):
+    """
+    Rideability factor based on the angle between swell direction and beach aspect.
+
+    For straight beach breaks (not points or reefs), the angle of attack determines
+    whether waves close out, peel perfectly, or arrive weak after excessive refraction.
+
+    Zones based on surf science literature:
+      0°–10°  (close-out)     → poor, wave shuts down all at once
+     15°–45°  (perfect peeler) → excellent, peeling down the line
+     60°+     (extreme angle)  → weak, wave loses energy refracting
+    """
+    curve = [
+        (0,   0.4),   # straight-on close-out
+        (10,  0.5),   # edge of close-out zone
+        (15,  1.0),   # peeler zone begins
+        (45,  1.0),   # peeler zone ends
+        (60,  0.5),   # extreme angle begins
+        (90,  0.3),   # extreme — very weak
+    ]
+
+    if attack_angle < 0:
+        return 1.0
+
+    for i in range(len(curve) - 1):
+        x1, y1 = curve[i]
+        x2, y2 = curve[i + 1]
+        if x1 <= attack_angle <= x2:
+            t = (attack_angle - x1) / (x2 - x1)
+            return y1 + t * (y2 - y1)
+
+    # Beyond 90° — extrapolate down
+    return max(0.0, 0.3 - (attack_angle - 90) * 0.01)
+
+
 def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period,
                               left_offset=10, right_offset=10):
     """
@@ -564,9 +599,15 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             wave_height, wave_direction, aspect, wave_period, left_off, right_off
         )
         exposure = calculate_exposure_percent(wave_direction, aspect, left_off, right_off)
+
+        # Angle of attack — how the swell hits the beach face
+        raw_attack = abs(wave_direction - aspect)
+        attack_angle = min(raw_attack, 180 - raw_attack) if raw_attack > 90 else raw_attack
+        attack_factor = _angle_of_attack_factor(attack_angle)
+
         rating = calculate_surf_rating(effective_height, wave_period)
         tide_factor_value = tide_factor(tide_height)
-        adjusted_rating = rating * tide_factor_value
+        adjusted_rating = rating * tide_factor_value * attack_factor
         adjusted_rating = max(0, min(5, adjusted_rating))
         precise_rating = adjusted_rating
         star_rating = round(precise_rating * 2) / 2
