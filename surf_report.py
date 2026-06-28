@@ -219,69 +219,101 @@ def get_tide_trend(current_height, past_height, future_height):
         return "changing"
 
 
+def _diffraction_coefficient(shadow_angle):
+    """
+    Diffraction coefficient Kd from Wiegel's curves for a beach 5–10 wavelengths
+    from the headland tip.  Maps shadow angle (degrees past the direct window edge)
+    to the fraction of offshore wave height that reaches the beach.
+    """
+    if shadow_angle <= 0:
+        return 1.0  # inside the direct window, no diffraction loss
+
+    # Midpoints from the Wiegel curve table
+    curve = [
+        (0,   0.70),
+        (10,  0.55),
+        (30,  0.40),
+        (60,  0.225),
+        (90,  0.15),
+    ]
+
+    for i in range(len(curve) - 1):
+        x1, y1 = curve[i]
+        x2, y2 = curve[i + 1]
+        if x1 <= shadow_angle <= x2:
+            t = (shadow_angle - x1) / (x2 - x1)
+            return y1 + t * (y2 - y1)
+
+    # Extrapolate beyond 90° using the slope from the last two points, floor at 0
+    x1, y1 = curve[-2]
+    x2, y2 = curve[-1]
+    slope = (y2 - y1) / (x2 - x1)
+    result = y2 + slope * (shadow_angle - x2)
+    return max(0.0, result)
+
+
 def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period,
                               left_offset=10, right_offset=10):
     """
     Calculate wave height at breaking using the breaker index formula.
-    
+
     Swell arriving within the left/right offset window of the beach's primary
-    aspect is considered fully exposed (no power loss). Beyond that window,
-    exposure falls off with the cosine of the angular distance past the window edge.
-    
+    aspect is considered fully exposed.  Beyond that window, headland shadowing
+    reduces wave height according to Wiegel's diffraction curves.
+
     Parameters:
     - offshore_height: deep-water swell height in metres (H₀)
     - wave_direction: direction of swell in degrees from north
     - beach_aspect: primary direction the beach faces in degrees from north
     - wave_period: swell period in seconds (T)
-    - left_offset: degrees left of primary aspect that are still fully exposed
-    - right_offset: degrees right of primary aspect that are still fully exposed
-    
+    - left_offset: degrees left of primary aspect in the direct window
+    - right_offset: degrees right of primary aspect in the direct window
+
     Returns:
     - estimated breaker wave height in metres
     """
     # Compute effective angular delta: distance outside the direct window
     diff = (wave_direction - beach_aspect + 180) % 360 - 180  # signed diff [-180, 180]
     if -left_offset <= diff <= right_offset:
-        effective_delta_deg = 0.0
+        shadow_angle = 0.0
     elif diff < -left_offset:
-        effective_delta_deg = abs(diff) - left_offset
+        shadow_angle = abs(diff) - left_offset
     else:
-        effective_delta_deg = diff - right_offset
-    
-    # Directional exposure factor based on distance outside the window
-    effective_delta = math.radians(effective_delta_deg)
-    exposure_factor = max(0, math.cos(effective_delta))
-    
-    # Effective offshore height at the beach
-    h0_effective = offshore_height * exposure_factor
-    
-    # If there's no significant wave energy, return 0
+        shadow_angle = diff - right_offset
+
+    # Diffraction coefficient (fraction of offshore height that reaches the beach)
+    kd = _diffraction_coefficient(shadow_angle)
+
+    # Effective offshore height after headland shadowing
+    h0_effective = offshore_height * kd
+
     if h0_effective < 0.01 or wave_period < 1:
         return 0.0
-    
-    # Apply the breaker formula: H = 0.44 · H₀ · (T / √H₀)^(2/5)
+
+    # Breaker formula: H = 0.44 · H₀ · (T / √H₀)^(2/5)
     h_breaker = 0.44 * h0_effective * (wave_period / (h0_effective ** 0.5)) ** 0.4
-    
+
     return h_breaker
 
 
 def calculate_exposure_percent(wave_direction, beach_aspect,
                                left_offset=10, right_offset=10):
     """
-    Calculate beach exposure percentage considering the direct swell window.
-    
-    Swell within the window (aspect ± left/right offset) is fully exposed.
-    Outside, exposure decreases linearly to 0% at 90° past the window edge.
+    Calculate beach exposure percentage based on Wiegel diffraction.
+
+    Swell within the direct window (aspect ± offset) is fully exposed.
+    Outside, the diffraction coefficient determines what fraction reaches shore.
     """
-    diff = (wave_direction - beach_aspect + 180) % 360 - 180  # signed diff [-180, 180]
+    diff = (wave_direction - beach_aspect + 180) % 360 - 180
     if -left_offset <= diff <= right_offset:
-        effective_delta = 0
+        shadow_angle = 0
     elif diff < -left_offset:
-        effective_delta = abs(diff) - left_offset
+        shadow_angle = abs(diff) - left_offset
     else:
-        effective_delta = diff - right_offset
-    exposure = max(0, min(100, (90 - effective_delta) / 90 * 100))
-    return exposure
+        shadow_angle = diff - right_offset
+
+    kd = _diffraction_coefficient(shadow_angle)
+    return kd * 100
 
 
 def calculate_wind_quality(wind_direction, beach_aspect):
