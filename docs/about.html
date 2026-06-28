@@ -272,6 +272,20 @@
     </section>
 
     <section>
+        <h2>📐 Angle of Attack — Wave Rideability</h2>
+        <p>The angle at which a swell hits a beach (the <strong>angle of attack</strong>) determines whether waves close out, peel perfectly, or arrive weak. For straight beach breaks — where sandbars are relatively flat — this is the primary factor shaping rideability.</p>
+
+        <table>
+            <tr><th>Attack angle</th><th>Zone</th><th>Quality factor</th><th>Result</th></tr>
+            <tr><td>0°–10°</td><td>Close-out</td><td>0.4–0.5</td><td>Entire wave shuts down at once — poor rideability</td></tr>
+            <tr><td>15°–45°</td><td>Perfect peeler</td><td>1.0</td><td>Wave breaks progressively down the line — excellent</td></tr>
+            <tr><td>60°+</td><td>Extreme angle</td><td>0.5→0.3</td><td>Wave loses energy refracting — weak, crumbling faces</td></tr>
+        </table>
+
+        <p>The attack angle is clamped to the beach's L/R window: inside the window the direct angle is used; outside it, the diffracted wave arrives at roughly the window edge, so the window offset is used instead. The attack factor multiplies the star rating alongside the tide factor.</p>
+    </section>
+
+    <section>
         <h2>🏖️ Beach Orientations</h2>
         <p>Each beach has a <strong>primary aspect</strong> — the direction the beach face points towards the ocean (degrees from north) — plus left and right offsets defining the direct swell window. These are configured in <code>beaches.json</code>:</p>
 

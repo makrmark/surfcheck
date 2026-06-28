@@ -601,8 +601,16 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         exposure = calculate_exposure_percent(wave_direction, aspect, left_off, right_off)
 
         # Angle of attack — how the swell hits the beach face
-        raw_attack = abs(wave_direction - aspect)
-        attack_angle = min(raw_attack, 180 - raw_attack) if raw_attack > 90 else raw_attack
+        # When swell is inside the window, attack = direct angular difference.
+        # When outside, the wave diffracts around the headland and arrives
+        # at roughly the window edge, so attack is clamped to the nearer offset.
+        diff = (wave_direction - aspect + 180) % 360 - 180
+        if -left_off <= diff <= right_off:
+            attack_angle = abs(diff)
+        elif diff < -left_off:
+            attack_angle = left_off
+        else:
+            attack_angle = right_off
         attack_factor = _angle_of_attack_factor(attack_angle)
 
         rating = calculate_surf_rating(effective_height, wave_period)
