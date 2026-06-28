@@ -620,8 +620,9 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         bw_label = wind_condition_label(wind_dir, aspect)
         bw_strength = wind_strength_emoji(wind_speed)
 
-        # Wave Quality factor (0-1): combines wind, angle of attack, and tide height
-        wave_quality = (bw_quality + attack_factor + tide_factor_value) / 3
+        # Wave Quality factor (0-1): product of wind, attack angle, and tide
+        # If any factor is imperfect, quality drops — a product is stricter than an average
+        wave_quality = bw_quality * attack_factor * tide_factor_value
 
         adjusted_rating = rating * wave_quality
         adjusted_rating = max(0, min(5, adjusted_rating))
