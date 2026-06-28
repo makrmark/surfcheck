@@ -287,28 +287,30 @@ def _angle_of_attack_factor(attack_angle):
     return max(0.0, 0.3 - (attack_angle - 90) * 0.01)
 
 
+def shoal_factor(period):
+    """
+    Amplification from shoaling for a wave of given period (seconds).
+    Longer-period waves carry more energy and amplify more as they rise before breaking.
+    6s windswell ≈ no amplification.  18s+ groundswell ≈ 1.6× amplification.
+    """
+    if period < 6:
+        return 1.0
+    elif period >= 18:
+        return 1.6
+    else:
+        return 1.0 + (period - 6) * 0.6 / 12
+
+
 def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period,
                               left_offset=10, right_offset=10):
     """
-    Calculate wave height at breaking using the breaker index formula.
-
-    Swell arriving within the left/right offset window of the beach's primary
-    aspect is considered fully exposed.  Beyond that window, headland shadowing
-    reduces wave height according to Wiegel's diffraction curves.
-
-    Parameters:
-    - offshore_height: deep-water swell height in metres (H₀)
-    - wave_direction: direction of swell in degrees from north
-    - beach_aspect: primary direction the beach faces in degrees from north
-    - wave_period: swell period in seconds (T)
-    - left_offset: degrees left of primary aspect in the direct window
-    - right_offset: degrees right of primary aspect in the direct window
-
-    Returns:
-    - estimated breaker wave height in metres
+    Effective wave height after headland shadowing and period-driven shoaling.
+    
+    All multiplicative: offshore_swell × Kd × shoal_factor(period).
+    Swell arriving within the L/R window is fully exposed (Kd=1).
+    Beyond the window, Wiegel diffraction reduces the height.
     """
-    # Compute effective angular delta: distance outside the direct window
-    diff = (wave_direction - beach_aspect + 180) % 360 - 180  # signed diff [-180, 180]
+    diff = (wave_direction - beach_aspect + 180) % 360 - 180
     if -left_offset <= diff <= right_offset:
         shadow_angle = 0.0
     elif diff < -left_offset:
@@ -316,28 +318,19 @@ def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wa
     else:
         shadow_angle = diff - right_offset
 
-    # Diffraction coefficient (fraction of offshore height that reaches the beach)
     kd = _diffraction_coefficient(shadow_angle)
+    shoal = shoal_factor(wave_period)
+    effective = offshore_height * kd * shoal
 
-    # Effective offshore height after headland shadowing
-    h0_effective = offshore_height * kd
-
-    if h0_effective < 0.01 or wave_period < 1:
+    if effective < 0.01:
         return 0.0
-
-    # Breaker formula: H = 0.44 · H₀ · (T / √H₀)^(2/5)
-    h_breaker = 0.44 * h0_effective * (wave_period / (h0_effective ** 0.5)) ** 0.4
-
-    return h_breaker
+    return effective
 
 
 def calculate_exposure_percent(wave_direction, beach_aspect,
                                left_offset=10, right_offset=10):
     """
-    Calculate beach exposure percentage based on Wiegel diffraction.
-
-    Swell within the direct window (aspect ± offset) is fully exposed.
-    Outside, the diffraction coefficient determines what fraction reaches shore.
+    Beach exposure percentage = Kd × 100 (how much swell reaches the beach).
     """
     diff = (wave_direction - beach_aspect + 180) % 360 - 180
     if -left_offset <= diff <= right_offset:
@@ -346,7 +339,6 @@ def calculate_exposure_percent(wave_direction, beach_aspect,
         shadow_angle = abs(diff) - left_offset
     else:
         shadow_angle = diff - right_offset
-
     kd = _diffraction_coefficient(shadow_angle)
     return kd * 100
 
@@ -613,7 +605,9 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             attack_angle = right_off
         attack_factor = _angle_of_attack_factor(attack_angle)
 
-        rating = calculate_surf_rating(effective_height, wave_period)  # Wave Height score (0-5)
+        # Wave Height score (0-5): offshore_swell × Kd × shoaling, all multiplicative
+        # 5★ = double overhead = 3.6m
+        wave_height_score = min(5, effective_height / 3.6 * 5)
         tide_factor_value = tide_factor(tide_height)
 
         bw_quality = calculate_wind_quality(wind_dir, aspect)
@@ -624,7 +618,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         # If any factor is imperfect, quality drops — a product is stricter than an average
         wave_quality = bw_quality * attack_factor * tide_factor_value
 
-        adjusted_rating = rating * wave_quality
+        adjusted_rating = wave_height_score * wave_quality
         adjusted_rating = max(0, min(5, adjusted_rating))
         precise_rating = adjusted_rating
         star_rating = round(precise_rating * 2) / 2
@@ -646,7 +640,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "wind_quality": bw_quality,
             "wind_label": bw_label,
             "wind_strength": bw_strength,
-            "wave_height_score": rating,
+            "wave_height_score": wave_height_score,
             "attack_factor": attack_factor,
             "tide_factor_value": tide_factor_value,
         })
