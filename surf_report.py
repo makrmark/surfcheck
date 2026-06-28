@@ -13,7 +13,6 @@ import math
 import os
 import sys
 import logging
-import subprocess
 from pathlib import Path
 
 import imos_sst
@@ -1337,22 +1336,6 @@ def main():
         log_file = Path.home() / "surf_report_log.txt"
         with open(log_file, 'a') as f:
             f.write(f"{datetime.datetime.now()}: Report generated successfully\n")
-
-        # Commit and push to GitHub so Pages updates
-        try:
-            subprocess.run(["git", "add", "-A"], cwd=Path(__file__).parent, capture_output=True, timeout=10)
-            subprocess.run(["git", "commit", "-m", f"Daily surf report {datetime.date.today()}"],
-                          cwd=Path(__file__).parent, capture_output=True, timeout=10)
-            push = subprocess.run(["git", "push"], cwd=Path(__file__).parent,
-                                 capture_output=True, timeout=30)
-            if push.returncode == 0:
-                logger.info("Committed and pushed to GitHub")
-            else:
-                logger.warning(f"Push stderr: {push.stderr.decode().strip()}")
-        except subprocess.TimeoutExpired:
-            logger.warning("Git push timed out")
-        except Exception as e:
-            logger.warning(f"Git error (may be nothing to commit): {e}")
 
         return True
     except Exception as e:
