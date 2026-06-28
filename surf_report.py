@@ -606,19 +606,19 @@ def generate_report(marine_data, wind_data, tide_data):
             <h2>🌊 Overall Conditions</h2>
             <div class="condition-item">
                 <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">{tf["wave_height"]:.1f}m @ {tf["wave_period"]:.0f}s from {tf["wave_direction"]:.0f}° ({tf["wave_compass"]}) <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">{tf["wave_height"]:.1f}m @ {tf["wave_period"]:.0f}s from {tf["wave_direction"]:.0f}° ({tf["wave_compass"]})<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]} <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]}<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">{tf["display_tide"]:.1f}m {tf["tide_emoji"]} {tf["tide_trend"].title()} <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">{tf["display_tide"]:.1f}m {tf["tide_emoji"]} {tf["tide_trend"].title()}<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Water:</span>
-                <span class="value" title="{sst_source} — coastal edge SST off Northern Beaches">{water_temp}°C — {wetsuit_rec} <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">{water_temp}°C — {wetsuit_rec}<span class="tooltip">{sst_source} — coastal edge SST off Northern Beaches</span></span>
             </div>
         </div>'''
 
@@ -801,15 +801,38 @@ def generate_report(marine_data, wind_data, tide_data):
             font-weight: 500;
             color: #333;
             cursor: help;
+            position: relative;
         }}
-        .tooltip-icon {{
-            font-size: 0.8em;
-            color: #999;
-            margin-left: 3px;
-            opacity: 0.5;
+        .value .tooltip {{
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
         }}
-        .value:hover .tooltip-icon {{
-            opacity: 1.0;
+        .value .tooltip::after {{
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }}
+        .value:hover .tooltip {{
+            visibility: visible;
+            opacity: 1;
         }}
         .beach-grid {{
             display: grid;

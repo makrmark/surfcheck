@@ -128,15 +128,38 @@
             font-weight: 500;
             color: #333;
             cursor: help;
+            position: relative;
         }
-        .tooltip-icon {
-            font-size: 0.8em;
-            color: #999;
-            margin-left: 3px;
-            opacity: 0.5;
+        .value .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
         }
-        .value:hover .tooltip-icon {
-            opacity: 1.0;
+        .value .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+        .value:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
         .beach-grid {
             display: grid;
@@ -294,19 +317,19 @@
             <h2>🌊 Overall Conditions</h2>
             <div class="condition-item">
                 <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 124° (SE) <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">0.9m @ 9s from 124° (SE)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">13 km/h (7 kt) WSW <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">13 km/h (7 kt) WSW<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">-0.9m 🔻 Low <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">-0.9m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Water:</span>
-                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">19.6°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
             </div>
         </div>
         <div class="section">
@@ -494,19 +517,19 @@
             <h2>🌊 Overall Conditions</h2>
             <div class="condition-item">
                 <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 124° (SE) <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">0.9m @ 9s from 124° (SE)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">10 km/h (5 kt) SW <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">10 km/h (5 kt) SW<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">-1.4m 🔻 Low <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">-1.4m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Water:</span>
-                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">19.6°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
             </div>
         </div>
         <div class="section">
@@ -694,19 +717,19 @@
             <h2>🌊 Overall Conditions</h2>
             <div class="condition-item">
                 <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 125° (SE) <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">0.9m @ 9s from 125° (SE)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">1 km/h (1 kt) W <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">1 km/h (1 kt) W<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">1.0m 🔺 High <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">1.0m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Water:</span>
-                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">19.6°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
             </div>
         </div>
         <div class="section">
@@ -894,19 +917,19 @@
             <h2>🌊 Overall Conditions</h2>
             <div class="condition-item">
                 <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 124° (SE) <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">0.9m @ 9s from 124° (SE)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">2 km/h (1 kt) W <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">2 km/h (1 kt) W<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">0.4m 🔺 High <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">0.4m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Water:</span>
-                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value">19.6°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
             </div>
         </div>
         <div class="section">
@@ -1081,7 +1104,7 @@
         </div></div>
 
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-28 10:40:32 AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-28 10:46:14 AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>
