@@ -6,42 +6,42 @@
       "primary_aspect": 158,
       "left_offset": 68,
       "right_offset": 22,
-      "notes": "Northernmost beach, southeast-southeast exposure"
+      "notes": "Northernmost beach. Wide exposure from E (90°) to S (180°). Mostly open ocean with only minor headland sheltering to the north — picks up a broad range of swell directions."
     },
     {
       "name": "Dee Why",
       "primary_aspect": 135,
       "left_offset": 67.5,
       "right_offset": 22.5,
-      "notes": "Southeast facing beach, sheltered by southern headland"
+      "notes": "Southeast facing beach, sheltered by southern headland. Wide left exposure from ENE (67.5°) to primary, but tightly shadowed on the right (only to SSE at 157.5°). Best with SE or ESE swell — loses south swells quickly."
     },
     {
       "name": "Curl Curl",
       "primary_aspect": 112,
       "left_offset": 44.5,
       "right_offset": 45.5,
-      "notes": "East-southeast exposed beach with consistent swell"
+      "notes": "East-southeast exposed beach with consistent swell. Nearly symmetrical window from ENE (67.5°) to SSE (157.5°). Good all-rounder — picks up most swell from east through south."
     },
     {
       "name": "Freshwater",
       "primary_aspect": 135,
       "left_offset": 5,
       "right_offset": 22.5,
-      "notes": "Southeast facing beach, protected by northern headland"
+      "notes": "Southeast facing beach, protected by northern headland. Very narrow exposure (130° to 158°) — heavily shadowed on the left by North Head. Only catches swell with a strong southerly component."
     },
     {
       "name": "North Steyne",
       "primary_aspect": 90,
       "left_offset": 45,
       "right_offset": 45,
-      "notes": "Eastern end of Manly Beach, exposed to east swells"
+      "notes": "Eastern end of Manly Beach, exposed to east swells. Symmetrical window from NE (45°) to SE (135°). Wide open to any swell with an easterly component — the default north-end beach when there's east swell."
     },
     {
       "name": "South Steyne",
       "primary_aspect": 68,
       "left_offset": 45.5,
       "right_offset": 22,
-      "notes": "East-northeast end of Manly Beach, NE swell exposure"
+      "notes": "East-northeast end of Manly Beach, NE swell exposure. Window from NNE (22.5°) to E (90°). Tight right shadow — loses south swells quickly. Best with northerly or north-easterly swell."
     }
   ]
 }
