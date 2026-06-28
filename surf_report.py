@@ -646,10 +646,8 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "tide_factor_value": tide_factor_value,
         })
 
-    # Overall rating (average of all beach star ratings)
-    overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
-    overall_rating = max(0, min(5, overall_rating))
-    overall_rating = round(overall_rating * 2) / 2
+    # Overall rating — use the best beach's rating so it matches the top card
+    overall_rating = max(bc["rating"] for bc in beach_conditions)
 
     # Best beaches — rating already bakes in wind, attack, and tide, so use directly
     best_score = max(bc["precise_rating"] for bc in beach_conditions)
