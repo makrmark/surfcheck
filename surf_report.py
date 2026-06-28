@@ -343,24 +343,44 @@ def calculate_exposure_percent(wave_direction, beach_aspect,
     return kd * 100
 
 
-def calculate_wind_quality(wind_direction, beach_aspect):
+def calculate_wind_quality(wind_direction, beach_aspect, wind_speed_kmh=0):
     """
-    Compute wind quality for a specific beach based on wind direction relative to beach aspect.
-    
+    Compute wind quality for a specific beach combining direction and speed.
+
     Waves break roughly parallel to the beach, so what matters is how the wind hits
     the beach face, not the offshore wave direction.
-    
-    0°   = onshore  (wind from sea toward land) → quality 0.4  (worst)
-    90°  = cross-shore (wind parallel to beach) → quality 0.7  (neutral)
-    180° = offshore  (wind from land toward sea) → quality 1.0 (best)
-    
-    Returns a float in [0.4, 1.0].
+
+    Direction:
+      0°   = onshore  → dir_quality 0.4 (worst)
+      90°  = cross    → dir_quality 0.7 (neutral)
+      180° = offshore → dir_quality 1.0 (best)
+
+    Speed (km/h):
+      0–9   = glassy/calm     → quality 1.0 regardless of direction
+      9–22  = light breeze    → mild degradation
+      22–37 = moderate        → significant degradation
+      37+   = strong / gale   → severe degradation
+
+    Above 9 km/h: quality = dir_quality × speed_factor
     """
+    # Direction component
     delta = abs(wind_direction - beach_aspect)
     if delta > 180:
         delta = 360 - delta
-    quality = 1.0 - abs(delta - 180) / 180
-    return max(0.4, min(1.0, quality))
+    dir_quality = 1.0 - abs(delta - 180) / 180
+    dir_quality = max(0.4, min(1.0, dir_quality))
+
+    # Speed component — how much the wind degrades the surface
+    if wind_speed_kmh < 9:
+        return 1.0  # glassy — direction doesn't matter
+    elif wind_speed_kmh < 22:
+        speed_factor = 1.0 - (wind_speed_kmh - 9) * 0.25 / 13
+    elif wind_speed_kmh < 37:
+        speed_factor = 0.75 - (wind_speed_kmh - 22) * 0.35 / 15
+    else:
+        speed_factor = max(0.15, 0.40 - (wind_speed_kmh - 37) * 0.20 / 13)
+
+    return max(0.3, dir_quality * speed_factor)
 
 
 def wind_condition_label(wind_direction, beach_aspect):
@@ -383,16 +403,19 @@ def wind_condition_label(wind_direction, beach_aspect):
 
 
 def wind_strength_emoji(wind_speed_kmh):
-    """Return an emoji indicating how significant the wind strength is.
-    Light breezes barely matter; strong winds dominate conditions."""
-    if wind_speed_kmh < 5:
-        return ""       # negligible — barely affects the surface
-    elif wind_speed_kmh < 15:
-        return "🌬️"    # moderate breeze — noticeable texture
-    elif wind_speed_kmh < 25:
-        return "💨"     # strong wind — significant effect
+    """Emoji for wind speed thresholds:
+    0–9 km/h  = glassy
+    9–22 km/h = light breeze  🌬️
+    22–37 km/h = moderate     💨
+    37+ km/h   = gale/strong  🌪️"""
+    if wind_speed_kmh < 9:
+        return ""
+    elif wind_speed_kmh < 22:
+        return "🌬️"
+    elif wind_speed_kmh < 37:
+        return "💨"
     else:
-        return "🌪️"   # gusty / very strong — dominant factor
+        return "🌪️"
 
 
 def calculate_surf_rating(effective_height, wave_period):
@@ -610,7 +633,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         wave_height_score = min(5, 5 * (effective_height / 3.6) ** 0.65)
         tide_factor_value = tide_factor(tide_height)
 
-        bw_quality = calculate_wind_quality(wind_dir, aspect)
+        bw_quality = calculate_wind_quality(wind_dir, aspect, wind_speed)
         bw_label = wind_condition_label(wind_dir, aspect)
         bw_strength = wind_strength_emoji(wind_speed)
 
