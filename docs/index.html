@@ -183,6 +183,15 @@
             font-size: 0.9em;
             color: #666;
         }
+        .beach-card .surf-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+        .beach-card .surf-detail .surf-value {
+            font-size: 1.1em;
+            white-space: nowrap;
+        }
         .stars {
             font-size: 1.2em;
             color: #ffd700;
@@ -275,359 +284,7 @@
             <h2>🏆 Best Beaches</h2>
             <div class="summary-section">
                 <div class="summary-item" style="grid-column: 1 / -1;">
-                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Dee Why, Freshwater, Curl Curl</div>
-                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">★★☆☆☆</div>
-                    <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>3-4 ft</strong></div>
-                </div>
-            </div>
-        </div>
-        <div class="section">
-            <h2>🌊 Overall Conditions</h2>
-            <div class="condition-item">
-                <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">1.0m @ 9s from 124° (SE) <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">10 km/h (5 kt) W <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">-1.1m 🔻 Low <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Water:</span>
-                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-        </div>
-        <div class="section">
-            <h2>🏖️ Beach Conditions</h2>
-            <div class="beach-grid">
-                <div class="beach-card">
-                    <div class="beach-name">
-                        <span>Long Reef</span>
-                        <span class="beach-aspect">158° (SSE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">62%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
-                </div>
-                <div class="beach-card beach-card-best">
-                    <div class="beach-name">
-                        <span>Dee Why</span>
-                        <span class="beach-aspect">135° (SE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">88%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Shortboard, Fish, Mid-Length</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
-                </div>
-                <div class="beach-card beach-card-best">
-                    <div class="beach-name">
-                        <span>Curl Curl</span>
-                        <span class="beach-aspect">112° (ESE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">87%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Shortboard, Fish, Mid-Length</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">East-southeast exposed beach with consistent swell</div>
-                </div>
-                <div class="beach-card beach-card-best">
-                    <div class="beach-name">
-                        <span>Freshwater</span>
-                        <span class="beach-aspect">135° (SE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">88%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Shortboard, Fish, Mid-Length</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, protected by northern headland</div>
-                </div>
-                <div class="beach-card">
-                    <div class="beach-name">
-                        <span>North Steyne</span>
-                        <span class="beach-aspect">90° (E)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">62%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
-                </div>
-                <div class="beach-card">
-                    <div class="beach-name">
-                        <span>South Steyne</span>
-                        <span class="beach-aspect">68° (ENE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">38%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
-                </div>
-            </div>
-        </div></div>
-<div class="timeframe-content" data-tf="9–12pm" style="display:none;">
-        <div class="section">
-            <h2>🏆 Best Beaches</h2>
-            <div class="summary-section">
-                <div class="summary-item" style="grid-column: 1 / -1;">
-                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Dee Why, Freshwater, Curl Curl</div>
-                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">★★☆☆☆</div>
-                    <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>3-4 ft</strong></div>
-                </div>
-            </div>
-        </div>
-        <div class="section">
-            <h2>🌊 Overall Conditions</h2>
-            <div class="condition-item">
-                <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">1.0m @ 9s from 124° (SE) <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">2 km/h (1 kt) W <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">1.4m 🔺 High <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Water:</span>
-                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
-            </div>
-        </div>
-        <div class="section">
-            <h2>🏖️ Beach Conditions</h2>
-            <div class="beach-grid">
-                <div class="beach-card">
-                    <div class="beach-name">
-                        <span>Long Reef</span>
-                        <span class="beach-aspect">158° (SSE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">62%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
-                </div>
-                <div class="beach-card beach-card-best">
-                    <div class="beach-name">
-                        <span>Dee Why</span>
-                        <span class="beach-aspect">135° (SE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">88%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Shortboard, Fish, Mid-Length</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
-                </div>
-                <div class="beach-card beach-card-best">
-                    <div class="beach-name">
-                        <span>Curl Curl</span>
-                        <span class="beach-aspect">112° (ESE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">87%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Shortboard, Fish, Mid-Length</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">East-southeast exposed beach with consistent swell</div>
-                </div>
-                <div class="beach-card beach-card-best">
-                    <div class="beach-name">
-                        <span>Freshwater</span>
-                        <span class="beach-aspect">135° (SE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">88%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Shortboard, Fish, Mid-Length</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, protected by northern headland</div>
-                </div>
-                <div class="beach-card">
-                    <div class="beach-name">
-                        <span>North Steyne</span>
-                        <span class="beach-aspect">90° (E)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">62%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
-                </div>
-                <div class="beach-card">
-                    <div class="beach-name">
-                        <span>South Steyne</span>
-                        <span class="beach-aspect">68° (ENE)</span>
-                    </div>
-                    <div class="surf-info">
-                        <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
-                            <div class="surf-label">Surf Height</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">38%</div>
-                            <div class="surf-label">Exposure</div>
-                        </div>
-                    </div>
-                    <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
-                </div>
-            </div>
-        </div></div>
-<div class="timeframe-content" data-tf="12–3pm" style="display:none;">
-        <div class="section">
-            <h2>🏆 Best Beaches</h2>
-            <div class="summary-section">
-                <div class="summary-item" style="grid-column: 1 / -1;">
-                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Dee Why, Freshwater, Curl Curl</div>
+                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Curl Curl, Dee Why, Freshwater</div>
                     <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">★★☆☆☆</div>
                     <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>3-4 ft</strong></div>
                 </div>
@@ -641,11 +298,11 @@
             </div>
             <div class="condition-item">
                 <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">3 km/h (2 kt) SSE <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">13 km/h (7 kt) WSW <span class="tooltip-icon">ⓘ</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">0.8m 🔺 High <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">-0.9m 🔻 Low <span class="tooltip-icon">ⓘ</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Water:</span>
@@ -673,6 +330,10 @@
                             <div class="surf-value">62%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
@@ -695,6 +356,10 @@
                         <div class="surf-detail">
                             <div class="surf-value">88%</div>
                             <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
@@ -720,6 +385,10 @@
                             <div class="surf-value">87%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
@@ -744,6 +413,10 @@
                             <div class="surf-value">88%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
@@ -767,6 +440,10 @@
                         <div class="surf-detail">
                             <div class="surf-value">62%</div>
                             <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
@@ -791,6 +468,10 @@
                             <div class="surf-value">38%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
@@ -798,13 +479,13 @@
                 </div>
             </div>
         </div></div>
-<div class="timeframe-content" data-tf="3–6pm" style="display:none;">
+<div class="timeframe-content" data-tf="9–12pm" style="display:none;">
         <div class="section">
             <h2>🏆 Best Beaches</h2>
             <div class="summary-section">
                 <div class="summary-item" style="grid-column: 1 / -1;">
                     <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Curl Curl, Dee Why, Freshwater</div>
-                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">★½☆☆☆</div>
+                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">★★☆☆☆</div>
                     <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>3-4 ft</strong></div>
                 </div>
             </div>
@@ -813,15 +494,15 @@
             <h2>🌊 Overall Conditions</h2>
             <div class="condition-item">
                 <span class="label">Swell:</span>
-                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 123° (ESE) <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 124° (SE) <span class="tooltip-icon">ⓘ</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Wind:</span>
-                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">9 km/h (5 kt) SE <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">10 km/h (5 kt) SW <span class="tooltip-icon">ⓘ</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Tide:</span>
-                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">0.4m 📈 Rising <span class="tooltip-icon">ⓘ</span></span>
+                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">-1.4m 🔻 Low <span class="tooltip-icon">ⓘ</span></span>
             </div>
             <div class="condition-item">
                 <span class="label">Water:</span>
@@ -846,11 +527,15 @@
                             <div class="surf-label">Period</div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">61%</div>
+                            <div class="surf-value">62%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
-                    <div class="stars">★½☆☆☆</div>
+                    <div class="stars">★★☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
                     <div class="notes">Northernmost beach, southeast-southeast exposure</div>
                 </div>
@@ -869,11 +554,15 @@
                             <div class="surf-label">Period</div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">87%</div>
+                            <div class="surf-value">88%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
-                    <div class="stars">★½☆☆☆</div>
+                    <div class="stars">★★☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
                 <div class="best-beach-badge">⭐ Best Beach Today</div>
                     <div class="notes">Southeast facing beach, sheltered by southern headland</div>
@@ -893,11 +582,15 @@
                             <div class="surf-label">Period</div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">88%</div>
+                            <div class="surf-value">87%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
-                    <div class="stars">★½☆☆☆</div>
+                    <div class="stars">★★☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
                 <div class="best-beach-badge">⭐ Best Beach Today</div>
                     <div class="notes">East-southeast exposed beach with consistent swell</div>
@@ -917,11 +610,15 @@
                             <div class="surf-label">Period</div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">87%</div>
+                            <div class="surf-value">88%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
                     </div>
-                    <div class="stars">★½☆☆☆</div>
+                    <div class="stars">★★☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
                 <div class="best-beach-badge">⭐ Best Beach Today</div>
                     <div class="notes">Southeast facing beach, protected by northern headland</div>
@@ -930,6 +627,95 @@
                     <div class="beach-name">
                         <span>North Steyne</span>
                         <span class="beach-aspect">90° (E)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">62%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
+                </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>South Steyne</span>
+                        <span class="beach-aspect">68° (ENE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">38%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
+                </div>
+            </div>
+        </div></div>
+<div class="timeframe-content" data-tf="12–3pm" style="display:none;">
+        <div class="section">
+            <h2>🏆 Best Beaches</h2>
+            <div class="summary-section">
+                <div class="summary-item" style="grid-column: 1 / -1;">
+                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Curl Curl, Dee Why, Freshwater</div>
+                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">★★☆☆☆</div>
+                    <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>3-4 ft</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🌊 Overall Conditions</h2>
+            <div class="condition-item">
+                <span class="label">Swell:</span>
+                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 125° (SE) <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Wind:</span>
+                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">1 km/h (1 kt) W <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Tide:</span>
+                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">1.0m 🔺 High <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Water:</span>
+                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🏖️ Beach Conditions</h2>
+            <div class="beach-grid">
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Long Reef</span>
+                        <span class="beach-aspect">158° (SSE)</span>
                     </div>
                     <div class="surf-info">
                         <div class="surf-detail">
@@ -944,6 +730,321 @@
                             <div class="surf-value">63%</div>
                             <div class="surf-label">Exposure</div>
                         </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
+                </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Dee Why</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">3-4 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">89%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
+                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
+                </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Curl Curl</span>
+                        <span class="beach-aspect">112° (ESE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">3-4 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">86%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
+                    <div class="notes">East-southeast exposed beach with consistent swell</div>
+                </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Freshwater</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">3-4 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">89%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
+                    <div class="notes">Southeast facing beach, protected by northern headland</div>
+                </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>North Steyne</span>
+                        <span class="beach-aspect">90° (E)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">61%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
+                </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>South Steyne</span>
+                        <span class="beach-aspect">68° (ENE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">37%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
+                </div>
+            </div>
+        </div></div>
+<div class="timeframe-content" data-tf="3–6pm" style="display:none;">
+        <div class="section">
+            <h2>🏆 Best Beaches</h2>
+            <div class="summary-section">
+                <div class="summary-item" style="grid-column: 1 / -1;">
+                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">Curl Curl, Dee Why, Freshwater</div>
+                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">★★☆☆☆</div>
+                    <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>3-4 ft</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🌊 Overall Conditions</h2>
+            <div class="condition-item">
+                <span class="label">Swell:</span>
+                <span class="value" title="Open-Meteo Marine API: global wave model (WW3) offshore Sydney">0.9m @ 9s from 124° (SE) <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Wind:</span>
+                <span class="value" title="Open-Meteo Weather API: 10m wind from GFS/ECMWF model">2 km/h (1 kt) W <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Tide:</span>
+                <span class="value" title="Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour">0.4m 🔺 High <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+            <div class="condition-item">
+                <span class="label">Water:</span>
+                <span class="value" title="IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches">19.6°C — 3/2 steamer <span class="tooltip-icon">ⓘ</span></span>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🏖️ Beach Conditions</h2>
+            <div class="beach-grid">
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Long Reef</span>
+                        <span class="beach-aspect">158° (SSE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">62%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
+                </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Dee Why</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">3-4 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">88%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
+                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
+                </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Curl Curl</span>
+                        <span class="beach-aspect">112° (ESE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">3-4 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">87%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
+                    <div class="notes">East-southeast exposed beach with consistent swell</div>
+                </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Freshwater</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">3-4 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">88%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆</div>
+                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                <div class="best-beach-badge">⭐ Best Beach Today</div>
+                    <div class="notes">Southeast facing beach, protected by northern headland</div>
+                </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>North Steyne</span>
+                        <span class="beach-aspect">90° (E)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Surf Height</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9s</div>
+                            <div class="surf-label">Period</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">62%</div>
+                            <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label"> Wind</div>
+                        </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
                     <div class="board">🏄 Fish, Mid-Length, Funboard</div>
@@ -964,8 +1065,12 @@
                             <div class="surf-label">Period</div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">39%</div>
+                            <div class="surf-value">38%</div>
                             <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label"> Wind</div>
                         </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
@@ -976,7 +1081,7 @@
         </div></div>
 
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-27 19:24:17 AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-28 10:40:32 AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>

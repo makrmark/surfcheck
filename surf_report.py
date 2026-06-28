@@ -235,6 +235,58 @@ def calculate_exposure_percent(wave_direction, beach_aspect):
     return exposure
 
 
+def calculate_wind_quality(wind_direction, beach_aspect):
+    """
+    Compute wind quality for a specific beach based on wind direction relative to beach aspect.
+    
+    Waves break roughly parallel to the beach, so what matters is how the wind hits
+    the beach face, not the offshore wave direction.
+    
+    0°   = onshore  (wind from sea toward land) → quality 0.0  (worst)
+    90°  = cross-shore (wind parallel to beach) → quality 0.5  (neutral)
+    180° = offshore  (wind from land toward sea) → quality 1.0 (best)
+    
+    Returns a float in [0.0, 1.0].
+    """
+    delta = abs(wind_direction - beach_aspect)
+    if delta > 180:
+        delta = 360 - delta
+    quality = 1.0 - abs(delta - 180) / 180
+    return max(0.0, min(1.0, quality))
+
+
+def wind_condition_label(wind_direction, beach_aspect):
+    """
+    Return a human-readable label for wind condition at a specific beach.
+    """
+    delta = abs(wind_direction - beach_aspect)
+    if delta > 180:
+        delta = 360 - delta
+    if delta <= 30:
+        return "Onshore"
+    elif delta < 60:
+        return "X-On"
+    elif delta <= 120:
+        return "Cross"
+    elif delta < 150:
+        return "X-Off"
+    else:
+        return "Offshore"
+
+
+def wind_strength_emoji(wind_speed_kmh):
+    """Return an emoji indicating how significant the wind strength is.
+    Light breezes barely matter; strong winds dominate conditions."""
+    if wind_speed_kmh < 5:
+        return ""       # negligible — barely affects the surface
+    elif wind_speed_kmh < 15:
+        return "🌬️"    # moderate breeze — noticeable texture
+    elif wind_speed_kmh < 25:
+        return "💨"     # strong wind — significant effect
+    else:
+        return "🌪️"   # gusty / very strong — dominant factor
+
+
 def calculate_surf_rating(effective_height, wave_period):
     """
     Calculate surf rating (0-5 stars) based on wave height and period.
@@ -436,6 +488,10 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         if effective_height > max_effective_height:
             max_effective_height = effective_height
 
+        bw_quality = calculate_wind_quality(wind_dir, aspect)
+        bw_label = wind_condition_label(wind_dir, aspect)
+        bw_strength = wind_strength_emoji(wind_speed)
+
         beach_conditions.append({
             "name": beach_name,
             "aspect": aspect,
@@ -445,19 +501,16 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "precise_rating": precise_rating,
             "board": board,
             "notes": BEACH_NOTES.get(beach_name, ""),
-            "period": wave_period
+            "period": wave_period,
+            "wind_quality": bw_quality,
+            "wind_label": bw_label,
+            "wind_strength": bw_strength,
         })
 
     # Overall rating
     overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
     overall_rating = max(0, min(5, overall_rating))
     overall_rating = round(overall_rating * 2) / 2
-
-    # Wind quality
-    wind_wave_angle = abs(wind_dir - wave_direction)
-    if wind_wave_angle > 180:
-        wind_wave_angle = 360 - wind_wave_angle
-    wind_quality = 1.0 - abs(wind_wave_angle - 180) / 180
 
     # Tide quality
     tide_quality_map = {
@@ -466,7 +519,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
     tide_quality = tide_quality_map.get(tide_trend, 1.0)
 
     # Best beaches
-    composite_for_beach = lambda bc: bc["precise_rating"] * (0.5 + 0.25 * wind_quality + 0.25 * tide_quality)
+    composite_for_beach = lambda bc: bc["precise_rating"] * (0.5 + 0.25 * bc["wind_quality"] + 0.25 * tide_quality)
     best_score = max(composite_for_beach(bc) for bc in beach_conditions)
     best_beaches = sorted(
         [bc for bc in beach_conditions if composite_for_beach(bc) >= best_score - 0.5],
@@ -495,7 +548,6 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         "best_beaches": best_beaches,
         "best_beaches_str": best_beaches_str,
         "max_effective_height": max_effective_height,
-        "wind_quality": wind_quality,
         "tide_quality": tide_quality,
     }
 
@@ -600,6 +652,10 @@ def generate_report(marine_data, wind_data, tide_data):
                         <div class="surf-detail">
                             <div class="surf-value">{beach["exposure"]:.0f}%</div>
                             <div class="surf-label">Exposure</div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">{beach["wind_label"]}</div>
+                            <div class="surf-label">{beach["wind_strength"]} Wind</div>
                         </div>
                     </div>
                     <div class="stars">{stars}</div>
@@ -799,6 +855,15 @@ def generate_report(marine_data, wind_data, tide_data):
         .surf-label {{
             font-size: 0.9em;
             color: #666;
+        }}
+        .beach-card .surf-info {{
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }}
+        .beach-card .surf-detail .surf-value {{
+            font-size: 1.1em;
+            white-space: nowrap;
         }}
         .stars {{
             font-size: 1.2em;
