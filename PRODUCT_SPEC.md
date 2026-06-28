@@ -1,7 +1,7 @@
 # Product Specification – Northern Beaches Surf Check Static Webpage
 
-**Version:** 1.0  
-**Date:** 2026-06-26  
+**Version:** 2.0  
+**Date:** 2026-06-28  
 **Author:** Updated from Hermes Agent spec for static webpage deployment  
 
 ---  
@@ -33,7 +33,7 @@ Northern Beaches Surf Check is a static webpage that provides daily surf reports
 | **FR-1** | **Data Acquisition** – Retrieve marine forecast (wave height, period, direction) and wind forecast (speed, direction) from Open-Meteo APIs for Sydney coordinates (-33.78, 151.30). | Successful HTTP 200 responses; parsed JSON contains required hourly fields. |
 | **FR-2** | **Tide Observation** – Query MHL Station 213470 (Sydney Level 1) for current water-level observation and timestamp. | Returns numeric tide height (metres) and valid ISO-8601 timestamp; on failure, logs warning and falls back to harmonic tide model. |
 | **FR-3** | **Tide Forecast** – Using observed tide height & timestamp, compute tide height and trend (rising/falling/high/low) for report time (06:00) and 3-hour forecast slots (06, 09, 12, 15, 18h). | Computed values within ±0.2m of reference tide table (when MHL data available); trend matches numerical derivative sign. |
-| **FR-4** | **Beach-Specific Wave Height** – For each beach (Long Reef, Dee Why, Curl Curl, Freshwater, North Steyne, South Steyne), compute effective height = offshore height × cos(Δθ), where Δθ is absolute difference between beach aspect (° from N) and wave direction. | Effective height ≥ 0 and ≤ offshore height; exposure % = (90‑\|Δθ\|)/90 × 100 clamped to [0,100]. |
+| **FR-4** | **Beach-Specific Wave Height** – For each beach (Long Reef, Dee Why, Curl Curl, Freshwater, North Steyne, South Steyne), compute effective height using a direct swell window (primary aspect ± left/right offset, default 10°). Swell inside the window is fully exposed. Outside the window, height is reduced by Wiegel diffraction coefficients (K<sub>d</sub> = 0.70 at 10° past window edge, falling to 0.15 at 90° past). The breaker formula is then applied to estimate breaking height. | Effective height ≥ 0 and ≤ offshore height; exposure % follows Wiegel K<sub>d</sub> curve × 100. |
 | **FR-5** | **Surf Rating** – Calculate 0‑5 star rating based on effective wave height (scaled to 2m max) and wave period (scaled 6‑15s), multiplied by tide factor (optimal tide 0.5‑1.5m → 1.0; outside range reduces linearly). | Rating matches specification table (see Section 4.1). |
 | **FR-6** | **Board Recommendation** – Map effective height to board type (Log < 0.5m, Funboard 0.5‑1.0m, Shortboard 1.0‑2.0m, Gun > 2.0m) with dual‑option handling when height within 0.1m of threshold; adjust down one step if period < 8s. | Recommendation string follows rule set; examples: 0.45m → Log, 0.95m → Funboard/Shortboard, 2.2m → Gun. |
 | **FR-7** | **Wetsuit Recommendation** – Based on month‑derived sea‑surface temperature (see Table 1) and Quiksilver guide, output textual recommendation (e.g., “Boardshorts or rash vest”, “Spring suit (2mm)”, “3/2 full wetsuit”, “4/3 full wetsuit with booties, gloves, hood”). | Recommendation matches decision table for given month. |
@@ -46,6 +46,7 @@ Northern Beaches Surf Check is a static webpage that provides daily surf reports
 ## 4. Data Sources & Calculations  
 
 ### 4.1 Data Sources  
+- **Beach Configuration**: `beaches.json` in the project root — defines primary aspect, left/right offsets, and notes for each beach.  
 - **Open-Meteo Marine API**: https://marine-api.open-meteo.com/v1/marine  
   Parameters: latitude=-33.78, longitude=151.30, hourly=wave_height,wave_period,wave_direction,wind_speed,wind_direction  
 - **Open-Meteo Weather API**: https://api.open-meteo.com/v1/forecast  
@@ -59,14 +60,14 @@ Northern Beaches Surf Check is a static webpage that provides daily surf reports
 
 ### 4.2 Beach Definitions  
 
-| Beach | Aspect (° from North) | Notes |
-|-------|----------------------|-------|
-| Long Reef | 135° (Southeast) | Northernmost beach, southeast exposure |
-| Dee Why | 135° (Southeast) | Southeast facing beach, sheltered by southern headland |
-| Curl Curl | 112° (East-Southeast) | East-southeast exposed beach with consistent swell |
-| Freshwater | 135° (Southeast) | Southeast facing beach, protected by northern headland |
-| North Steyne | 90° (East) | Eastern end of Manly Beach, exposed to east swells |
-| South Steyne | 68° (East-Northeast) | East-northeast end of Manly Beach, NE swell exposure |
+| Beach | Aspect (°) | Left offset | Right offset | Notes |
+|-------|-----------|-------------|--------------|-------|
+| Long Reef | 158° | 10° | 10° | Northernmost beach, southeast-southeast exposure |
+| Dee Why | 135° | 10° | 10° | Southeast facing beach, sheltered by southern headland |
+| Curl Curl | 112° | 10° | 10° | East-southeast exposed beach with consistent swell |
+| Freshwater | 135° | 10° | 10° | Southeast facing beach, protected by northern headland |
+| North Steyne | 90° | 10° | 10° | Eastern end of Manly Beach, exposed to east swells |
+| South Steyne | 68° | 10° | 10° | East-northeast end of Manly Beach, NE swell exposure |
 
 ### 4.3 Surf Rating Formula  
 
@@ -97,89 +98,15 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
 
 ## 5. Report Template (HTML Structure)  
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Northern Beaches Surf Check - Sydney Surf Report</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f8ff; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #0066cc; text-align: center; }
-        .timestamp { text-align: center; color: #666; font-style: italic; margin-bottom: 20px; }
-        .section { margin: 20px 0; padding: 15px; border-left: 4px solid #0066cc; background: #f8f9fa; }
-        .beach-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 15px 0; }
-        .beach-card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: white; }
-        .beach-name { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
-        .surf-info { margin: 8px 0; }
-        .rating { font-size: 1.2em; letter-spacing: 2px; }
-        .board { font-weight: bold; color: #0066cc; }
-        .tide-info, .wetsuit-info { background: #e3f2fd; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 0.9em; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
-        <p class="timestamp">Last updated: {timestamp}</p>
-        
-        <div class="section">
-            <h2>🌊 Offshore Conditions</h2>
-            <div class="surf-info"><strong>Swell:</strong> {swell_height}m @ {swell_period}s from {swell_direction}°</div>
-            <div class="surf-info"><strong>Wind:</strong> {wind_speed}km/h from {wind_direction}° ({wind_direction_text})</div>
-        </div>
-        
-        <div class="section">
-            <h2>🏖️ Beach Conditions</h2>
-            <div class="beach-grid">
-                {beach_cards}
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>📊 Overall Assessment</h2>
-            <div class="summary-section">
-                <div class="summary-item">
-                    <div class="summary-value">{overall_rating}</div>
-                    <div class="summary-label">Overall Rating</div>
-                    <div class="stars">{stars}</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-value">{max_effective_height:.1f}m</div>
-                    <div class="summary-label">Max Surf Height</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-value">{tide_height:.1f}m</div>
-                    <div class="summary-label">Tide Height</div>
-                    <div class="tide-trend">{tide_trend.title()}</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-value">{water_temp}°C</div>
-                    <div class="summary-label">Water Temp</div>
-                    <div class="wetsuit">Wetsuit: {wetsuit_rec}</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>🌡️ Water Temperature & Wetsuit Guide</h2>
-            <div class="wetsuit-info">
-                <strong>Water Temperature:</strong> {water_temp}°C<br>
-                <strong>Recommended Wetsuit:</strong> {wetsuit_recommendation}
-            </div>
-        </div>
-        
-        <div class="footer">
-            Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
-            Data sources: Open-Meteo (marine & wind forecasts), MHL NSW<br>
-            Generated daily at 05:45 AM for morning surf sessions
-        </div>
-    </div>
-</body>
-</html>
-```
+The generated HTML (`docs/index.html`) is a full-page, standalone document with embedded CSS and JavaScript. See the live site or `docs/index.html` in the repository for the current structure. Key sections:
+
+- **Header**: Title, timeframe navigation buttons (6–9am / 9–12pm / 12–3pm / 3–6pm), and generation timestamp (in footer)
+- **Best Beaches**: Top 3 beaches by composite score (rating × wind × tide)
+- **Overall Conditions**: Swell, wind, tide, water temperature
+- **Beach Cards**: Per-beach grid showing wave height, period, exposure, wind condition, star rating, board recommendation
+- **Footer**: Generation timestamp, data source links
+- **JavaScript**: Client-side timeframe toggling with localStorage persistence
+- **CSS Tooltips**: Floating info boxes on hover for data source attribution
 
 ---  
 
@@ -231,13 +158,14 @@ Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for intege
 | Idea | Benefit | Status |
 |------|---------|--------|
 | **Dynamic Water Temperature** – Pull real‑time SST from IMOS S3 bucket (RAMSSA L4) instead of month‑lookup. | More precise wetsuit advice. | ✅ **Implemented** |
+| **Per-beach swell exposure windows** – L/R offsets defining direct swell window; Wiegel diffraction curves for headland shadowing. | Physically realistic wave reduction past headlands. | ✅ **Implemented** |
+| **Beach config in JSON** – `beaches.json` with aspect, offsets, notes. | Easy to tune without touching code. | ✅ **Implemented** |
 | **Multiple Forecast Horizons** – Offer 12‑hour and 24‑hour outlooks. | Better planning for later sessions. | ⬜ Planned |
-| **Multiple Forecast Horizons** – Offer 12‑hour and 24‑hour outlooks. | Better planning for later sessions. |
-| **Surf‑Quality Index** – Combine wave power, period, and wind into a single numeric score. | Simplifies decision making. |
-| **Rich Media Attachments** – Include a small tide‑graph or wave‑direction rose as an image attachment. | Visual enhancement. |
-| **User‑Configurable Beaches** – Allow per‑user beach list via Hermes memory or a JSON config file. | Personalisation without code change. |
-| **Unit‑Test Suite** – Add `pytest` tests for each function with CI integration. | Higher confidence in changes. |
-| **Dockerised Version** – Package script & dependencies for easy deployment on other hosts. | Portability. |
+| **Surf‑Quality Index** – Combine wave power, period, and wind into a single numeric score. | Simplifies decision making. | ⬜ Planned |
+| **Rich Media Attachments** – Include a small tide‑graph or wave‑direction rose as an image attachment. | Visual enhancement. | ⬜ Planned |
+| **User‑Configurable Beaches** – Allow per‑user beach list via the existing JSON config mechanism. | Personalisation without code change. | ⬜ Planned |
+| **Unit‑Test Suite** – Add `pytest` tests for each function with CI integration. | Higher confidence in changes. | ⬜ Planned |
+| **Dockerised Version** – Package script & dependencies for easy deployment on other hosts. | Portability. | ⬜ Planned |
 
 ---  
 

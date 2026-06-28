@@ -6,14 +6,11 @@ Known deficiencies, planned enhancements, and ideas for future work.
 
 ## Known Deficiencies
 
-### Wave model based only on beach aspect, not actual exposure
-The wave height calculation for each beach uses a simple cosine falloff based on the difference between offshore wave direction and beach aspect. This does not account for:
+### Headland diffraction model uses idealised geometry
+The Wiegel diffraction curves assume a simplified semi-infinite breakwater. Real headlands have irregular shapes, cliffs, and varying distances to the beach. The default 10° L/R window is a reasonable starting point but should ideally be calibrated per beach using local knowledge or wave modelling.
 
-- **Headland shadowing** — e.g. Freshwater is partially sheltered by the northern headland at North Head, reducing effective swell energy from certain directions regardless of aspect.
-- **Local bathymetry** — offshore reefs, sandbars, and depth contours refract and focus wave energy in ways the simple model ignores.
-- **Sheltered vs exposed ends** — within a single beach (e.g. North Steyne vs South Steyne), the actual swell exposure varies due to the shape of the coastline.
-
-A more accurate model would use a per-beach exposure window (e.g. "receives swell from 60°–120° with peak at 90°") rather than a single aspect figure.
+### No consideration of bathymetric refraction inside the shadow zone
+Diffracted waves may refract as they approach the beach, bending back towards the headland or spreading along the coast. The current model assumes diffracted waves continue straight after the headland.
 
 ### Harmonic tide model limited to M2 + S2
 The tide model uses only the two largest constituents (M2 lunar, S2 solar). Missing constituents (N2, K1, O1, etc.) introduce errors of up to ±0.2m, especially during neap tides or when meteorological effects (wind setup, barometric pressure) are present.
@@ -39,7 +36,8 @@ The real-time SST pipeline depends on `aws s3 cp --no-sign-request` being availa
 
 ## Planned Enhancements
 
-- [ ] **Per-beach swell exposure windows** — Replace single-aspect model with per-beach directional windows that account for headland sheltering and local bathymetry.
+- [x] **Per-beach swell exposure windows** — Beach config in `beaches.json` with L/R offsets; Wiegel diffraction curves for headland shadowing beyond the window.
+- [ ] **Calibrate L/R offsets per beach** — Default 10° offsets are a starting point; tune per beach using local knowledge or wave modelling.
 - [ ] **Tide graph** — Add an inline SVG tide curve for the day, generated from the harmonic model.
 - [ ] **Rain / air temperature display** — Include hourly precipitation probability and air temp from the Open-Meteo weather API in the Overall Conditions section.
 - [ ] **Wind gust data** — Add gust speed to the wind display (Open-Meteo provides `windgusts`).
