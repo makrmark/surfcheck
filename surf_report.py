@@ -633,7 +633,6 @@ def generate_report(marine_data, wind_data, tide_data):
             stars = generate_stars(beach["rating"])
             is_best = beach["name"] in best_names
             card_class = " beach-card-best" if is_best else ""
-            badge = f'\n                <div class="best-beach-badge">⭐ Best Beach Today</div>' if is_best else ""
             html += f'''
                 <div class="beach-card{card_class}">
                     <div class="beach-name">
@@ -658,10 +657,13 @@ def generate_report(marine_data, wind_data, tide_data):
                             <div class="surf-label">{beach["wind_strength"]} Wind</div>
                         </div>
                     </div>
-                    <div class="stars">{stars}</div>
-                    <div class="board">🏄 {beach["board"]}</div>{badge}
-                    <div class="notes">{beach["notes"]}</div>
-                </div>'''
+                    <div class="stars">{stars}'''
+            if is_best:
+                html += f' <span class="best-beach-badge">🏆 Best Beach</span>'
+            html += f'''</div>
+                        <div class="board">🏄 {beach["board"]}</div>
+                        <div class="notes">{beach["notes"]}</div>
+                    </div>'''
 
         html += '''
             </div>
@@ -892,6 +894,9 @@ def generate_report(marine_data, wind_data, tide_data):
             font-size: 1.2em;
             color: #ffd700;
             margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }}
         .board {{
             font-weight: bold;
@@ -953,11 +958,11 @@ def generate_report(marine_data, wind_data, tide_data):
             display: inline-block;
             background: #ffd700;
             color: #8b6914;
-            font-size: 0.75em;
+            font-size: 0.8em;
             font-weight: bold;
             padding: 2px 8px;
             border-radius: 10px;
-            margin-top: 8px;
+            white-space: nowrap;
         }}
         @media (max-width: 599px) {{
             .timeframe-content {{

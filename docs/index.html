@@ -219,6 +219,9 @@
             font-size: 1.2em;
             color: #ffd700;
             margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .board {
             font-weight: bold;
@@ -280,11 +283,11 @@
             display: inline-block;
             background: #ffd700;
             color: #8b6914;
-            font-size: 0.75em;
+            font-size: 0.8em;
             font-weight: bold;
             padding: 2px 8px;
             border-radius: 10px;
-            margin-top: 8px;
+            white-space: nowrap;
         }
         @media (max-width: 599px) {
             .timeframe-content {
@@ -359,9 +362,9 @@
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Northernmost beach, southeast-southeast exposure</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Dee Why</span>
@@ -385,11 +388,10 @@
                             <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, sheltered by southern headland</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Curl Curl</span>
@@ -413,11 +415,10 @@
                             <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">East-southeast exposed beach with consistent swell</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-southeast exposed beach with consistent swell</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Freshwater</span>
@@ -441,11 +442,10 @@
                             <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, protected by northern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, protected by northern headland</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>North Steyne</span>
@@ -470,9 +470,9 @@
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>South Steyne</span>
@@ -497,9 +497,9 @@
                         </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
+                    </div>
             </div>
         </div></div>
 <div class="timeframe-content" data-tf="9–12pm" style="display:none;">
@@ -559,9 +559,9 @@
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Northernmost beach, southeast-southeast exposure</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Dee Why</span>
@@ -585,11 +585,10 @@
                             <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, sheltered by southern headland</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Curl Curl</span>
@@ -613,11 +612,10 @@
                             <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">East-southeast exposed beach with consistent swell</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-southeast exposed beach with consistent swell</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Freshwater</span>
@@ -641,11 +639,10 @@
                             <div class="surf-label">🌬️ Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, protected by northern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, protected by northern headland</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>North Steyne</span>
@@ -670,9 +667,9 @@
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>South Steyne</span>
@@ -697,9 +694,9 @@
                         </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
+                    </div>
             </div>
         </div></div>
 <div class="timeframe-content" data-tf="12–3pm" style="display:none;">
@@ -759,9 +756,9 @@
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Northernmost beach, southeast-southeast exposure</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Dee Why</span>
@@ -785,11 +782,10 @@
                             <div class="surf-label"> Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, sheltered by southern headland</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Curl Curl</span>
@@ -813,11 +809,10 @@
                             <div class="surf-label"> Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">East-southeast exposed beach with consistent swell</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-southeast exposed beach with consistent swell</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Freshwater</span>
@@ -841,11 +836,10 @@
                             <div class="surf-label"> Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, protected by northern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, protected by northern headland</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>North Steyne</span>
@@ -870,9 +864,9 @@
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>South Steyne</span>
@@ -897,9 +891,9 @@
                         </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
+                    </div>
             </div>
         </div></div>
 <div class="timeframe-content" data-tf="3–6pm" style="display:none;">
@@ -959,9 +953,9 @@
                         </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Northernmost beach, southeast-southeast exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Northernmost beach, southeast-southeast exposure</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Dee Why</span>
@@ -985,11 +979,10 @@
                             <div class="surf-label"> Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, sheltered by southern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, sheltered by southern headland</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Curl Curl</span>
@@ -1013,11 +1006,10 @@
                             <div class="surf-label"> Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">East-southeast exposed beach with consistent swell</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-southeast exposed beach with consistent swell</div>
+                    </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
                         <span>Freshwater</span>
@@ -1041,11 +1033,10 @@
                             <div class="surf-label"> Wind</div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                <div class="best-beach-badge">⭐ Best Beach Today</div>
-                    <div class="notes">Southeast facing beach, protected by northern headland</div>
-                </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Southeast facing beach, protected by northern headland</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>North Steyne</span>
@@ -1070,9 +1061,9 @@
                         </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">Eastern end of Manly Beach, exposed to east swells</div>
+                    </div>
                 <div class="beach-card">
                     <div class="beach-name">
                         <span>South Steyne</span>
@@ -1097,14 +1088,14 @@
                         </div>
                     </div>
                     <div class="stars">★½☆☆☆</div>
-                    <div class="board">🏄 Fish, Mid-Length, Funboard</div>
-                    <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
-                </div>
+                        <div class="board">🏄 Fish, Mid-Length, Funboard</div>
+                        <div class="notes">East-northeast end of Manly Beach, NE swell exposure</div>
+                    </div>
             </div>
         </div></div>
 
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-28 10:46:14 AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-28 11:06:57 AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>
