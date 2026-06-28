@@ -347,21 +347,15 @@ def calculate_wind_quality(wind_direction, beach_aspect, wind_speed_kmh=0):
     """
     Compute wind quality for a specific beach combining direction and speed.
 
-    Waves break roughly parallel to the beach, so what matters is how the wind hits
-    the beach face, not the offshore wave direction.
+    Uses a breakpoint table derived from the user's wind-speed quality specs:
+    Speed      Offshore   Onshore   Description
+    0–9 km/h    1.0       1.0      Glassy/calm — excellent regardless
+    22 km/h     0.85      0.65     Light breeze — good offshore, fair onshore
+    37 km/h     0.50      0.30     Moderate — poor to mediocre
+    50+ km/h    0.25      0.15     Gale — dangerous/messy
 
-    Direction:
-      0°   = onshore  → dir_quality 0.4 (worst)
-      90°  = cross    → dir_quality 0.7 (neutral)
-      180° = offshore → dir_quality 1.0 (best)
-
-    Speed (km/h):
-      0–9   = glassy/calm     → quality 1.0 regardless of direction
-      9–22  = light breeze    → mild degradation
-      22–37 = moderate        → significant degradation
-      37+   = strong / gale   → severe degradation
-
-    Above 9 km/h: quality = dir_quality × speed_factor
+    Values at intermediate speeds are linearly interpolated.  At any given speed,
+    the final quality is a blend between offshore and onshore based on direction.
     """
     # Direction component
     delta = abs(wind_direction - beach_aspect)
@@ -370,17 +364,33 @@ def calculate_wind_quality(wind_direction, beach_aspect, wind_speed_kmh=0):
     dir_quality = 1.0 - abs(delta - 180) / 180
     dir_quality = max(0.4, min(1.0, dir_quality))
 
-    # Speed component — how much the wind degrades the surface
-    if wind_speed_kmh < 9:
-        return 1.0  # glassy — direction doesn't matter
-    elif wind_speed_kmh < 22:
-        speed_factor = 1.0 - (wind_speed_kmh - 9) * 0.25 / 13
-    elif wind_speed_kmh < 37:
-        speed_factor = 0.75 - (wind_speed_kmh - 22) * 0.35 / 15
-    else:
-        speed_factor = max(0.15, 0.40 - (wind_speed_kmh - 37) * 0.20 / 13)
+    # Breakpoints: (speed_kmh, offshore_q, onshore_q)
+    bp = [
+        (0,   1.0,  1.0),
+        (9,   1.0,  1.0),
+        (22,  0.85, 0.65),
+        (37,  0.50, 0.30),
+        (50,  0.25, 0.15),
+    ]
 
-    return max(0.3, dir_quality * speed_factor)
+    # Clamp speed and find surrounding breakpoints
+    speed = max(0, min(wind_speed_kmh, 50))
+    q_off = q_on = 1.0
+    for i in range(len(bp) - 1):
+        s1, off1, on1 = bp[i]
+        s2, off2, on2 = bp[i + 1]
+        if s1 <= speed <= s2:
+            t = (speed - s1) / (s2 - s1) if s2 != s1 else 0
+            q_off = off1 + t * (off2 - off1)
+            q_on = on1 + t * (on2 - on1)
+            break
+    if speed > bp[-1][0]:
+        q_off, q_on = bp[-1][1], bp[-1][2]
+
+    # Blend offshore/onshore based on direction
+    # dir_quality: 0.4 = onshore, 1.0 = offshore
+    blend = (dir_quality - 0.4) / 0.6
+    return q_on + (q_off - q_on) * blend
 
 
 def wind_condition_label(wind_direction, beach_aspect):
