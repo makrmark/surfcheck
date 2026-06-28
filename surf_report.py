@@ -642,6 +642,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "wind_strength": bw_strength,
             "wave_height_score": wave_height_score,
             "attack_factor": attack_factor,
+            "attack_angle": attack_angle,
             "tide_factor_value": tide_factor_value,
         })
 
@@ -772,19 +773,19 @@ def generate_report(marine_data, wind_data, tide_data):
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">{metres_to_feet_range(beach["effective_height"])}</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">{beach["period"]:.0f}s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">{beach["attack_angle"]:.0f}°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">{beach["exposure"]:.0f}%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">{beach["wind_label"]}</div>
-                            <div class="surf-label">{beach["wind_strength"]} Wind</div>
+                            <div class="surf-label">{beach["wind_strength"]} Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">{stars}'''
@@ -963,6 +964,31 @@ def generate_report(marine_data, wind_data, tide_data):
             border-top-color: #333;
         }}
         .value:hover .tooltip {{
+            visibility: visible;
+            opacity: 1;
+        }}
+        .surf-label {{
+            position: relative;
+            cursor: help;
+        }}
+        .surf-label .tooltip {{
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+        }}
+        .surf-label:hover .tooltip {{
             visibility: visible;
             opacity: 1;
         }}

@@ -161,6 +161,31 @@
             visibility: visible;
             opacity: 1;
         }
+        .surf-label {
+            position: relative;
+            cursor: help;
+        }
+        .surf-label .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .surf-label:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
         .beach-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -346,19 +371,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">34°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -373,19 +398,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">11°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -400,19 +425,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">12°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-Off</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -427,19 +452,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">11°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -454,19 +479,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">34°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Offshore</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -481,19 +506,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">1-2 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">38%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Offshore</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -543,19 +568,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">34°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -570,19 +595,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">11°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -597,19 +622,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">12°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-Off</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -624,19 +649,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">11°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -651,19 +676,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">34°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Offshore</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -678,19 +703,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">1-2 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">38%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Offshore</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆</div>
@@ -740,19 +765,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">33°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Onshore</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -767,19 +792,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">10°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-On</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">½☆☆☆☆</div>
@@ -794,19 +819,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">13°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-On</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -821,19 +846,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">10°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-On</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">½☆☆☆☆</div>
@@ -848,19 +873,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">35°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -875,19 +900,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">1-2 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">37%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">½☆☆☆☆</div>
@@ -937,19 +962,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">34°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-On</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -964,19 +989,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">11°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-On</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">½☆☆☆☆</div>
@@ -991,19 +1016,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">12°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">½☆☆☆☆</div>
@@ -1018,19 +1043,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">11°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-On</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">½☆☆☆☆</div>
@@ -1045,19 +1070,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">3-4 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">34°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">100%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">Cross</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -1072,19 +1097,19 @@
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">1-2 ft</div>
-                            <div class="surf-label">Height</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">9s</div>
-                            <div class="surf-label">Period</div>
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">38%</div>
-                            <div class="surf-label">Exposure</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">X-Off</div>
-                            <div class="surf-label">🌬️ Wind</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
                     <div class="stars">★☆☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
@@ -1095,7 +1120,7 @@
         </div></div>
 
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-28 19:12:23 AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-28 19:26:05 AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>
