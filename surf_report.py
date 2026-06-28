@@ -605,9 +605,9 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             attack_angle = right_off
         attack_factor = _angle_of_attack_factor(attack_angle)
 
-        # Wave Height score (0-5): offshore_swell × Kd × shoaling, all multiplicative
-        # 5★ = double overhead = 3.6m
-        wave_height_score = min(5, effective_height / 3.6 * 5)
+        # Wave Height score (0-5): power curve for diminishing returns past head high
+        # Small waves climb fast toward overhead, then level off toward double overhead
+        wave_height_score = min(5, 5 * (effective_height / 3.6) ** 0.65)
         tide_factor_value = tide_factor(tide_height)
 
         bw_quality = calculate_wind_quality(wind_dir, aspect)
