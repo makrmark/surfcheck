@@ -1,0 +1,47 @@
+{
+  "_comment": "Beach configuration for Northern Beaches Surf Check. Each beach has a primary aspect (direction the beach faces in degrees from North) plus left and right offsets defining the direct swell window. Swell arriving within the left/right window is considered fully exposed; beyond it, power falls off due to shadowing.",
+  "beaches": [
+    {
+      "name": "Long Reef",
+      "primary_aspect": 158,
+      "left_offset": 10,
+      "right_offset": 10,
+      "notes": "Northernmost beach, southeast-southeast exposure"
+    },
+    {
+      "name": "Dee Why",
+      "primary_aspect": 135,
+      "left_offset": 10,
+      "right_offset": 10,
+      "notes": "Southeast facing beach, sheltered by southern headland"
+    },
+    {
+      "name": "Curl Curl",
+      "primary_aspect": 112,
+      "left_offset": 10,
+      "right_offset": 10,
+      "notes": "East-southeast exposed beach with consistent swell"
+    },
+    {
+      "name": "Freshwater",
+      "primary_aspect": 135,
+      "left_offset": 10,
+      "right_offset": 10,
+      "notes": "Southeast facing beach, protected by northern headland"
+    },
+    {
+      "name": "North Steyne",
+      "primary_aspect": 90,
+      "left_offset": 10,
+      "right_offset": 10,
+      "notes": "Eastern end of Manly Beach, exposed to east swells"
+    },
+    {
+      "name": "South Steyne",
+      "primary_aspect": 68,
+      "left_offset": 10,
+      "right_offset": 10,
+      "notes": "East-northeast end of Manly Beach, NE swell exposure"
+    }
+  ]
+}

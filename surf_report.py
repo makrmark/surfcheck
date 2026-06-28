@@ -7,6 +7,7 @@ to trigger GitHub Pages deployment.
 """
 
 import requests
+import json
 import datetime
 import math
 import os
@@ -29,12 +30,12 @@ TIMEFRAMES = [
 ]
 
 BEACHES = {
-    "Long Reef": 158,   # degrees from North (sse)
-    "Dee Why": 135,     # degrees from North (southeast)
-    "Curl Curl": 112,   # degrees from North (east-southeast)
-    "Freshwater": 135,  # degrees from North (southeast)
-    "North Steyne": 90, # degrees from North (east)
-    "South Steyne": 68  # degrees from North (east-northeast)
+    "Long Reef":     {"aspect": 158, "left_offset": 10, "right_offset": 10},
+    "Dee Why":       {"aspect": 135, "left_offset": 10, "right_offset": 10},
+    "Curl Curl":     {"aspect": 112, "left_offset": 10, "right_offset": 10},
+    "Freshwater":    {"aspect": 135, "left_offset": 10, "right_offset": 10},
+    "North Steyne":  {"aspect": 90,  "left_offset": 10, "right_offset": 10},
+    "South Steyne":  {"aspect": 68,  "left_offset": 10, "right_offset": 10},
 }
 BEACH_NOTES = {
     "Long Reef": "Northernmost beach, southeast-southeast exposure",
@@ -44,6 +45,31 @@ BEACH_NOTES = {
     "North Steyne": "Eastern end of Manly Beach, exposed to east swells",
     "South Steyne": "East-northeast end of Manly Beach, NE swell exposure"
 }
+
+
+def load_beaches_config(config_path="beaches.json"):
+    """Load beach configuration from a JSON file, falling back to hardcoded defaults."""
+    global BEACHES, BEACH_NOTES
+    try:
+        with open(config_path, 'r') as f:
+            data = json.load(f)
+        loaded = {}
+        notes = {}
+        for b in data.get("beaches", []):
+            name = b["name"]
+            loaded[name] = {
+                "aspect": b["primary_aspect"],
+                "left_offset": b.get("left_offset", 10),
+                "right_offset": b.get("right_offset", 10),
+            }
+            notes[name] = b.get("notes", "")
+        if loaded:
+            BEACHES = loaded
+            BEACH_NOTES = notes
+            logger.info(f"Loaded {len(loaded)} beaches from {config_path}")
+    except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+        logger.warning(f"Could not load {config_path}: {e}. Using hardcoded defaults.")
+
 LOG_FILE = Path.home() / "surforecast.log"
 REPORT_FILE = Path("docs") / "index.html"  # GitHub Pages serves from /docs
 ERROR_REPORT_FILE = Path("docs") / "error.html"
@@ -75,6 +101,9 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+# Load beach config from JSON file (falls back to hardcoded defaults)
+load_beaches_config()
 
 
 def fetch_marine_forecast():
@@ -190,48 +219,68 @@ def get_tide_trend(current_height, past_height, future_height):
         return "changing"
 
 
-def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period):
+def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period,
+                              left_offset=10, right_offset=10):
     """
-    Calculate wave height at breaking using the breaker index formula:
-    H ≈ 0.44 · H₀ · (T / √H₀)^(2/5)
+    Calculate wave height at breaking using the breaker index formula.
     
-    First computes the directional exposure (effective offshore height),
-    then estimates the wave height right before breaking.
+    Swell arriving within the left/right offset window of the beach's primary
+    aspect is considered fully exposed (no power loss). Beyond that window,
+    exposure falls off with the cosine of the angular distance past the window edge.
     
     Parameters:
     - offshore_height: deep-water swell height in metres (H₀)
     - wave_direction: direction of swell in degrees from north
-    - beach_aspect: direction the beach faces in degrees from north
+    - beach_aspect: primary direction the beach faces in degrees from north
     - wave_period: swell period in seconds (T)
+    - left_offset: degrees left of primary aspect that are still fully exposed
+    - right_offset: degrees right of primary aspect that are still fully exposed
     
     Returns:
     - estimated breaker wave height in metres
     """
-    # Step 1: Calculate directional exposure factor
-    delta_theta = math.radians(abs(wave_direction - beach_aspect))
-    exposure_factor = max(0, math.cos(delta_theta))
+    # Compute effective angular delta: distance outside the direct window
+    diff = (wave_direction - beach_aspect + 180) % 360 - 180  # signed diff [-180, 180]
+    if -left_offset <= diff <= right_offset:
+        effective_delta_deg = 0.0
+    elif diff < -left_offset:
+        effective_delta_deg = abs(diff) - left_offset
+    else:
+        effective_delta_deg = diff - right_offset
     
-    # Step 2: Effective offshore height at the beach
+    # Directional exposure factor based on distance outside the window
+    effective_delta = math.radians(effective_delta_deg)
+    exposure_factor = max(0, math.cos(effective_delta))
+    
+    # Effective offshore height at the beach
     h0_effective = offshore_height * exposure_factor
     
-    # Step 3: If there's no significant wave energy, return 0
+    # If there's no significant wave energy, return 0
     if h0_effective < 0.01 or wave_period < 1:
         return 0.0
     
-    # Step 4: Apply the breaker formula
-    # H = 0.44 · H₀ · (T / √H₀)^(2/5)
+    # Apply the breaker formula: H = 0.44 · H₀ · (T / √H₀)^(2/5)
     h_breaker = 0.44 * h0_effective * (wave_period / (h0_effective ** 0.5)) ** 0.4
     
     return h_breaker
 
 
-def calculate_exposure_percent(wave_direction, beach_aspect):
+def calculate_exposure_percent(wave_direction, beach_aspect,
+                               left_offset=10, right_offset=10):
     """
-    Calculate beach exposure percentage.
-    exposure = (90 - |Δθ|) / 90 * 100, clamped to [0, 100]
+    Calculate beach exposure percentage considering the direct swell window.
+    
+    Swell within the window (aspect ± left/right offset) is fully exposed.
+    Outside, exposure decreases linearly to 0% at 90° past the window edge.
     """
-    delta_theta = abs(wave_direction - beach_aspect)
-    exposure = max(0, min(100, (90 - delta_theta) / 90 * 100))
+    diff = (wave_direction - beach_aspect + 180) % 360 - 180  # signed diff [-180, 180]
+    if -left_offset <= diff <= right_offset:
+        effective_delta = 0
+    elif diff < -left_offset:
+        effective_delta = abs(diff) - left_offset
+    else:
+        effective_delta = diff - right_offset
+    exposure = max(0, min(100, (90 - effective_delta) / 90 * 100))
     return exposure
 
 
@@ -474,9 +523,15 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
     beach_conditions = []
     max_effective_height = 0
 
-    for beach_name, aspect in BEACHES.items():
-        effective_height = calculate_effective_height(wave_height, wave_direction, aspect, wave_period)
-        exposure = calculate_exposure_percent(wave_direction, aspect)
+    for beach_name, bconfig in BEACHES.items():
+        aspect = bconfig["aspect"]
+        left_off = bconfig.get("left_offset", 10)
+        right_off = bconfig.get("right_offset", 10)
+
+        effective_height = calculate_effective_height(
+            wave_height, wave_direction, aspect, wave_period, left_off, right_off
+        )
+        exposure = calculate_exposure_percent(wave_direction, aspect, left_off, right_off)
         rating = calculate_surf_rating(effective_height, wave_period)
         tide_factor_value = tide_factor(tide_height)
         adjusted_rating = rating * tide_factor_value
