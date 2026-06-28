@@ -642,7 +642,7 @@ def generate_report(marine_data, wind_data, tide_data):
                     <div class="surf-info">
                         <div class="surf-detail">
                             <div class="surf-value">{metres_to_feet_range(beach["effective_height"])}</div>
-                            <div class="surf-label">Surf Height</div>
+                            <div class="surf-label">Height</div>
                         </div>
                         <div class="surf-detail">
                             <div class="surf-value">{beach["period"]:.0f}s</div>
