@@ -540,7 +540,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
       - tide_height, display_tide, tide_trend, tide_emoji
       - beach_conditions: list of per-beach dicts
       - overall_rating, best_beaches_str, max_effective_height
-      - wind_quality, tide_quality
+      - wind_quality, attack_factor, tide_factor_value
     """
     # Extract hourly arrays
     marine_times = marine_data['hourly']['time']
@@ -613,9 +613,17 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             attack_angle = right_off
         attack_factor = _angle_of_attack_factor(attack_angle)
 
-        rating = calculate_surf_rating(effective_height, wave_period)
+        rating = calculate_surf_rating(effective_height, wave_period)  # Wave Height score (0-5)
         tide_factor_value = tide_factor(tide_height)
-        adjusted_rating = rating * tide_factor_value * attack_factor
+
+        bw_quality = calculate_wind_quality(wind_dir, aspect)
+        bw_label = wind_condition_label(wind_dir, aspect)
+        bw_strength = wind_strength_emoji(wind_speed)
+
+        # Wave Quality factor (0-1): combines wind, angle of attack, and tide height
+        wave_quality = (bw_quality + attack_factor + tide_factor_value) / 3
+
+        adjusted_rating = rating * wave_quality
         adjusted_rating = max(0, min(5, adjusted_rating))
         precise_rating = adjusted_rating
         star_rating = round(precise_rating * 2) / 2
@@ -623,10 +631,6 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
 
         if effective_height > max_effective_height:
             max_effective_height = effective_height
-
-        bw_quality = calculate_wind_quality(wind_dir, aspect)
-        bw_label = wind_condition_label(wind_dir, aspect)
-        bw_strength = wind_strength_emoji(wind_speed)
 
         beach_conditions.append({
             "name": beach_name,
@@ -641,25 +645,21 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "wind_quality": bw_quality,
             "wind_label": bw_label,
             "wind_strength": bw_strength,
+            "wave_height_score": rating,
+            "attack_factor": attack_factor,
+            "tide_factor_value": tide_factor_value,
         })
 
-    # Overall rating
+    # Overall rating (average of all beach star ratings)
     overall_rating = sum(bc["rating"] for bc in beach_conditions) / len(beach_conditions)
     overall_rating = max(0, min(5, overall_rating))
     overall_rating = round(overall_rating * 2) / 2
 
-    # Tide quality
-    tide_quality_map = {
-        "rising": 1.1, "falling": 0.95, "high": 0.85, "low": 0.95, "slack": 1.0, "changing": 1.0
-    }
-    tide_quality = tide_quality_map.get(tide_trend, 1.0)
-
-    # Best beaches
-    composite_for_beach = lambda bc: bc["precise_rating"] * (0.5 + 0.25 * bc["wind_quality"] + 0.25 * tide_quality)
-    best_score = max(composite_for_beach(bc) for bc in beach_conditions)
+    # Best beaches — rating already bakes in wind, attack, and tide, so use directly
+    best_score = max(bc["precise_rating"] for bc in beach_conditions)
     best_beaches = sorted(
-        [bc for bc in beach_conditions if composite_for_beach(bc) >= best_score - 0.5],
-        key=composite_for_beach, reverse=True
+        [bc for bc in beach_conditions if bc["precise_rating"] >= best_score - 0.5],
+        key=lambda bc: bc["precise_rating"], reverse=True
     )[:3]
     best_beaches_str = ", ".join(bc["name"] for bc in best_beaches)
 
@@ -684,7 +684,6 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         "best_beaches": best_beaches,
         "best_beaches_str": best_beaches_str,
         "max_effective_height": max_effective_height,
-        "tide_quality": tide_quality,
     }
 
 
