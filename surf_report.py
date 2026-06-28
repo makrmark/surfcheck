@@ -365,11 +365,14 @@ def calculate_wind_quality(wind_direction, beach_aspect, wind_speed_kmh=0):
     dir_quality = max(0.4, min(1.0, dir_quality))
 
     # Breakpoints: (speed_kmh, offshore_q, onshore_q)
+    # Glassy calm → 0.85 (no wind to hold up the face)
+    # Light offshore breeze → 1.0 (groomed, holds up the face)
+    # Light onshore → 0.70 (some texture)
     bp = [
-        (0,   1.0,  1.0),
-        (9,   1.0,  1.0),
-        (22,  0.85, 0.65),
-        (37,  0.50, 0.30),
+        (0,   0.85, 0.85),
+        (9,   0.85, 0.85),
+        (22,  1.00, 0.70),
+        (37,  0.55, 0.35),
         (50,  0.25, 0.15),
     ]
 
