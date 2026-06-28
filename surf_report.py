@@ -265,12 +265,12 @@ def _angle_of_attack_factor(attack_angle):
      60°+     (extreme angle)  → weak, wave loses energy refracting
     """
     curve = [
-        (0,   0.4),   # straight-on close-out
-        (10,  0.5),   # edge of close-out zone
-        (15,  1.0),   # peeler zone begins
-        (45,  1.0),   # peeler zone ends
-        (60,  0.5),   # extreme angle begins
-        (90,  0.3),   # extreme — very weak
+        (0,   0.5),   # straight-on close-out — half penalty
+        (10,  0.6),   # edge of close-out zone
+        (15,  1.0),   # peeler zone begins — no penalty
+        (45,  1.0),   # peeler zone ends — no penalty
+        (60,  0.65),  # extreme angle begins
+        (90,  0.5),   # extreme — half penalty
     ]
 
     if attack_angle < 0:
@@ -358,17 +358,17 @@ def calculate_wind_quality(wind_direction, beach_aspect):
     Waves break roughly parallel to the beach, so what matters is how the wind hits
     the beach face, not the offshore wave direction.
     
-    0°   = onshore  (wind from sea toward land) → quality 0.0  (worst)
-    90°  = cross-shore (wind parallel to beach) → quality 0.5  (neutral)
+    0°   = onshore  (wind from sea toward land) → quality 0.4  (worst)
+    90°  = cross-shore (wind parallel to beach) → quality 0.7  (neutral)
     180° = offshore  (wind from land toward sea) → quality 1.0 (best)
     
-    Returns a float in [0.0, 1.0].
+    Returns a float in [0.4, 1.0].
     """
     delta = abs(wind_direction - beach_aspect)
     if delta > 180:
         delta = 360 - delta
     quality = 1.0 - abs(delta - 180) / 180
-    return max(0.0, min(1.0, quality))
+    return max(0.4, min(1.0, quality))
 
 
 def wind_condition_label(wind_direction, beach_aspect):
@@ -437,9 +437,9 @@ def tide_factor(tide_height):
     if 0.5 <= tide_height <= 1.5:
         return 1.0
     elif tide_height < 0.5:
-        return 0.5 + (tide_height - 0) * (1.0 - 0.5) / (0.5 - 0)  # 0.5 to 1.0
+        return 0.6 + tide_height * (1.0 - 0.6) / 0.5  # 0.6 to 1.0
     else:  # tide_height > 1.5
-        return 1.0 - (tide_height - 1.5) * (1.0 - 0.5) / (3.0 - 1.5)  # 1.0 to 0.5
+        return 1.0 - (tide_height - 1.5) * (1.0 - 0.6) / (3.0 - 1.5)  # 1.0 to 0.6
 
 
 def get_board_recommendation(effective_height, wave_period):
