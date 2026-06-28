@@ -679,10 +679,10 @@ def generate_report(marine_data, wind_data, tide_data):
         <div class="section">
             <h2>🏆 Best Beaches</h2>
             <div class="summary-section">
-                <div class="summary-item" style="grid-column: 1 / -1;">
-                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em;">{tf["best_beaches_str"]}</div>
-                    <div class="stars" style="font-size: 1.5em; margin-top: 6px; color: #ffd700;">{generate_stars(tf["overall_rating"])}</div>
-                    <div style="margin-top: 8px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{metres_to_feet_range(tf["max_effective_height"])}</strong></div>
+                <div class="summary-item" style="grid-column: 1 / -1; text-align: center;">
+                    <div class="stars" style="font-size: 1.8em; color: #ffd700; display: block; text-align: center;">{generate_stars(tf["overall_rating"])}</div>
+                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em; margin-top: 4px;">{tf["best_beaches_str"]}</div>
+                    <div style="margin-top: 6px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{metres_to_feet_range(tf["max_effective_height"])}</strong></div>
                 </div>
             </div>
         </div>'''
