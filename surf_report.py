@@ -16,6 +16,7 @@ import logging
 from pathlib import Path
 
 import imos_sst
+import llm_report
 
 # Configuration
 LOCATION = {"latitude": -33.78, "longitude": 151.30}  # Sydney
@@ -746,6 +747,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "attack_angle": attack_angle,
             "tide_factor_value": tide_factor_value,
             "embayment_factor": embay_val,
+            "wave_quality": wave_quality,
         })
 
     # Overall rating — use the best beach's rating so it matches the top card
@@ -812,6 +814,13 @@ def generate_report(marine_data, wind_data, tide_data):
     water_temp = sst_data["temp"]
     sst_source = sst_data["source"]
     wetsuit_rec = imos_sst.get_wetsuit_recommendation(water_temp)
+
+    # Generate LLM-powered per-beach reports (all timeframes in one call)
+    llm_reports = llm_report.generate_reports(TIMEFRAMES, all_timeframes)
+    if llm_reports:
+        for tf in all_timeframes:
+            for bc in tf["beach_conditions"]:
+                bc["llm_note"] = llm_reports.get((tf["label"], bc["name"]), "")
 
     # Build the timeframe section HTML blocks
     def build_tf_section(tf, is_first):
@@ -903,7 +912,11 @@ def generate_report(marine_data, wind_data, tide_data):
                 html += f' <span class="best-beach-badge">🏆 Best Beach</span>'
             html += f'''</div>
                         <div class="board">🏄 {beach["board"]}</div>
-                        <div class="notes">{beach["notes"]}</div>
+                        <div class="notes">{beach["notes"]}</div>'''
+            if beach.get("llm_note"):
+                html += f'''
+                        <div class="forecaster-note">💬 {beach["llm_note"]}</div>'''
+            html += '''
                     </div>'''
 
         html += '''
@@ -1177,6 +1190,16 @@ def generate_report(marine_data, wind_data, tide_data):
             font-style: italic;
             color: #666;
             margin-top: 10px;
+        }}
+        .forecaster-note {{
+            font-size: 0.85em;
+            color: #555;
+            background: #f0fff0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            border-left: 3px solid #4caf50;
+            line-height: 1.4;
         }}
         .summary-section {{
             display: grid;

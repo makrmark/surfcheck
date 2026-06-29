@@ -329,12 +329,23 @@
     </section>
 
     <section>
+        <h2>🤖 LLM-Powered Surf Notes</h2>
+        <p>When the <code>OPENROUTER_API_KEY</code> environment variable is set, the system generates a <strong>brief, one-sentence surf note</strong> for each beach at each timeframe using an LLM (OpenAI GPT-4o-mini via OpenRouter).</p>
+        <p>The LLM receives all the computed numerical data — swell height/period, embayment, attack angle, wind quality, tide factor — and synthesises it into a concise, colloquial note explaining the overall experience and the key factor driving it. For example:</p>
+        <blockquote style="background:#f0fff0;padding:10px;border-left:3px solid #4caf50;margin:10px 0;border-radius:4px;">
+            💬 Big and heavy from direct south exposure — the wide beach helps but 4.2m faces mean shifting peaks. For experienced surfers only.
+        </blockquote>
+        <p>Each note appears as a green-tinted bubble below the beach card data. The LLM call is made once for all timeframes in a single API request. If the API key is not set, the system skips this step silently and the cards show only the numerical data.</p>
+    </section>
+
+    <section>
         <h2>🤖 Automation & Deployment</h2>
         <ol>
             <li><strong>5:45 AM daily</strong> — macOS launch agent triggers <code>surf_report.py</code></li>
             <li>Python script fetches live data from Open-Meteo APIs</li>
             <li>Queries IMOS S3 bucket for real-time SST</li>
             <li>Calculates beach-specific conditions, ratings, and recommendations</li>
+            <li>Optionally calls OpenRouter API for LLM-powered surf notes (if <code>OPENROUTER_API_KEY</code> is set)</li>
             <li>Generates a static HTML page (<code>docs/index.html</code>)</li>
             <li>Commits changes to the local git repository</li>
             <li>Pushes to GitHub, which triggers automatic GitHub Pages rebuild</li>
