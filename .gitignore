@@ -162,4 +162,4 @@ ENV/
 env/
 .venv/
 
-# End of https://www.toptal.com/developers/gitignore/api/venv,python,macos
+# End of https://www.toptal.com/developers/gitignore/api/venv,python,macosenv.sh
