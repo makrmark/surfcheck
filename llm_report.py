@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 API_KEY_ENV = "OPENROUTER_API_KEY"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "openai/gpt-4o-mini"
+MODEL = "meta-llama/llama-3.3-70b-instruct:free"
 
 
 def _build_prompt(timeframes_config, all_timeframes):
@@ -139,7 +139,6 @@ def generate_reports(timeframes_config, all_timeframes):
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                "response_format": {"type": "json_object"},
                 "max_tokens": 2000,
                 "temperature": 0.3,
             },
