@@ -104,73 +104,63 @@
 
     <section>
         <h2>📡 Data Sources</h2>
+
         <h3>IMOS Satellite SST (Real-Time Water Temperature)</h3>
         <p>Instead of relying on monthly averages, the system fetches <strong>real-time sea surface temperature</strong> from the <strong>Integrated Marine Observing System (IMOS)</strong> via their public S3 bucket:</p>
         <ul>
             <li><strong>Product:</strong> RAMSSA L4 — Regional Australian Multi-Sensor SST Analysis (9 km resolution, gap-free)</li>
             <li><strong>Bucket:</strong> <code>s3://imos-data/IMOS/SRS/SST/ghrsst/L4/RAMSSA/</code></li>
             <li><strong>Access:</strong> Public bucket, accessed via <code>aws s3 cp --no-sign-request</code></li>
-            <li><strong>Query:</strong> Downloads the latest NetCDF file, extracts SST for the Northern Beaches coastal edge (first ocean pixel offshore, ~19 km east of the coastline)</li>
+            <li><strong>Query:</strong> Downloads the latest NetCDF file, extracts SST for the Northern Beaches coastal edge (first ocean pixel offshore)</li>
             <li><strong>Coverage:</strong> Daily 12:00 UTC analyses, typically available by ~17:00 UTC the same day</li>
-            <li><strong>Variables:</strong> <code>analysed_sst</code> — foundation sea surface temperature (Kelvin, auto-scaled)</li>
         </ul>
         <p>If the S3 endpoint is unreachable or the NetCDF file cannot be parsed, the system falls back to monthly climatological averages.</p>
 
         <h3>Open-Meteo Marine API</h3>
         <p>Provides hourly wave and wind forecasts for the Sydney coast (-33.78, 151.30):</p>
         <ul>
-            <li><strong>Wave Height</strong> — Significant wave height in metres (H₀)</li>
-            <li><strong>Wave Period</strong> — Peak wave period in seconds (T)</li>
+            <li><strong>Wave Height</strong> — Significant wave height in metres (H<sub>s</sub>)</li>
+            <li><strong>Wave Period</strong> — Peak wave period in seconds</li>
             <li><strong>Wave Direction</strong> — Direction waves are coming from, in degrees from north</li>
-            <li><strong>Wind Speed & Direction</strong> — 10m wind speed and direction in km/h and knots</li>
+            <li><strong>Wind Speed & Direction</strong> — 10m wind speed and direction</li>
         </ul>
-        <p>Open-Meteo provides free, no-registration-required access to global weather models.</p>
 
         <h3>Tide Data — Harmonic Tide Model</h3>
         <p>Rather than relying on an external tide API (the MHL endpoint is currently unavailable), the system uses a <strong>harmonic tide model</strong> calibrated for Sydney Harbour. See the Tide section below for full details.</p>
     </section>
 
     <section>
-        <h2>🌊 Wave Height at Breaking</h2>
-        <p>Rather than simply displaying the offshore swell height, we estimate how high waves will be when they <em>break</em> at each beach, using the <strong>breaker index formula</strong> commonly used by oceanographers:</p>
+        <h2>🌊 Effective Wave Height at Each Beach</h2>
+        <p>The system computes <strong>effective height</strong> — the face height of the breaking wave at each beach — by applying two corrections to the offshore swell:</p>
 
-        <div class="formula">
-            H ≈ 0.44 · H₀ · (T / √H₀)<sup>2/5</sup>
-        </div>
-
-        <p>Where:</p>
-        <ul>
-            <li><strong>H</strong> = Wave height at breaking (metres)</li>
-            <li><strong>H₀</strong> = Offshore deep-water swell height after directional exposure (metres)</li>
-            <li><strong>T</strong> = Swell period (seconds)</li>
-        </ul>
-
-        <p>A 1m, 14s swell will break at about 1.4m, while a 1m, 8s swell only reaches about 1.0m. Longer-period swells amplify more.</p>
-
-        <h3>Directional Exposure &amp; Headland Shadowing</h3>
-        <p>Each beach has a <strong>primary aspect</strong> — the direction the beach faces — plus a <strong>left and right offset</strong> (default 10° each) that defines a direct swell window. Swell arriving within this window is fully exposed.</p>
-        <p>When swell arrives outside the window, it must diffract around a headland to reach the beach. The energy loss follows <strong>Wiegel's diffraction curves</strong> for a beach 5–10 wavelengths from the headland tip:</p>
+        <h3>1. Headland Diffraction — Wiegel's Curves</h3>
+        <p>Each beach has a <strong>primary aspect</strong> and an <strong>L/R window</strong> defined in <code>beaches.json</code>. Swell arriving inside the window is fully exposed (K<sub>d</sub> = 1.0). Outside the window, energy is reduced by Wiegel diffraction:</p>
 
         <table>
-            <tr><th>Shadow angle<br>(degrees past window edge)</th><th>Diffraction coefficient<br>K<sub>d</sub></th><th>Fraction of offshore<br>height retained</th></tr>
-            <tr><td>0° (at window edge)</td><td>1.00</td><td>100% (fully exposed)</td></tr>
-            <tr><td>10° past</td><td>0.55</td><td>55%</td></tr>
+            <tr><th>Shadow angle</th><th>K<sub>d</sub></th><th>Height retained</th></tr>
+            <tr><td>0° (inside window)</td><td>1.00</td><td>100%</td></tr>
+            <tr><td>10° past</td><td>0.70</td><td>70%</td></tr>
             <tr><td>30° past</td><td>0.40</td><td>40%</td></tr>
             <tr><td>60° past</td><td>0.225</td><td>22.5%</td></tr>
             <tr><td>90° past</td><td>0.15</td><td>15%</td></tr>
-            <tr><td>150° past</td><td>0.00</td><td>fully blocked</td></tr>
         </table>
 
-        <p>K<sub>d</sub> values between the table points are linearly interpolated. Beyond 90° the curve is extrapolated to zero at ~150°. The diffraction coefficient is applied to the offshore height <em>before</em> the breaker formula, since diffraction happens in deeper water.</p>
+        <h3>2. Shoaling Amplification</h3>
+        <p>Longer-period waves carry more energy and amplify more as they rise up the shoreface before breaking:</p>
+
+        <table>
+            <tr><th>Period</th><th>Shoal Factor</th><th>Example</th></tr>
+            <tr><td>&lt; 6s (windswell)</td><td>1.0×</td><td>No amplification</td></tr>
+            <tr><td>10s</td><td>~1.2×</td><td>1.0m → 1.2m</td></tr>
+            <tr><td>14s</td><td>~1.4×</td><td>1.0m → 1.4m</td></tr>
+            <tr><td>≥ 18s (groundswell)</td><td>1.6×</td><td>1.0m → 1.6m</td></tr>
+        </table>
 
         <div class="formula">
-            H<sub>0 effective</sub> = H<sub>0 offshore</sub> × K<sub>d</sub><br>
-            H<sub>breaker</sub> = 0.44 · H<sub>0 effective</sub> · (T / √H<sub>0 effective</sub>)<sup>2/5</sup>
+            effective_height = offshore_height × K<sub>d</sub> × shoal_factor(period)
         </div>
 
-        <p><strong>Example:</strong> A 3.0m swell arriving 60° past the window edge has K<sub>d</sub> ≈ 0.225. The effective offshore height reaching the beach is 3.0 × 0.225 = 0.67m. After shoaling (breaker formula with a 10s period), it breaks at roughly 0.8m — a significant reduction from the open ocean height.</p>
-
-        <p>Beach configurations are defined in <code>beaches.json</code> at the project root, making it easy to adjust the direct window for each beach without touching code.</p>
+        <p>All heights are <strong>face height</strong> in Australian convention — the vertical trough-to-crest of the breaking wave.</p>
     </section>
 
     <section>
@@ -193,96 +183,87 @@
         <p>The model uses an <strong>epoch-based calculation</strong> (since Jan 1, 2000) so the lunar tide advances ~50 minutes each day. Phase angles are calibrated for Sydney Harbour.</p>
 
         <h3>Tide Trend</h3>
-        <p>The trend (rising/falling/high/low/slack) is determined by comparing the tide height now to predictions one hour before and after. Low tide heights are displayed as negative values with a trend emoji (📈, 📉, 🔺, 🔻, ➖).</p>
+        <p>The trend (rising/falling/high/low/slack) is determined by comparing the tide height now to predictions one hour before and after.</p>
     </section>
 
     <section>
-        <h2>🌊 Wind & Tide Effects on Surf Quality</h2>
-        <p>The best beach selection goes beyond raw wave height — it considers how wind and tide conditions shape wave quality.</p>
+        <h2>⭐ Surf Rating (0–5 ★)</h2>
+        <p>The rating is computed per-beach in two stages:</p>
 
-        <h3>Wind Quality — Offshore vs Onshore (Per-Beach)</h3>
-        <p>Wind quality is computed <strong>per beach</strong> by comparing wind direction to the beach's aspect (not the offshore wave direction). Waves break roughly parallel to the beach, so what matters is how wind hits the beach face:</p>
-        <ul>
-            <li><strong>Offshore wind</strong> (wind opposite to waves, ≈180° apart) — clean, well-shaped waves. <strong>Score boosted.</strong></li>
-            <li><strong>Onshore wind</strong> (wind in the same direction as waves) — choppy, messy waves. <strong>Score reduced.</strong></li>
-            <li><strong>Cross-shore wind</strong> (wind perpendicular to waves) — neutral.</li>
-        </ul>
-        <p>The wind quality factor ranges from 0.0 (onshore) to 1.0 (offshore) and adjusts the composite score by up to 25%.</p>
-
-        <h3>Tide Stage Quality</h3>
-        <p>Where the tide is in its cycle significantly affects how waves break:</p>
-        <ul>
-            <li><strong>📈 Rising tide (incoming)</strong> — Acts as a natural "push" that organises the swell and improves wave consistency. <strong>Best time for surfing — bonus applied.</strong></li>
-            <li><strong>📉 Falling tide (outgoing)</strong> — Can generate strong rip currents, sometimes degrading wave shape. Slight penalty.</li>
-            <li><strong>🔺 High tide</strong> — More water over sandbars; waves can become soft, fat, and slow. If too high, waves may "drown out" entirely. Penalty.</li>
-            <li><strong>🔻 Low tide</strong> — Shallow water, steeper/hollower waves. Great for advanced surfers but harder paddle-out. Slight penalty for danger.</li>
-            <li><strong>➖ Slack tide</strong> — Neutral.</li>
-        </ul>
-        <p>The tide stage quality factor adjusts the composite score by up to 25%.</p>
-
+        <h3>1. Wave Height Score</h3>
         <div class="formula">
-            composite = precise_rating × (0.5 + 0.25 × wind_quality + 0.25 × tide_quality)
+            wave_height_score = min(5, 5 × (effective_height / 1.83)<sup>0.85</sup>)
         </div>
-    </section>
+        <p>Capped at <strong>1.83m (6 ft / overhead)</strong> — that's a perfect 5★ on height. Beyond 1.83m, height plateaus and quality factors do the differentiating. The exponent 0.85 gives a near-linear curve so small waves aren't compressed.</p>
 
-    <section>
-        <h2>⭐ Surf Rating & Best Beaches</h2>
-        <h3>Star Rating (0–5 ★)</h3>
-        <p>The surf rating combines three normalized factors, then rounds to the nearest half star for display:</p>
-        <ul>
-            <li><strong>Wave Height Factor</strong> (0–2.5 pts): <code>min(height/2.0, 1.0) × 2.5</code></li>
-            <li><strong>Period Factor</strong> (0–2.5 pts): <code>max(0, min((T-6)/10, 1)) × 2.5</code></li>
-            <li><strong>Tide Height Factor</strong> (modifier): 1.0 at optimal tide (0.5–1.5m), decreases linearly outside that range</li>
-        </ul>
-        <p>The precise (unrounded) rating is used internally for rankings — so a beach with 2.05 ranks above one with 1.89, even though both display as ★★☆☆☆.</p>
+        <table>
+            <tr><th>Effective Height</th><th>Feet</th><th>Height Score</th><th>Surf Feel</th></tr>
+            <tr><td>0.3m</td><td>1 ft</td><td>1.0★</td><td>Ankle-knee</td></tr>
+            <tr><td>0.6m</td><td>2 ft</td><td>2.0★</td><td>Waist high</td></tr>
+            <tr><td>1.0m</td><td>3 ft</td><td>3.0★</td><td>Chest-shoulder</td></tr>
+            <tr><td>1.4m</td><td>4–5 ft</td><td>4.0★</td><td>Head high</td></tr>
+            <tr><td>1.83m</td><td>6 ft</td><td>5.0★</td><td>Overhead</td></tr>
+        </table>
 
-        <h3>🏆 Best Beaches Selection</h3>
-        <p>The top 3 beaches are selected using a composite score that combines the precise surf rating with wind and tide quality:</p>
+        <h3>2. Wave Quality Factor (multiplicative)</h3>
         <div class="formula">
-            composite = precise_rating × (0.5 + 0.25 × wind_quality + 0.25 × tide_quality)
+            wave_quality = wind_quality × attack_factor × tide_factor × embayment_factor
         </div>
-        <p>This rewards beaches with good wave height <em>and</em> favourable conditions (offshore wind, rising tide) while penalising those with onshore wind or poor tide stage.</p>
+        <ul>
+            <li><strong>Wind quality</strong> (0.15–1.0): blend of direction (offshore→onshore) and speed. A light offshore breeze scores 1.0; an onshore gale scores 0.15.</li>
+            <li><strong>Attack factor</strong> (0.5–1.0): angle of swell vs beach face. 15°–45° = 1.0 (perfect peeler); 0° = 0.5 (close-out); 90° = 0.5 (extreme angle).</li>
+            <li><strong>Tide factor</strong> (0.6–1.0): 1.0 at 0.5–1.5m tide height, decreasing linearly outside that range.</li>
+            <li><strong>Embayment factor</strong> (0.3–1.0): how open or closed the beach is for the given swell size — see below.</li>
+        </ul>
+
+        <h3>Final Rating</h3>
+        <div class="formula">
+            star_rating = round(wave_height_score × wave_quality × 2) / 2
+        </div>
+        <p>Because quality is a <strong>product</strong> (not an average), a single bad factor heavily penalises the score — just like in real surfing where onshore wind ruins a session regardless of wave height.</p>
     </section>
 
     <section>
-        <h2>🏄 Board & Wetsuit Recommendations</h2>
-        <h3>Board Selection</h3>
-        <p>Based on wave height at breaking, with adjustments for swell period:</p>
-        <ul>
-            <li><strong>Longboard / Log</strong> — &lt; 0.3m</li>
-            <li><strong>Longboard / Funboard / Groveller</strong> — 0.3–0.6m</li>
-            <li><strong>Fish / Funboard / Mid-Length</strong> — 0.6–1.0m</li>
-            <li><strong>Shortboard / Fish / Mid-Length</strong> — 1.0–1.5m</li>
-            <li><strong>Shortboard / Step-Up</strong> — 1.5–2.0m</li>
-            <li><strong>Step-Up</strong> — 2.0m+</li>
-        </ul>
-        <p><strong>Short period (&lt; 8s):</strong> Favour higher-volume boards (e.g., Shortboard → Fish/Funboard).</p>
-        <p><strong>Long period (&gt;= 12s) with size (&gt;= 1.2m):</strong> Favour a Step-Up for powerful ground swell.</p>
+        <h2>🏄 Board Recommendations</h2>
+        <p>Board selection is based on effective face height, with adjustments for wave period and quality. On poor quality days (onshore wind, ugly tide, sloppy conditions), the effective height is adjusted downward so the system recommends more volume.</p>
 
-        <h3>Wetsuit Guide</h3>
-        <p>Wetsuit recommendations are based on <strong>real-time sea surface temperature</strong> from the IMOS RAMSSA L4 satellite analysis, queried daily from the IMOS S3 bucket. The recommendation uses standard temperature thresholds:</p>
+        <h3>Base Thresholds (ideal conditions)</h3>
+        <table>
+            <tr><th>Face Height</th><th>Feet</th><th>Boards</th></tr>
+            <tr><td>&lt; 0.3m</td><td>&lt; 1 ft</td><td>Longboard, Log</td></tr>
+            <tr><td>0.3–0.6m</td><td>1–2 ft</td><td>Longboard, Funboard</td></tr>
+            <tr><td>0.6–1.0m</td><td>2–3 ft</td><td>Groveller, Fish, Funboard</td></tr>
+            <tr><td>1.0–1.5m</td><td>3–5 ft</td><td>Shortboard, Fish, Mid-Length</td></tr>
+            <tr><td>1.5–2.0m</td><td>5–7 ft</td><td>Shortboard, Mid-Length, Step-Up</td></tr>
+            <tr><td>2.0–2.5m</td><td>7–8 ft</td><td>Shortboard, Step-Up</td></tr>
+            <tr><td>&gt; 2.5m</td><td>&gt; 8 ft</td><td>Step-Up</td></tr>
+        </table>
+
+        <h3>Period Adjustments</h3>
+        <ul>
+            <li><strong>&lt; 8s (windswell):</strong> Favour more volume — e.g. Shortboard → Fish/Funboard</li>
+            <li><strong>≥ 12s (groundswell) + ≥ 1.2m:</strong> Favour Step-Up for power</li>
+        </ul>
+
+        <h3>Quality Adjustment</h3>
+        <p>When <code>wave_quality</code> is poor, the effective height is reduced for board selection:</p>
+        <div class="formula">
+            adj_height = effective_height × (0.7 + wave_quality × 0.3)
+        </div>
+        <p>Perfect conditions (quality = 1.0) → adj = effective height (no change). Terrible conditions (quality = 0.2) → adj = 76% of actual (bump up one volume category).</p>
+    </section>
+
+    <section>
+        <h2>🌡️ Wetsuit Guide</h2>
+        <p>Wetsuit recommendations are based on <strong>real-time sea surface temperature</strong> from the IMOS RAMSSA L4 satellite analysis, queried daily:</p>
         <ul>
             <li><strong>≥ 22°C:</strong> Boardshorts or rash vest</li>
             <li><strong>20–21°C:</strong> Spring suit (2 mm)</li>
-            <li><strong>17–19°C:</strong> 3/2 full wetsuit</li>
-            <li><strong>14–16°C:</strong> 4/3 full wetsuit</li>
-            <li><strong>&lt; 14°C:</strong> 5/4 full wetsuit with booties, gloves, hood</li>
+            <li><strong>17–19°C:</strong> 3/2 steamer</li>
+            <li><strong>14–16°C:</strong> 4/3 steamer</li>
+            <li><strong>&lt; 14°C:</strong> 5/4 steamer with booties, gloves, hood</li>
         </ul>
-        <p>If the IMOS satellite data is unavailable (network error, S3 outage, etc.), the system falls back to monthly climatological averages for Sydney waters.</p>
-    </section>
-
-    <section>
-        <h2>📐 Angle of Attack — Wave Rideability</h2>
-        <p>The angle at which a swell hits a beach (the <strong>angle of attack</strong>) determines whether waves close out, peel perfectly, or arrive weak. For straight beach breaks — where sandbars are relatively flat — this is the primary factor shaping rideability.</p>
-
-        <table>
-            <tr><th>Attack angle</th><th>Zone</th><th>Quality factor</th><th>Result</th></tr>
-            <tr><td>0°–10°</td><td>Close-out</td><td>0.4–0.5</td><td>Entire wave shuts down at once — poor rideability</td></tr>
-            <tr><td>15°–45°</td><td>Perfect peeler</td><td>1.0</td><td>Wave breaks progressively down the line — excellent</td></tr>
-            <tr><td>60°+</td><td>Extreme angle</td><td>0.5→0.3</td><td>Wave loses energy refracting — weak, crumbling faces</td></tr>
-        </table>
-
-        <p>The attack angle is clamped to the beach's L/R window: inside the window the direct angle is used; outside it, the diffracted wave arrives at roughly the window edge, so the window offset is used instead. The attack factor multiplies the star rating alongside the tide factor.</p>
+        <p>Falls back to monthly climatology if the satellite data is unavailable.</p>
     </section>
 
     <section>
@@ -291,48 +272,85 @@
 
         <table>
             <tr><th>Beach</th><th>Aspect (°)</th><th>Left offset</th><th>Right offset</th><th>Direction</th></tr>
-            <tr><td>Long Reef</td><td>158°</td><td>10°</td><td>10°</td><td>SSE (South-Southeast)</td></tr>
-            <tr><td>Dee Why</td><td>135°</td><td>10°</td><td>10°</td><td>SE (Southeast)</td></tr>
-            <tr><td>Curl Curl</td><td>112°</td><td>10°</td><td>10°</td><td>ESE (East-Southeast)</td></tr>
-            <tr><td>Freshwater</td><td>135°</td><td>10°</td><td>10°</td><td>SE (Southeast)</td></tr>
-            <tr><td>North Steyne</td><td>90°</td><td>10°</td><td>10°</td><td>E (East)</td></tr>
-            <tr><td>South Steyne</td><td>68°</td><td>10°</td><td>10°</td><td>ENE (East-Northeast)</td></tr>
+            <tr><td>Long Reef</td><td>158°</td><td>68°</td><td>22°</td><td>SSE (wide E to S exposure)</td></tr>
+            <tr><td>Dee Why</td><td>135°</td><td>67.5°</td><td>22.5°</td><td>SE (wide left, tight right)</td></tr>
+            <tr><td>Curl Curl</td><td>112°</td><td>44.5°</td><td>45.5°</td><td>ESE (nearly symmetrical)</td></tr>
+            <tr><td>Freshwater</td><td>135°</td><td>35°</td><td>22.5°</td><td>SE (moderate left, tight right)</td></tr>
+            <tr><td>North Steyne</td><td>90°</td><td>45°</td><td>45°</td><td>E (symmetrical NE to SE)</td></tr>
+            <tr><td>South Steyne</td><td>68°</td><td>45.5°</td><td>22°</td><td>ENE (wide left, tight right)</td></tr>
         </table>
 
-        <p>Swell arriving within the window (aspect ± offset) is fully exposed. Outside it, energy is reduced by Wiegel diffraction around headlands.</p>
+        <p>Swell arriving within the window (aspect − left to aspect + right) is fully exposed. Outside it, energy is reduced by Wiegel diffraction around headlands.</p>
+        <p>The total window angle (left + right offset) also drives the <strong>Embayment Factor</strong> — see below.</p>
+    </section>
+
+    <section>
+        <h2>🏞️ Embayment Factor</h2>
+        <p>The <strong>embayment factor</strong> measures how well a beach's physical layout accommodates the incoming swell. It answers the question: <em>"Is this beach wide enough for this wave, or will it close out?"</em></p>
+
+        <h3>The Theory</h3>
+        <p>Surf science defines a key ratio:</p>
+        <div class="formula">
+            W / L<sub>b</sub>
+        </div>
+        <p>Where <strong>W</strong> is the beach width between headlands (proxied by the total angular window in degrees), and <strong>L<sub>b</sub></strong> is the wave's sub-wavelength — how much lateral room the wave rotation needs.</p>
+        <ul>
+            <li><strong>W / L<sub>b</sub> &lt; 2</strong> → The beach is too narrow. Wave energy cannot spread out; the basin fills up faster than it drains → <strong>close-out</strong>.</li>
+            <li><strong>W / L<sub>b</sub> ≥ 6</strong> → Plenty of lateral room. Sandbars fracture into deep channels; water escapes. Clean, triangular A-frame peaks peel left and right → <strong>sweet spot</strong>.</li>
+        </ul>
+
+        <h3>Our Implementation</h3>
+        <p>We compute the embayment factor from two inputs:</p>
+        <div class="formula">
+            W = left_offset + right_offset (degrees, from beaches.json)<br>
+            Demand = effective_height × (period² / 100)<br>
+            Ratio = W / Demand<br>
+            embayment_factor = map(Ratio → 0.30–1.00)
+        </div>
+        <p>The <code>period²</code> term is crucial — longer-period groundswell carries exponentially more energy and needs far more lateral room. A 1m wave at 6s and a 1m wave at 16s are completely different beasts in an enclosed bay.</p>
+
+        <h3>Real-World Behaviour</h3>
+        <table>
+            <tr><th>Beach</th><th>Window</th><th>Small day (0.7m@8s)</th><th>Big day (2.5m@14s)</th></tr>
+            <tr><td>Freshwater</td><td>57.5°</td><td>1.00 ✅ fun punchy peaks</td><td>0.53 ⚠️ close-out risk</td></tr>
+            <tr><td>Long Reef</td><td>90°</td><td>1.00 ✅ plenty of room</td><td>0.63 ✅ handles it</td></tr>
+            <tr><td>Curl Curl</td><td>90°</td><td>1.00 ✅ plenty of room</td><td>0.63 ✅ handles it</td></tr>
+        </table>
+        <p>This matches local knowledge: Freshwater closes out on big southerly groundswell while Long Reef and Curl Curl handle it. On small days, Freshwater's tight profile actually sharpens the waves into fun, punchy peaks.</p>
+
+        <h3>Display</h3>
+        <p>Each beach card now shows an <strong>Embay.</strong> column with the factor as a percentage. This lets you quickly see which beaches are constrained by their layout for today's particular swell size and period.</p>
     </section>
 
     <section>
         <h2>🤖 Automation & Deployment</h2>
-        <p>The entire system runs automatically with no manual intervention:</p>
         <ol>
             <li><strong>5:45 AM daily</strong> — macOS launch agent triggers <code>surf_report.py</code></li>
             <li>Python script fetches live data from Open-Meteo APIs</li>
+            <li>Queries IMOS S3 bucket for real-time SST</li>
             <li>Calculates beach-specific conditions, ratings, and recommendations</li>
             <li>Generates a static HTML page (<code>docs/index.html</code>)</li>
             <li>Commits changes to the local git repository</li>
             <li>Pushes to GitHub, which triggers automatic GitHub Pages rebuild</li>
             <li>Live site updates within minutes</li>
         </ol>
-        <p>All code is open source at <a href="https://github.com/makrmark/surfcheck" target="_blank">github.com/makrmark/surfcheck</a>.</p>
     </section>
 
     <section>
-        <h2>⚠️ Limitations & Notes</h2>
+        <h2>⚠️ Known Limitations</h2>
         <ul>
-            <li>Tide data is from a harmonic model, not real-time observations. Accuracy is approximately ±0.2m.</li>
-            <li>The breaker formula is a generalised rule-of-thumb; actual breaking heights depend on local bathymetry, reef structure, and sandbars.</li>
-            <li>Wiegel's diffraction curves assume a simplified headland geometry (semi-infinite breakwater); real headlands are irregular and may produce different shadowing patterns.</li>
-            <li>Wind data is for the offshore Sydney location, not beach-specific local conditions.</li>
-            <li>Wetsuit recommendations are based on real-time IMOS satellite SST, falling back to monthly averages if satellite data is unavailable.</li>
-            <li>The IMOS SST query requires AWS CLI and network access to the S3 bucket.</li>
+            <li>Tide model uses only M2 + S2 constituents — missing N2, K1, O1 introduce up to ±0.2m error</li>
+            <li>Wiegel diffraction curves assume idealised headland geometry</li>
+            <li>Single offshore data point for all beaches — no local wind effects</li>
+            <li>Shoaling factor is uniform across all beaches (doesn't account for beach slope)</li>
+            <li>IMOS SST query requires AWS CLI</li>
         </ul>
     </section>
 
     <div class="footer">
         <p><a href="./index.html">← Back to Surf Report</a></p>
         <p>Northern Beaches Surf Check — Automated surf report for Sydney beaches</p>
-        <p>Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model (MHL-calibrated)</p>
+        <p>Data sources: Open-Meteo (marine & wind), harmonic tide model (MHL-calibrated), IMOS RAMSSA L4 (SST)</p>
     </div>
 </body>
 </html>

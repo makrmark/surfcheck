@@ -50,6 +50,7 @@ The real-time SST pipeline depends on `aws s3 cp --no-sign-request` being availa
 
 - [x] **Per-beach swell exposure windows** — Beach config in `beaches.json` with L/R offsets; Wiegel diffraction curves for headland shadowing beyond the window.
 - [ ] **Extend tide model to 22 harmonic constituents** — AHO provides full constituent set for Fort Denison on request. Would improve accuracy at neap tides and under meteorological effects.
+- [x] **Embayment factor** — Wave quality multiplier based on beach openness (angular window between headlands) vs wave energy demand. Wide beaches (Long Reef, Curl Curl) score high; narrow beaches (Freshwater) get penalised on big-swell days. Mapped via piecewise curve from the W/Lb ratio theory. Displayed as a new "Embay." column on each beach card.
 - [ ] **Period-dependent diffraction** — Kd should vary with wave period (shorter waves diffract less). Implement `Kd = f(shadow_angle, r/L)` per Coastal Engineering Manual.
 - [ ] **Beach-specific shoal factors** — Replace uniform `shoal_factor(period)` with per-beach curves accounting for shoreface slope (steeper = more amplification).
 - [ ] **Calibrate L/R offsets per beach** — Current offsets are qualitative estimates. Cross-reference against real surf reports or wave buoys to validate.

@@ -34,8 +34,8 @@ Northern Beaches Surf Check is a static webpage that provides daily surf reports
 | **FR-2** | **Tide Observation** – Query MHL Station 213470 (Sydney Level 1) for current water-level observation and timestamp. | Returns numeric tide height (metres) and valid ISO-8601 timestamp; on failure, logs warning and falls back to harmonic tide model. |
 | **FR-3** | **Tide Forecast** – Using observed tide height & timestamp, compute tide height and trend (rising/falling/high/low) for report time (06:00) and 3-hour forecast slots (06, 09, 12, 15, 18h). | Computed values within ±0.2m of reference tide table (when MHL data available); trend matches numerical derivative sign. |
 | **FR-4** | **Beach-Specific Wave Height** – For each beach (Long Reef, Dee Why, Curl Curl, Freshwater, North Steyne, South Steyne), compute effective height using a direct swell window (primary aspect ± left/right offset, default 10°). Swell inside the window is fully exposed. Outside the window, height is reduced by Wiegel diffraction coefficients (K<sub>d</sub> = 0.70 at 10° past window edge, falling to 0.15 at 90° past). The breaker formula is then applied to estimate breaking height. | Effective height ≥ 0 and ≤ offshore height; exposure % follows Wiegel K<sub>d</sub> curve × 100. |
-| **FR-5** | **Surf Rating** – Calculate 0‑5 star rating based on effective wave height (scaled to 2m max) and wave period (scaled 6‑15s), multiplied by tide factor (optimal tide 0.5‑1.5m → 1.0; outside range reduces linearly). | Rating matches specification table (see Section 4.1). |
-| **FR-6** | **Board Recommendation** – Map effective height to board type (Log < 0.5m, Funboard 0.5‑1.0m, Shortboard 1.0‑2.0m, Gun > 2.0m) with dual‑option handling when height within 0.1m of threshold; adjust down one step if period < 8s. | Recommendation string follows rule set; examples: 0.45m → Log, 0.95m → Funboard/Shortboard, 2.2m → Gun. |
+| **FR-5** | **Surf Rating** – Calculate 0‑5 star rating per beach using two-stage formula: (1) wave height score = min(5, 5 × (effective_height / 1.83)^0.85) capped at 1.83m (6 ft / overhead); (2) multiplicative quality factor = wind_quality × attack_factor × tide_factor. Final rating = wave_height_score × wave_quality, rounded to nearest 0.5★. | Rating matches specification in Section 4.3. |
+| **FR-6** | **Board Recommendation** – Map effective height to board types (see Section 4.5) with adjustments for short period (< 8s → more volume), long period (≥ 12s + ≥ 1.2m → favour step-up), and poor wave quality (reduces effective height for board selection → more volume). | Recommendation string follows rule set; examples: 0.4m → Longboard/Funboard, 0.9m → Groveller/Fish/Funboard, 1.7m → Shortboard/Mid-Length/Step-Up, 3.0m → Step-Up. |
 | **FR-7** | **Wetsuit Recommendation** – Based on month‑derived sea‑surface temperature (see Table 1) and Quiksilver guide, output textual recommendation (e.g., “Boardshorts or rash vest”, “Spring suit (2mm)”, “3/2 full wetsuit”, “4/3 full wetsuit with booties, gloves, hood”). | Recommendation matches decision table for given month. |
 | **FR-8** | **Report Generation** – Produce a static HTML surf report with sections: header, offshore swell, wind, per‑beach cards (beach [aspect° (dir)] Surf: X.Xm [Ys @ Z%] ★★☆☆☆ Board: A/B), overall summary, max expected tide, water temp & wetsuit recommendation, timestamp. | Generated HTML matches template in Section 5 and is valid HTML5. |
 | **FR-9** | **Automated Deployment** – Local cron job runs generation script daily at 05:45 LT, commits updated HTML to git repo, and pushes to origin to trigger GitHub Pages rebuild. | Job runs successfully each morning; GitHub Pages updates within minutes of push; commit history shows daily updates. |
@@ -62,37 +62,65 @@ Northern Beaches Surf Check is a static webpage that provides daily surf reports
 
 | Beach | Aspect (°) | Left offset | Right offset | Notes |
 |-------|-----------|-------------|--------------|-------|
-| Long Reef | 158° | 10° | 10° | Northernmost beach, southeast-southeast exposure |
-| Dee Why | 135° | 10° | 10° | Southeast facing beach, sheltered by southern headland |
-| Curl Curl | 112° | 10° | 10° | East-southeast exposed beach with consistent swell |
-| Freshwater | 135° | 10° | 10° | Southeast facing beach, protected by northern headland |
-| North Steyne | 90° | 10° | 10° | Eastern end of Manly Beach, exposed to east swells |
-| South Steyne | 68° | 10° | 10° | East-northeast end of Manly Beach, NE swell exposure |
+| Long Reef | 158° | 68° | 22° | Northernmost beach. Wide exposure from E (90°) to S (180°). |
+| Dee Why | 135° | 67.5° | 22.5° | Southeast facing, wide left exposure, tightly shadowed right. |
+| Curl Curl | 112° | 44.5° | 45.5° | East-southeast, nearly symmetrical ENE to SSE. |
+| Freshwater | 135° | 35° | 22.5° | Southeast facing, moderate left, tight right shadow. |
+| North Steyne | 90° | 45° | 45° | Eastern end of Manly, symmetrical NE to SE. |
+| South Steyne | 68° | 45.5° | 22° | East-northeast, wide left, tight right. Loses south swells quickly. |
 
 ### 4.3 Surf Rating Formula  
 
-The rating combines three normalized factors:  
-1. **Wave Height Factor**: min(effective_height / 2.0, 1.0)  
-2. **Period Factor**: min((wave_period - 6) / (15 - 6), 1.0) clamped to [0,1]  
-3. **Tide Factor**:  
-   - If 0.5 ≤ tide_height ≤ 1.5: factor = 1.0  
-   - If tide_height < 0.5: factor = tide_height / 0.5  
-   - If tide_height > 1.5: max(0, (3.0 - tide_height) / 1.5)  
+The rating is computed per-beach in two stages:
 
-Final Rating = 5 × (Height Factor × Period Factor × Tide Factor)  
-Rounded to nearest 0.5 star, displayed as ★★☆☆☆ (full stars for integer part, half star for .5)  
+1. **Wave Height Score** (0–5):  
+   `wave_height_score = min(5, 5 × (effective_height / 1.83)^0.85)`  
+   - Capped at **1.83m (6 ft / overhead)**, which scores 5★.  
+   - Beyond 1.83m, height plateaus — quality factors differentiate bigger waves.  
+   - Wave period is already baked into `effective_height` via shoaling amplification.  
 
-### 4.4 Wetsuit Guide (by Month)  
+2. **Wave Quality Factor** (0–1, multiplicative):  
+   `wave_quality = wind_quality × attack_factor × tide_factor × embayment_factor`  
+   - **Wind quality**: blend of direction (offshore → onshore) and speed, from 0.15 (gale onshore) to 1.0 (light offshore breeze)  
+   - **Attack factor**: angle of swell relative to beach face — 1.0 for 15°–45° (perfect peeler), drops to 0.5 for close-out or extreme angle  
+   - **Tide factor**: 1.0 for 0.5–1.5m range, linearly decreasing to 0.6 at 0m or 3.0m  
+   - **Embayment factor**: how open or closed the beach is relative to the size of the swell. Wide-open beaches (Long Reef, Curl Curl) score near 1.0 on small-to-moderate days. Narrow/closed beaches (Freshwater) drop to ~0.5 on big groundswell days due to close-out risk.  
 
-| Month | Approx. Water Temp | Wetsuit Recommendation |
-|-------|-------------------|------------------------|
-| Dec-Feb | 20-24°C | Boardshorts or rash vest |
-| Mar, Nov | 18-20°C | Spring suit (2mm) or springsuit |
-| Apr-May | 16-18°C | 3/2 full wetsuit |
-| Jun-Aug | 14-16°C | 4/3 full wetsuit |
-| Sep-Oct | 16-19°C | 3/2 full wetsuit |
+**Final Rating** = `wave_height_score × wave_quality`  
+Rounded to nearest 0.5★, displayed as ★★★★☆ (full stars + optional ½).  
 
-*Note: Monthly table is the fallback only. Real-time SST from IMOS RAMSSA L4 is queried daily via S3 and used preferentially, with temperature-based thresholds (≥22°C rash vest, 20–21°C spring suit, 17–19°C 3/2, 14–16°C 4/3, <14°C 5/4+hood).*
+**Key property**: The product is strict — one bad factor (e.g., onshore gale at 0.15) heavily penalises the score regardless of height.  
+
+### 4.4 Wetsuit Guide  
+
+Real-time SST from IMOS RAMSSA L4 satellite analysis, queried daily via S3, with temperature-based thresholds:
+- ≥ 22°C → Boardshorts or rash vest  
+- 20–21°C → Spring suit (2 mm)  
+- 17–19°C → 3/2 steamer  
+- 14–16°C → 4/3 steamer  
+- < 14°C → 5/4 steamer with booties, gloves, hood  
+
+Falls back to monthly climatology if satellite data is unavailable.
+
+### 4.5 Board Recommendation Guide  
+
+| Face Height | Feet | Boards |
+|-------------|------|--------|
+| < 0.3m | < 1 ft | Longboard, Log |
+| 0.3–0.6m | 1–2 ft | Longboard, Funboard |
+| 0.6–1.0m | 2–3 ft | Groveller, Fish, Funboard |
+| 1.0–1.5m | 3–5 ft | Shortboard, Fish, Mid-Length |
+| 1.5–2.0m | 5–7 ft | Shortboard, Mid-Length, Step-Up |
+| 2.0–2.5m | 7–8 ft | Shortboard, Step-Up |
+| > 2.5m | > 8 ft | Step-Up |
+
+**Period adjustments:**
+- < 8s (windswell) → bump up one volume category
+- ≥ 12s + ≥ 1.2m (powerful groundswell) → favour Step-Up
+
+**Quality adjustment:**
+`adj_height = effective_height × (0.7 + wave_quality × 0.3)`  
+Poor quality = lower adj_height = more volume recommended.
 
 ---  
 
@@ -161,6 +189,7 @@ The generated HTML (`docs/index.html`) is a full-page, standalone document with 
 | **Per-beach swell exposure windows** – L/R offsets defining direct swell window; Wiegel diffraction curves for headland shadowing. | Physically realistic wave reduction past headlands. | ✅ **Implemented** |
 | **Beach config in JSON** – `beaches.json` with aspect, offsets, notes. | Easy to tune without touching code. | ✅ **Implemented** |
 | **Multiple Forecast Horizons** – Offer 12‑hour and 24‑hour outlooks. | Better planning for later sessions. | ⬜ Planned |
+| **Embayment Factor** – Wave quality factor based on beach openness (L/R window) vs swell size. Wide beaches (Long Reef) handle big swells; narrow beaches (Freshwater) close out. | Physically realistic quality penalty for enclosed beaches on big days. | ✅ **Implemented** |
 | **Surf‑Quality Index** – Combine wave power, period, and wind into a single numeric score. | Simplifies decision making. | ⬜ Planned |
 | **Rich Media Attachments** – Include a small tide‑graph or wave‑direction rose as an image attachment. | Visual enhancement. | ⬜ Planned |
 | **User‑Configurable Beaches** – Allow per‑user beach list via the existing JSON config mechanism. | Personalisation without code change. | ⬜ Planned |

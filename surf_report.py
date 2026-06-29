@@ -30,12 +30,12 @@ TIMEFRAMES = [
 ]
 
 BEACHES = {
-    "Long Reef":     {"aspect": 158, "left_offset": 10, "right_offset": 10},
-    "Dee Why":       {"aspect": 135, "left_offset": 10, "right_offset": 10},
-    "Curl Curl":     {"aspect": 112, "left_offset": 10, "right_offset": 10},
-    "Freshwater":    {"aspect": 135, "left_offset": 10, "right_offset": 10},
-    "North Steyne":  {"aspect": 90,  "left_offset": 10, "right_offset": 10},
-    "South Steyne":  {"aspect": 68,  "left_offset": 10, "right_offset": 10},
+    "Long Reef":     {"aspect": 158, "left_offset": 68, "right_offset": 22},
+    "Dee Why":       {"aspect": 135, "left_offset": 67.5, "right_offset": 22.5},
+    "Curl Curl":     {"aspect": 112, "left_offset": 44.5, "right_offset": 45.5},
+    "Freshwater":    {"aspect": 135, "left_offset": 35, "right_offset": 22.5},
+    "North Steyne":  {"aspect": 90,  "left_offset": 45, "right_offset": 45},
+    "South Steyne":  {"aspect": 68,  "left_offset": 45.5, "right_offset": 22},
 }
 BEACH_NOTES = {
     "Long Reef": "Northernmost beach, southeast-southeast exposure",
@@ -301,6 +301,54 @@ def shoal_factor(period):
         return 1.0 + (period - 6) * 0.6 / 12
 
 
+def embayment_factor(left_offset, right_offset, effective_height, wave_period):
+    """
+    Embayment quality factor (0.3–1.0) based on beach openness vs wave energy demand.
+
+    W = left_offset + right_offset (degrees) — the total angular window between headlands.
+    A wider angle = more physically open beach (e.g. Long Reef at 90°).
+    A narrower angle = more enclosed/closed beach (e.g. Freshwater at 57.5°).
+
+    Wave Energy Demand = effective_height × (period² / 100).
+    Longer-period groundswell carries more energy and needs more lateral room
+    to spread out.  The /100 normalises so ratio clusters in a sensible range.
+
+    Embayment Ratio = W / Demand
+
+    High ratio (wide beach, small swell) → plenty of room → factor ≈ 1.0 (A-frame sweet spot)
+    Low ratio (narrow beach, big swell) → close-out risk → factor ≈ 0.3
+    """
+    W = left_offset + right_offset
+    demand = effective_height * (wave_period ** 2) / 100.0
+
+    if demand <= 0:
+        return 1.0
+
+    ratio = W / demand
+
+    # Breakpoints: (ratio, factor)
+    # Calibrated so Freshwater on a 2.5m@14s day scores ~0.5,
+    # while Long Reef on a 0.8m@8s day scores ~1.0.
+    curve = [
+        (0,   0.30),   # extreme close-out — wave has no room
+        (10,  0.50),   # close-out zone
+        (30,  0.80),   # marginal — some A-frame potential
+        (60,  0.95),   # approaching ideal
+        (100, 1.00),   # sweet spot — plenty of room
+    ]
+
+    for i in range(len(curve) - 1):
+        x1, y1 = curve[i]
+        x2, y2 = curve[i + 1]
+        if x1 <= ratio <= x2:
+            t = (ratio - x1) / (x2 - x1) if x2 != x1 else 0
+            return y1 + t * (y2 - y1)
+
+    if ratio > curve[-1][0]:
+        return 1.0
+    return curve[0][1]
+
+
 def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period,
                               left_offset=10, right_offset=10):
     """
@@ -470,20 +518,32 @@ def tide_factor(tide_height):
         return 1.0 - (tide_height - 1.5) * (1.0 - 0.6) / (3.0 - 1.5)  # 1.0 to 0.6
 
 
-def get_board_recommendation(effective_height, wave_period):
-    """Get board recommendation(s) based on wave height and period.
+def get_board_recommendation(effective_height, wave_period, wave_quality=1.0):
+    """Get board recommendation(s) based on wave height, period, and quality.
+
+    On poor quality days (onshore wind, ugly tide, bad angle), bumps volume up
+    so you're hunting on a board that can actually catch the few good ones.
     Returns a comma-separated list of suitable board types."""
+
+    # Quality-adjusted height for board selection:
+    # Poor quality = treat the wave as smaller = recommend more volume
+    # quality 1.0 → no adjustment; quality 0.2 → ~half the height for board pick
+    quality_boost = 0.7 + wave_quality * 0.3    # ranges from 1.0 (perfect) down to 0.7 (terrible)
+    adj_height = effective_height * quality_boost
+
     boards = []
 
-    if effective_height < 0.3:
+    if adj_height < 0.3:
         boards = ["Longboard", "Log"]
-    elif effective_height < 0.6:
-        boards = ["Longboard", "Funboard", "Groveller"]
-    elif effective_height < 1.0:
-        boards = ["Fish", "Funboard", "Mid-Length"]
-    elif effective_height < 1.5:
+    elif adj_height < 0.6:
+        boards = ["Longboard", "Funboard"]
+    elif adj_height < 1.0:
+        boards = ["Groveller", "Fish", "Funboard"]
+    elif adj_height < 1.5:
         boards = ["Shortboard", "Fish", "Mid-Length"]
-    elif effective_height < 2.0:
+    elif adj_height < 2.0:
+        boards = ["Shortboard", "Mid-Length", "Step-Up"]
+    elif adj_height < 2.5:
         boards = ["Shortboard", "Step-Up"]
     else:
         boards = ["Step-Up"]
@@ -502,11 +562,13 @@ def get_board_recommendation(effective_height, wave_period):
             boards = ["Longboard", "Log"]
 
     # Long period (>= 12s) — powerful ground swell, favour step-up when it's getting size
-    elif wave_period >= 12 and effective_height >= 1.2:
-        if effective_height < 1.5:
+    elif wave_period >= 12 and adj_height >= 1.2:
+        if adj_height < 1.5:
             boards = ["Shortboard", "Step-Up"]
-        elif effective_height < 2.0:
+        elif adj_height < 2.0:
             boards = ["Step-Up", "Shortboard"]
+        elif adj_height < 2.5:
+            boards = ["Step-Up"]
         else:
             boards = ["Step-Up"]
 
@@ -641,24 +703,27 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             attack_angle = right_off
         attack_factor = _angle_of_attack_factor(attack_angle)
 
-        # Wave Height score (0-5): power curve for diminishing returns past head high
-        # Small waves climb fast toward overhead, then level off toward double overhead
-        wave_height_score = min(5, 5 * (effective_height / 3.6) ** 0.65)
+        # Wave Height score (0-5): power curve capped at 1.83m (6 ft / overhead)
+        # Beyond 1.83m, height plateaus at 5★ — quality factors (wind, tide, attack) differentiate bigger waves
+        wave_height_score = min(5, 5 * (effective_height / 1.83) ** 0.85)
         tide_factor_value = tide_factor(tide_height)
 
         bw_quality = calculate_wind_quality(wind_dir, aspect, wind_speed)
         bw_label = wind_condition_label(wind_dir, aspect)
         bw_strength = wind_strength_emoji(wind_speed)
 
-        # Wave Quality factor (0-1): product of wind, attack angle, and tide
+        # Embayment factor — how open/closed the beach is for this swell
+        embay_val = embayment_factor(left_off, right_off, effective_height, wave_period)
+
+        # Wave Quality factor (0-1): product of wind, attack angle, tide, and embayment
         # If any factor is imperfect, quality drops — a product is stricter than an average
-        wave_quality = bw_quality * attack_factor * tide_factor_value
+        wave_quality = bw_quality * attack_factor * tide_factor_value * embay_val
 
         adjusted_rating = wave_height_score * wave_quality
         adjusted_rating = max(0, min(5, adjusted_rating))
         precise_rating = adjusted_rating
         star_rating = round(precise_rating * 2) / 2
-        board = get_board_recommendation(effective_height, wave_period)
+        board = get_board_recommendation(effective_height, wave_period, wave_quality)
 
         if effective_height > max_effective_height:
             max_effective_height = effective_height
@@ -680,6 +745,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "attack_factor": attack_factor,
             "attack_angle": attack_angle,
             "tide_factor_value": tide_factor_value,
+            "embayment_factor": embay_val,
         })
 
     # Overall rating — use the best beach's rating so it matches the top card
@@ -820,6 +886,10 @@ def generate_report(marine_data, wind_data, tide_data):
                         <div class="surf-detail">
                             <div class="surf-value">{beach["wind_label"]}</div>
                             <div class="surf-label">{beach["wind_strength"]} Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">{beach["embayment_factor"]:.0%}</div>
+                            <div class="surf-label">Embay.<span class="tooltip">Embayment quality: how open/closed the beach is for this swell size</span></div>
                         </div>
                     </div>
                     <div class="stars">{stars}'''
@@ -1073,7 +1143,7 @@ def generate_report(marine_data, wind_data, tide_data):
         }}
         .beach-card .surf-info {{
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 4px;
         }}
         .beach-card .surf-detail .surf-value {{
