@@ -5,6 +5,9 @@
 set -e
 cd "$(dirname "$0")"
 
+# Ensure common tool paths (launchd has a minimal PATH)
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
 # Load API keys from outside the repo (OPENROUTER_API_KEY, etc.)
 ENV_FILE="$HOME/.surforecast/env.sh"
 if [ -f "$ENV_FILE" ]; then
