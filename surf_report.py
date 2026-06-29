@@ -864,10 +864,20 @@ def generate_report(marine_data, wind_data, tide_data):
             stars = generate_stars(beach["rating"])
             is_best = beach["name"] in best_names
             card_class = " beach-card-best" if is_best else ""
+
+            # Embayment warning emoji
+            embay = beach["embayment_factor"]
+            if embay < 0.50:
+                embay_emoji = " 🚫"
+            elif embay < 0.75:
+                embay_emoji = " ⚠️"
+            else:
+                embay_emoji = ""
+
             html += f'''
                 <div class="beach-card{card_class}">
                     <div class="beach-name">
-                        <span>{beach["name"]}</span>
+                        <span>{beach["name"]}{embay_emoji}</span>
                         <span class="beach-aspect">{beach["aspect"]}° ({degrees_to_compass(beach["aspect"])})</span>
                     </div>
                     <div class="surf-info">
@@ -886,10 +896,6 @@ def generate_report(marine_data, wind_data, tide_data):
                         <div class="surf-detail">
                             <div class="surf-value">{beach["wind_label"]}</div>
                             <div class="surf-label">{beach["wind_strength"]} Wind<span class="tooltip">Wind vs beach aspect</span></div>
-                        </div>
-                        <div class="surf-detail">
-                            <div class="surf-value">{beach["embayment_factor"]:.0%}</div>
-                            <div class="surf-label">Embay.<span class="tooltip">Embayment quality: how open/closed the beach is for this swell size</span></div>
                         </div>
                     </div>
                     <div class="stars">{stars}'''
@@ -1143,7 +1149,7 @@ def generate_report(marine_data, wind_data, tide_data):
         }}
         .beach-card .surf-info {{
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 4px;
         }}
         .beach-card .surf-detail .surf-value {{
