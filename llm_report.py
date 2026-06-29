@@ -46,6 +46,8 @@ def _build_prompt(timeframes_config, all_timeframes):
     for i, tf_conf in enumerate(timeframes_config):
         tf_data = all_timeframes[i]
         label = tf_conf["label"]
+        # Replace en-dash with hyphen so the LLM doesn't have to reproduce Unicode
+        label = _normalise_label(label)
         user_prompt += f"--- {label} ---\n"
         user_prompt += (
             f"Offshore: {tf_data['wave_height']:.1f}m @ {tf_data['wave_period']:.0f}s "
@@ -71,6 +73,11 @@ def _build_prompt(timeframes_config, all_timeframes):
         user_prompt += "\n"
 
     return system_prompt, user_prompt
+
+
+def _normalise_label(label):
+    """Normalise unicode dashes to regular hyphens for matching."""
+    return label.replace('\u2013', '-').replace('\u2014', '-')
 
 
 def _load_env_file():
@@ -134,8 +141,18 @@ def generate_reports(timeframes_config, all_timeframes):
 
         reports = {}
         for tf_label, beach_dict in content.get("timeframes", {}).items():
+            # Normalise LLM label to match timeframes_config (handles dash variations)
+            norm_label = _normalise_label(tf_label)
+            matched_label = None
+            for tf_conf in timeframes_config:
+                if _normalise_label(tf_conf["label"]) == norm_label:
+                    matched_label = tf_conf["label"]
+                    break
+            if not matched_label:
+                logger.warning(f"LLM returned unknown timeframe label: {tf_label!r}")
+                continue
             for beach_name, note in beach_dict.items():
-                reports[(tf_label, beach_name)] = note.strip()
+                reports[(matched_label, beach_name)] = note.strip()
 
         logger.info(f"Received LLM reports for {len(reports)} beach/timeframe combos")
         return reports
