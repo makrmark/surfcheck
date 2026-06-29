@@ -17,6 +17,7 @@ Northern Beaches Surf Check fetches live marine and meteorological data from Ope
 - 📱 Responsive HTML design that works on mobile and desktop
 - 🔄 Automatic daily updates via local scheduler
 - ⚡ GitHub Pages deployment via git push
+- 🤖 Optional LLM-powered surf notes per beach (via OpenRouter) — one-sentence insights explaining the key factors
 
 ## Data Sources
 
@@ -87,6 +88,22 @@ Northern Beaches Surf Check fetches live marine and meteorological data from Ope
    # Add this line to run daily at 5:45 AM
    45 5 * * * cd /path/to/surforecast && ./venv/bin/python surf_report.py >> surforecast.log 2>&1
    ```
+
+### Optional: LLM-Powered Surf Notes
+
+To enable per-beach AI-generated surf notes, set your OpenRouter API key in
+`~/.surforecast/env.sh` (this file is outside the repo and is never committed):
+
+```bash
+mkdir -p ~/.surforecast
+cat >> ~/.surforecast/env.sh << 'EOF'
+export OPENROUTER_API_KEY="sk-or-v1-your-key-here"
+EOF
+```
+
+The system will automatically load it when running via `deploy.sh` or by calling
+`surf_report.py` directly. Without the key, the numerical data displays normally
+with no errors.
 
 ## How It Works
 

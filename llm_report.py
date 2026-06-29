@@ -73,6 +73,19 @@ def _build_prompt(timeframes_config, all_timeframes):
     return system_prompt, user_prompt
 
 
+def _load_env_file():
+    """Try to load ~/.surforecast/env.sh as a fallback for API keys."""
+    env_file = os.path.expanduser("~/.surforecast/env.sh")
+    if os.path.isfile(env_file):
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("export ") and "=" in line:
+                    parts = line[7:].split("=", 1)
+                    key, val = parts[0], parts[1].strip('"').strip("'")
+                    os.environ.setdefault(key, val)
+
+
 def generate_reports(timeframes_config, all_timeframes):
     """
     Call OpenRouter to generate per-beach surf reports for all timeframes.
@@ -85,6 +98,8 @@ def generate_reports(timeframes_config, all_timeframes):
         dict mapping (timeframe_label, beach_name) -> str report sentence.
         Empty dict if API key is not set or call fails.
     """
+    # Try env var first, then fall back to ~/.surforecast/env.sh
+    _load_env_file()
     api_key = os.environ.get(API_KEY_ENV)
     if not api_key:
         logger.info("OPENROUTER_API_KEY not set — skipping LLM reports")

@@ -120,6 +120,9 @@ ipython_config.yaml
 # Objectivism brick
 .objectivism-settings
 
+# Local environment secrets
+.surforecast/
+
 # Environments
 .env
 .venv

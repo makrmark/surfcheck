@@ -5,6 +5,12 @@
 set -e
 cd "$(dirname "$0")"
 
+# Load API keys from outside the repo (OPENROUTER_API_KEY, etc.)
+ENV_FILE="$HOME/.surforecast/env.sh"
+if [ -f "$ENV_FILE" ]; then
+    source "$ENV_FILE"
+fi
+
 LOG_FILE="$HOME/surfcheck_deploy.log"
 
 log() {
