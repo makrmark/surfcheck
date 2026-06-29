@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 API_KEY_ENV = "OPENROUTER_API_KEY"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "openai/gpt-oss-120b:free"
+MODEL = "openrouter/free"
 
 
 def _build_prompt(timeframes_config, all_timeframes):
