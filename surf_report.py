@@ -737,7 +737,6 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "rating": star_rating,
             "precise_rating": precise_rating,
             "board": board,
-            "notes": BEACH_NOTES.get(beach_name, ""),
             "period": wave_period,
             "wind_quality": bw_quality,
             "wind_label": bw_label,
@@ -911,8 +910,7 @@ def generate_report(marine_data, wind_data, tide_data):
             if is_best:
                 html += f' <span class="best-beach-badge">🏆 Best Beach</span>'
             html += f'''</div>
-                        <div class="board">🏄 {beach["board"]}</div>
-                        <div class="notes">{beach["notes"]}</div>'''
+                        <div class="board">🏄 {beach["board"]}</div>'''
             if beach.get("llm_note"):
                 html += f'''
                         <div class="forecaster-note">💬 {beach["llm_note"]}</div>'''
@@ -1184,12 +1182,6 @@ def generate_report(marine_data, wind_data, tide_data):
             padding: 2px 6px;
             border-radius: 3px;
             font-size: 0.9em;
-        }}
-        .notes {{
-            font-size: 0.9em;
-            font-style: italic;
-            color: #666;
-            margin-top: 10px;
         }}
         .forecaster-note {{
             font-size: 0.85em;
