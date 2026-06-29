@@ -318,6 +318,80 @@ def sunrise_sunset(date, lat=-33.78, lon=151.30, tz=10):
     return (sunrise_local % 24, sunset_local % 24)
 
 
+def solar_elevation_azimuth(hour, date, lat=-33.78, lon=151.30):
+    """
+    Compute solar elevation (degrees above horizon) and azimuth (degrees from north)
+    for a given hour (local AEST) and date at the Northern Beaches.
+    Returns (elevation, azimuth_compass).
+    """
+    doy = date.timetuple().tm_yday
+
+    # Solar declination (degrees)
+    decl = 23.45 * math.sin(math.radians(360.0 / 365 * (doy - 81)))
+
+    # Equation of time (minutes)
+    B = 360.0 / 365 * (doy - 81)
+    eot = (9.87 * math.sin(math.radians(2 * B))
+           - 7.53 * math.cos(math.radians(B))
+           - 1.5 * math.sin(math.radians(B)))
+
+    # Convert local time to UTC, then to hour angle
+    utc_hour = hour - 10  # AEST = UTC+10
+    # Hour angle (degrees): 15° per hour from solar noon
+    ha_deg = 15 * (utc_hour + (lon / 15) - 12 + eot / 60)
+
+    # Solar elevation (degrees above horizon)
+    sin_alt = (math.sin(math.radians(lat)) * math.sin(math.radians(decl))
+               + math.cos(math.radians(lat)) * math.cos(math.radians(decl))
+               * math.cos(math.radians(ha_deg)))
+    sin_alt = max(-1.0, min(1.0, sin_alt))
+    elevation = math.degrees(math.asin(sin_alt))
+
+    # Solar azimuth (degrees from north, clockwise)
+    cos_az = ((math.sin(math.radians(decl)) - math.sin(math.radians(lat)) * sin_alt)
+              / (math.cos(math.radians(lat)) * math.cos(math.radians(elevation))))
+    cos_az = max(-1.0, min(1.0, cos_az))
+    # Determine correct quadrant
+    if ha_deg > 0:
+        # After noon (afternoon) - sun is in the west
+        azimuth = 360 - math.degrees(math.acos(cos_az))
+    else:
+        # Before noon (morning) - sun is in the east
+        azimuth = math.degrees(math.acos(cos_az))
+
+    return (elevation, azimuth)
+
+
+def uv_index(solar_elevation):
+    """Estimate UV index from solar elevation (degrees above horizon)."""
+    if solar_elevation <= 0:
+        return 0  # Night
+    elif solar_elevation < 15:
+        return min(2, int(solar_elevation / 7.5))  # 0-2, Low
+    elif solar_elevation < 30:
+        return 3 + int((solar_elevation - 15) / 5)  # 3-5, Moderate
+    elif solar_elevation < 45:
+        return 6 + int((solar_elevation - 30) / 5)  # 6-8, High
+    elif solar_elevation < 60:
+        return 9 + int((solar_elevation - 45) / 5)  # 9-10, Very High
+    else:
+        return 11  # Extreme
+
+
+def hat_recommendation(uv, sun_compass, beach_names, timeframes_conditions):
+    """
+    Recommend hat type based on UV index and sun exposure.
+    Returns (hat_type, uv_label).
+    """
+    if uv <= 0:
+        return ("Not needed", "None")
+    if uv <= 2:
+        return ("Cap", "Low")
+    elif uv <= 5:
+        return ("Bucket hat", "Moderate")
+    else:
+        return ("Legionnaire's cap", "High")
+
 def shoal_factor(period):
     """
     Amplification from shoaling for a wave of given period (seconds).
@@ -811,6 +885,10 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         "best_beaches": best_beaches,
         "best_beaches_str": best_beaches_str,
         "max_effective_height": max_effective_height,
+        # Solar data for UV and hat recommendations
+        "solar_elevation": solar_elevation_azimuth(target_hour, today)[0],
+        "solar_compass": degrees_to_compass(solar_elevation_azimuth(target_hour, today)[1]),
+        "uv_index": uv_index(solar_elevation_azimuth(target_hour, today)[0]),
     }
 
 
@@ -875,10 +953,12 @@ def generate_report(marine_data, wind_data, tide_data):
         </div>'''
 
         # Overall Conditions section — two side-by-side cards
+        uv = tf["uv_index"]
+        hat_rec, uv_label = hat_recommendation(uv, tf["solar_compass"], "", [])
         html += f'''
         <div class="conditions-grid">
             <div class="section">
-                <h2>🌊 Swell &amp; Tide</h2>
+                <h2>🌊 Water Conditions</h2>
                 <div class="condition-item">
                     <span class="label">Swell:</span>
                     <span class="value">{tf["wave_height"]:.1f}m @ {tf["wave_period"]:.0f}s from {tf["wave_direction"]:.0f}° ({tf["wave_compass"]})<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
@@ -887,20 +967,39 @@ def generate_report(marine_data, wind_data, tide_data):
                     <span class="label">Tide:</span>
                     <span class="value">{tf["display_tide"]:.1f}m {tf["tide_emoji"]} {tf["tide_trend"].title()}<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
                 </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">{water_temp}°C — {wetsuit_rec}<span class="tooltip">{sst_source} — coastal edge SST off Northern Beaches</span></span>
+                </div>
             </div>
             <div class="section">
-                <h2>🌤️ Conditions</h2>
+                <h2>🌤️ Atmospheric</h2>
                 <div class="condition-item">
                     <span class="label">Wind:</span>
                     <span class="value">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]}<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
                 </div>
                 <div class="condition-item">
-                    <span class="label">Water:</span>
-                    <span class="value">{water_temp}°C — {wetsuit_rec}<span class="tooltip">{sst_source} — coastal edge SST off Northern Beaches</span></span>
-                </div>
-                <div class="condition-item">
                     <span class="label">Sun:</span>
                     <span class="value">🌅 {sunrise_str} — 🌇 {sunset_str} AEST<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">UV:</span>
+                    <span class="value">{uv_label} ({uv}) — Sun from {tf["solar_compass"]}<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🧤 Gear</h2>
+            <div class="gear-grid">
+                <div class="gear-item">
+                    <div class="gear-icon">🩱</div>
+                    <div class="gear-label">Wetsuit</div>
+                    <div class="gear-value">{wetsuit_rec}</div>
+                </div>
+                <div class="gear-item">
+                    <div class="gear-icon">🧢</div>
+                    <div class="gear-label">Hat</div>
+                    <div class="gear-value">{hat_rec}</div>
                 </div>
             </div>
         </div>'''
@@ -1250,6 +1349,31 @@ def generate_report(marine_data, wind_data, tide_data):
             .conditions-grid {{
                 grid-template-columns: 1fr;
             }}
+        }}
+        .gear-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+        }}
+        .gear-item {{
+            text-align: center;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 8px;
+        }}
+        .gear-icon {{
+            font-size: 2em;
+            margin-bottom: 6px;
+        }}
+        .gear-label {{
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 4px;
+        }}
+        .gear-value {{
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #0066cc;
         }}
         .summary-section {{
             display: grid;

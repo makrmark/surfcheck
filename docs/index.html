@@ -280,6 +280,31 @@
                 grid-template-columns: 1fr;
             }
         }
+        .gear-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        .gear-item {
+            text-align: center;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 8px;
+        }
+        .gear-icon {
+            font-size: 2em;
+            margin-bottom: 6px;
+        }
+        .gear-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .gear-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #0066cc;
+        }
         .summary-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -361,7 +386,7 @@
         </div>
         <div class="conditions-grid">
             <div class="section">
-                <h2>🌊 Swell &amp; Tide</h2>
+                <h2>🌊 Water Conditions</h2>
                 <div class="condition-item">
                     <span class="label">Swell:</span>
                     <span class="value">0.9m @ 7s from 102° (ESE)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
@@ -370,20 +395,39 @@
                     <span class="label">Tide:</span>
                     <span class="value">-0.5m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
                 </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
             </div>
             <div class="section">
-                <h2>🌤️ Conditions</h2>
+                <h2>🌤️ Atmospheric</h2>
                 <div class="condition-item">
                     <span class="label">Wind:</span>
                     <span class="value">5 km/h (3 kt) NW<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
                 </div>
                 <div class="condition-item">
-                    <span class="label">Water:</span>
-                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
-                </div>
-                <div class="condition-item">
                     <span class="label">Sun:</span>
                     <span class="value">🌅 07:04 — 🌇 16:51 AEST<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">UV:</span>
+                    <span class="value">None (0) — Sun from ENE<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🧤 Gear</h2>
+            <div class="gear-grid">
+                <div class="gear-item">
+                    <div class="gear-icon">🩱</div>
+                    <div class="gear-label">Wetsuit</div>
+                    <div class="gear-value">3/2 steamer</div>
+                </div>
+                <div class="gear-item">
+                    <div class="gear-icon">🧢</div>
+                    <div class="gear-label">Hat</div>
+                    <div class="gear-value">Not needed</div>
                 </div>
             </div>
         </div>
@@ -415,7 +459,7 @@
                     </div>
                     <div class="stars">★★☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Steep angle wraps around, weak peak—better for longboarders.</div>
+                        <div class="forecaster-note">💬 Extreme attack angle makes waves weak and mushy despite full exposure.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -442,7 +486,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Clean offshore holds up nice peaks peeling down the line.</div>
+                        <div class="forecaster-note">💬 Ideal angle and clean offshore hold up the face for peeling waves.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -469,7 +513,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Straight-on attack closes it out—too much swell for this shape.</div>
+                        <div class="forecaster-note">💬 Straight-on attack closes out the narrow beach with weak windswell.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -496,7 +540,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Offshore wind and good angle make for fun, lined-up waves.</div>
+                        <div class="forecaster-note">💬 Clean offshore and ideal angle give peeling waves despite small swell.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -523,7 +567,7 @@
                     </div>
                     <div class="stars">★★☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Slight angle but cross-off wind keeps it workable.</div>
+                        <div class="forecaster-note">💬 Near-straight attack closes out; short period lacks push.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -550,7 +594,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Sheltered from the main swell, small but clean due to cross winds.</div>
+                        <div class="forecaster-note">💬 Sheltered from ESE swell, small but fun with cross wind.</div>
                     </div>
             </div>
         </div></div>
@@ -567,7 +611,7 @@
         </div>
         <div class="conditions-grid">
             <div class="section">
-                <h2>🌊 Swell &amp; Tide</h2>
+                <h2>🌊 Water Conditions</h2>
                 <div class="condition-item">
                     <span class="label">Swell:</span>
                     <span class="value">0.8m @ 7s from 99° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
@@ -576,20 +620,39 @@
                     <span class="label">Tide:</span>
                     <span class="value">-1.1m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
                 </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
             </div>
             <div class="section">
-                <h2>🌤️ Conditions</h2>
+                <h2>🌤️ Atmospheric</h2>
                 <div class="condition-item">
                     <span class="label">Wind:</span>
                     <span class="value">5 km/h (3 kt) N<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
                 </div>
                 <div class="condition-item">
-                    <span class="label">Water:</span>
-                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
-                </div>
-                <div class="condition-item">
                     <span class="label">Sun:</span>
                     <span class="value">🌅 07:04 — 🌇 16:51 AEST<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">UV:</span>
+                    <span class="value">Moderate (5) — Sun from NNE<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🧤 Gear</h2>
+            <div class="gear-grid">
+                <div class="gear-item">
+                    <div class="gear-icon">🩱</div>
+                    <div class="gear-label">Wetsuit</div>
+                    <div class="gear-value">3/2 steamer</div>
+                </div>
+                <div class="gear-item">
+                    <div class="gear-icon">🧢</div>
+                    <div class="gear-label">Hat</div>
+                    <div class="gear-value">Bucket hat</div>
                 </div>
             </div>
         </div>
@@ -621,7 +684,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Northerly wind makes it side-off, but angle still tricky.</div>
+                        <div class="forecaster-note">💬 Extreme angle again; weak and mushy from diffraction.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -648,7 +711,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Good attack angle with side-offshore wind for clean rides.</div>
+                        <div class="forecaster-note">💬 Cross-off wind and ideal angle keep waves peeling nicely.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -675,7 +738,7 @@
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Nearly straight-on, but side-off wind cleans up the closeouts.</div>
+                        <div class="forecaster-note">💬 Straight-on attack closes out; short period doesn't help.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -702,7 +765,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Fully exposed with great angle, but small—fun for grovelers.</div>
+                        <div class="forecaster-note">💬 Sheltered by headland, small but clean with cross-off wind.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -729,7 +792,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Closeout city—straight-on attack and weak period ruin it.</div>
+                        <div class="forecaster-note">💬 Dead straight attack closes out; weak windswell.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -756,7 +819,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Small and sheltered, but cross wind keeps it tidy.</div>
+                        <div class="forecaster-note">💬 Sheltered, small waves with cross wind, still fun.</div>
                     </div>
             </div>
         </div></div>
@@ -773,7 +836,7 @@
         </div>
         <div class="conditions-grid">
             <div class="section">
-                <h2>🌊 Swell &amp; Tide</h2>
+                <h2>🌊 Water Conditions</h2>
                 <div class="condition-item">
                     <span class="label">Swell:</span>
                     <span class="value">0.8m @ 8s from 98° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
@@ -782,20 +845,39 @@
                     <span class="label">Tide:</span>
                     <span class="value">1.3m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
                 </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
             </div>
             <div class="section">
-                <h2>🌤️ Conditions</h2>
+                <h2>🌤️ Atmospheric</h2>
                 <div class="condition-item">
                     <span class="label">Wind:</span>
                     <span class="value">13 km/h (7 kt) NNE<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
                 </div>
                 <div class="condition-item">
-                    <span class="label">Water:</span>
-                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
-                </div>
-                <div class="condition-item">
                     <span class="label">Sun:</span>
                     <span class="value">🌅 07:04 — 🌇 16:51 AEST<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">UV:</span>
+                    <span class="value">High (6) — Sun from NNW<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🧤 Gear</h2>
+            <div class="gear-grid">
+                <div class="gear-item">
+                    <div class="gear-icon">🩱</div>
+                    <div class="gear-label">Wetsuit</div>
+                    <div class="gear-value">3/2 steamer</div>
+                </div>
+                <div class="gear-item">
+                    <div class="gear-icon">🧢</div>
+                    <div class="gear-label">Hat</div>
+                    <div class="gear-value">Legionnaire's cap</div>
                 </div>
             </div>
         </div>
@@ -827,7 +909,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Wind swings cross-off, but steep angle still limits the waves.</div>
+                        <div class="forecaster-note">💬 Extreme attack angle; waves are weak and unshapeable.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -854,7 +936,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Cross wind makes it a bit lumpy, but angle is perfect.</div>
+                        <div class="forecaster-note">💬 Ideal angle and cross wind still give good shape.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -881,7 +963,7 @@
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Angles improving, cross wind leaves face a bit bumpy.</div>
+                        <div class="forecaster-note">💬 Straight attack closes out; cross wind doesn't save it.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -908,7 +990,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Smaller now due to swell shadowing, but cross wind works.</div>
+                        <div class="forecaster-note">💬 Sheltered and small, but cross wind keeps it rideable.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -935,7 +1017,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Head-on attack and rising tide kill any shape—flat closeouts.</div>
+                        <div class="forecaster-note">💬 Almost straight-on; closes out completely.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -962,7 +1044,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Light onshore chops it up, but small and rideable.</div>
+                        <div class="forecaster-note">💬 Sheltered, small, cross-on wind makes it choppy.</div>
                     </div>
             </div>
         </div></div>
@@ -979,7 +1061,7 @@
         </div>
         <div class="conditions-grid">
             <div class="section">
-                <h2>🌊 Swell &amp; Tide</h2>
+                <h2>🌊 Water Conditions</h2>
                 <div class="condition-item">
                     <span class="label">Swell:</span>
                     <span class="value">0.9m @ 7s from 91° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
@@ -988,20 +1070,39 @@
                     <span class="label">Tide:</span>
                     <span class="value">0.8m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
                 </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
             </div>
             <div class="section">
-                <h2>🌤️ Conditions</h2>
+                <h2>🌤️ Atmospheric</h2>
                 <div class="condition-item">
                     <span class="label">Wind:</span>
                     <span class="value">16 km/h (9 kt) N<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
                 </div>
                 <div class="condition-item">
-                    <span class="label">Water:</span>
-                    <span class="value">19.7°C — 3/2 steamer<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
-                </div>
-                <div class="condition-item">
                     <span class="label">Sun:</span>
                     <span class="value">🌅 07:04 — 🌇 16:51 AEST<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">UV:</span>
+                    <span class="value">Low (1) — Sun from NW<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🧤 Gear</h2>
+            <div class="gear-grid">
+                <div class="gear-item">
+                    <div class="gear-icon">🩱</div>
+                    <div class="gear-label">Wetsuit</div>
+                    <div class="gear-value">3/2 steamer</div>
+                </div>
+                <div class="gear-item">
+                    <div class="gear-icon">🧢</div>
+                    <div class="gear-label">Hat</div>
+                    <div class="gear-value">Cap</div>
                 </div>
             </div>
         </div>
@@ -1033,7 +1134,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Side-offshore wind, but extreme angle wraps in weak—only longboards.</div>
+                        <div class="forecaster-note">💬 Extreme angle; waves are weak and unshapeable.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1060,7 +1161,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Side-offshore wind and good angle produce rippable walls.</div>
+                        <div class="forecaster-note">💬 Ideal angle and cross-off wind for peeling waves.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1087,7 +1188,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Best angle of the day, but cross wind adds texture.</div>
+                        <div class="forecaster-note">💬 Good angle now; cross wind gives decent shape.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1114,7 +1215,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Small but clean with side-off wind—sneaky fun.</div>
+                        <div class="forecaster-note">💬 Sheltered, small, cross-off wind keeps it clean.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1141,7 +1242,7 @@
                     </div>
                     <div class="stars">★☆☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Dead straight onslaught—closeouts and chop, avoid.</div>
+                        <div class="forecaster-note">💬 Dead straight attack; closes out with weak swell.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1168,13 +1269,13 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Onshore wind kills quality, only micro waves left.</div>
+                        <div class="forecaster-note">💬 Sheltered, small, cross-on wind makes it messy.</div>
                     </div>
             </div>
         </div></div>
 
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-30 09:39:49 AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-30 09:50:54 AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>
