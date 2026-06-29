@@ -288,6 +288,36 @@ def _angle_of_attack_factor(attack_angle):
     return max(0.0, 0.3 - (attack_angle - 90) * 0.01)
 
 
+def sunrise_sunset(date, lat=-33.78, lon=151.30, tz=10):
+    """
+    Calculate sunrise and sunset times for Northern Beaches area.
+    Returns (sunrise_local, sunset_local) as decimal hours in AEST.
+    Uses NOAA solar position algorithm.
+    """
+    doy = date.timetuple().tm_yday
+
+    # Solar declination (degrees)
+    decl = 23.45 * math.sin(math.radians(360.0 / 365 * (doy - 81)))
+
+    # Cosine of hour angle
+    cos_ha = -math.tan(math.radians(lat)) * math.tan(math.radians(decl))
+    cos_ha = max(-1.0, min(1.0, cos_ha))
+    ha = math.degrees(math.acos(cos_ha))
+
+    # Equation of time (minutes)
+    B = 360.0 / 365 * (doy - 81)
+    eot = (9.87 * math.sin(math.radians(2 * B))
+           - 7.53 * math.cos(math.radians(B))
+           - 1.5 * math.sin(math.radians(B)))
+
+    # Sunrise/sunset in local time (AEST = UTC+10)
+    # Formula: local = 12 - (lon +/- ha)/15 - eot/60 + tz
+    sunrise_local = 12 - (lon + ha) / 15 - eot / 60 + tz
+    sunset_local  = 12 - (lon - ha) / 15 - eot / 60 + tz
+
+    return (sunrise_local % 24, sunset_local % 24)
+
+
 def shoal_factor(period):
     """
     Amplification from shoaling for a wave of given period (seconds).
@@ -821,6 +851,11 @@ def generate_report(marine_data, wind_data, tide_data):
             for bc in tf["beach_conditions"]:
                 bc["llm_note"] = llm_reports.get((tf["label"], bc["name"]), "")
 
+    # Compute today's sunrise and sunset
+    sunrise_hour, sunset_hour = sunrise_sunset(today)
+    sunrise_str = f"{int(sunrise_hour):02d}:{int((sunrise_hour % 1) * 60):02d}"
+    sunset_str = f"{int(sunset_hour):02d}:{int((sunset_hour % 1) * 60):02d}"
+
     # Build the timeframe section HTML blocks
     def build_tf_section(tf, is_first):
         display = "" if is_first else "display:none;"
@@ -839,25 +874,34 @@ def generate_report(marine_data, wind_data, tide_data):
             </div>
         </div>'''
 
-        # Overall Conditions section
+        # Overall Conditions section — two side-by-side cards
         html += f'''
-        <div class="section">
-            <h2>🌊 Overall Conditions</h2>
-            <div class="condition-item">
-                <span class="label">Swell:</span>
-                <span class="value">{tf["wave_height"]:.1f}m @ {tf["wave_period"]:.0f}s from {tf["wave_direction"]:.0f}° ({tf["wave_compass"]})<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+        <div class="conditions-grid">
+            <div class="section">
+                <h2>🌊 Swell &amp; Tide</h2>
+                <div class="condition-item">
+                    <span class="label">Swell:</span>
+                    <span class="value">{tf["wave_height"]:.1f}m @ {tf["wave_period"]:.0f}s from {tf["wave_direction"]:.0f}° ({tf["wave_compass"]})<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Tide:</span>
+                    <span class="value">{tf["display_tide"]:.1f}m {tf["tide_emoji"]} {tf["tide_trend"].title()}<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+                </div>
             </div>
-            <div class="condition-item">
-                <span class="label">Wind:</span>
-                <span class="value">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]}<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Tide:</span>
-                <span class="value">{tf["display_tide"]:.1f}m {tf["tide_emoji"]} {tf["tide_trend"].title()}<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
-            </div>
-            <div class="condition-item">
-                <span class="label">Water:</span>
-                <span class="value">{water_temp}°C — {wetsuit_rec}<span class="tooltip">{sst_source} — coastal edge SST off Northern Beaches</span></span>
+            <div class="section">
+                <h2>🌤️ Conditions</h2>
+                <div class="condition-item">
+                    <span class="label">Wind:</span>
+                    <span class="value">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]}<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Water:</span>
+                    <span class="value">{water_temp}°C — {wetsuit_rec}<span class="tooltip">{sst_source} — coastal edge SST off Northern Beaches</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Sun:</span>
+                    <span class="value">🌅 {sunrise_str} — 🌇 {sunset_str} AEST<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
             </div>
         </div>'''
 
@@ -1192,6 +1236,20 @@ def generate_report(marine_data, wind_data, tide_data):
             margin-top: 8px;
             border-left: 3px solid #4caf50;
             line-height: 1.4;
+        }}
+        .conditions-grid {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }}
+        .conditions-grid .section {{
+            margin-bottom: 0;
+        }}
+        @media (max-width: 600px) {{
+            .conditions-grid {{
+                grid-template-columns: 1fr;
+            }}
         }}
         .summary-section {{
             display: grid;
