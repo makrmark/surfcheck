@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 API_KEY_ENV = "OPENROUTER_API_KEY"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "openrouter/free"
+MODEL = "deepseek/deepseek-v4-flash"
 
 
 def _build_prompt(timeframes_config, all_timeframes):
