@@ -885,10 +885,10 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         "best_beaches": best_beaches,
         "best_beaches_str": best_beaches_str,
         "max_effective_height": max_effective_height,
-        # Solar data for UV and hat recommendations
-        "solar_elevation": solar_elevation_azimuth(target_hour, today)[0],
-        "solar_compass": degrees_to_compass(solar_elevation_azimuth(target_hour, today)[1]),
-        "uv_index": uv_index(solar_elevation_azimuth(target_hour, today)[0]),
+        # Solar data for UV and hat recommendations (use midpoint of time period)
+        "solar_elevation": solar_elevation_azimuth(target_hour + 0.5, today)[0],
+        "solar_compass": degrees_to_compass(solar_elevation_azimuth(target_hour + 0.5, today)[1]),
+        "uv_index": uv_index(solar_elevation_azimuth(target_hour + 0.5, today)[0]),
     }
 
 
