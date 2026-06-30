@@ -38,6 +38,31 @@
             font-size: 0.95em;
             margin: 0;
         }
+        .day-nav {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 6px;
+            width: 100%;
+        }
+        .day-btn {
+            padding: 4px 16px;
+            border: 1.5px solid #0066cc;
+            border-radius: 20px;
+            background: white;
+            color: #0066cc;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .day-btn:hover {
+            background: #e6f2ff;
+        }
+        .day-btn.active {
+            background: #0066cc;
+            color: white;
+        }
         .timeframe-nav {
             display: flex;
             gap: 4px;
@@ -366,21 +391,29 @@
 <body>
     <header>
         <h1>🏄‍♂️ Northern Beaches Surf Check</h1>
-        <nav class="timeframe-nav">
-            <button class="tf-btn active" data-btn="6–9am" onclick="showTimeframe('6–9am')">🌅 6–9am</button>
-            <button class="tf-btn" data-btn="9–12pm" onclick="showTimeframe('9–12pm')">☀️ 9–12pm</button>
-            <button class="tf-btn" data-btn="12–3pm" onclick="showTimeframe('12–3pm')">🌤️ 12–3pm</button>
-            <button class="tf-btn" data-btn="3–6pm" onclick="showTimeframe('3–6pm')">🌇 3–6pm</button>
+        <nav class="day-nav">
+            <button class="day-btn active" data-day="today" onclick="showDay('today')">Today</button>
+            <button class="day-btn" data-day="tomorrow" onclick="showDay('tomorrow')">Tomorrow</button>
         </nav>
-    </header><div class="timeframe-content" data-tf="6–9am" style="">
+        <nav class="timeframe-nav">
+            <button class="tf-btn active" data-btn="6–9am" data-day="today" onclick="showTimeframe('6–9am')">🌅 6–9am</button>
+            <button class="tf-btn" data-btn="9–12pm" data-day="today" onclick="showTimeframe('9–12pm')">☀️ 9–12pm</button>
+            <button class="tf-btn" data-btn="12–3pm" data-day="today" onclick="showTimeframe('12–3pm')">🌤️ 12–3pm</button>
+            <button class="tf-btn" data-btn="3–6pm" data-day="today" onclick="showTimeframe('3–6pm')">🌇 3–6pm</button>
+            <button class="tf-btn active" data-btn="6–9am" data-day="tomorrow" onclick="showTimeframe('6–9am')" style="display:none">🌅 6–9am</button>
+            <button class="tf-btn" data-btn="9–12pm" data-day="tomorrow" onclick="showTimeframe('9–12pm')" style="display:none">☀️ 9–12pm</button>
+            <button class="tf-btn" data-btn="12–3pm" data-day="tomorrow" onclick="showTimeframe('12–3pm')" style="display:none">🌤️ 12–3pm</button>
+            <button class="tf-btn" data-btn="3–6pm" data-day="tomorrow" onclick="showTimeframe('3–6pm')" style="display:none">🌇 3–6pm</button>
+        </nav>
+    </header><div class="timeframe-content" data-tf="6–9am" data-day="today" style="">
         <div class="section">
-            <h2>🏆 Today&#39;s Recommendations</h2>
+            <h2>🏆 Recommendations for Tue 30th June</h2>
             <div class="rec-card">
                 <div class="rec-beaches">Dee Why, Freshwater</div>
                 <div class="rec-wave">3-4 ft</div>
                 <div class="rec-stars">★★½☆☆</div>
                 <div class="board-rec">🏄 Mid-Length, Funboard</div>
-                <div class="rec-detail">🧢 Water is cool (19.7°C) so you'll need a 3/2 steamer.</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
             </div>
         </div>
         <div class="conditions-grid">
@@ -396,7 +429,7 @@
                 </div>
                 <div class="condition-item">
                     <span class="label">Temp:</span>
-                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
                 </div>
             </div>
             <div class="section">
@@ -447,7 +480,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Oblique six-second swell wraps around weakly, leaving small, peaky waves.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -474,7 +506,6 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Clean offshore holds up the face of peelers with decent period for size.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -501,7 +532,6 @@
                     </div>
                     <div class="stars">★★☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Straight-on swell closes out the beach despite offshore wind keeping faces clean.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -528,7 +558,6 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Clean offshore and ideal angle give fun, rippable waves at this protected spot.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -555,7 +584,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Nearly head-on swell closes out, offering only short close-out sections despite cross-offshore wind.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -572,7 +600,7 @@
                             <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">55%</div>
+                            <div class="surf-value">49%</div>
                             <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
@@ -582,19 +610,18 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Sheltered from the east swell, only small refracted waves sneak around.</div>
                     </div>
             </div>
         </div></div>
-<div class="timeframe-content" data-tf="9–12pm" style="display:none;">
+<div class="timeframe-content" data-tf="9–12pm" data-day="today" style="display:none;">
         <div class="section">
-            <h2>🏆 Today&#39;s Recommendations</h2>
+            <h2>🏆 Recommendations for Tue 30th June</h2>
             <div class="rec-card">
                 <div class="rec-beaches">Dee Why, Curl Curl</div>
                 <div class="rec-wave">3-4 ft</div>
                 <div class="rec-stars">★★½☆☆</div>
                 <div class="board-rec">🏄 Mid-Length, Funboard</div>
-                <div class="rec-detail">🧢 Water is cool (19.7°C) so you'll need a 3/2 steamer.</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
             </div>
         </div>
         <div class="conditions-grid">
@@ -610,7 +637,7 @@
                 </div>
                 <div class="condition-item">
                     <span class="label">Temp:</span>
-                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
                 </div>
             </div>
             <div class="section">
@@ -661,7 +688,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Oblique swell loses energy; low tide exposes banks but waves are weak and peaky.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -688,7 +714,6 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Cross-offshore breeze holds up well-lined peelers at low tide.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -715,7 +740,6 @@
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Low tide and near head-on swell create fast, dumpy close-outs despite cross-offshore wind.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -724,7 +748,7 @@
                     </div>
                     <div class="surf-info">
                         <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-value">1-2 ft</div>
                             <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
@@ -732,7 +756,7 @@
                             <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">68%</div>
+                            <div class="surf-value">62%</div>
                             <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
@@ -740,9 +764,8 @@
                             <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
                         </div>
                     </div>
-                    <div class="stars">★★☆☆☆</div>
-                        <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Partially shadowed, but the angle and cross-offshore wind keep waves fun and hollow.</div>
+                    <div class="stars">★½☆☆☆</div>
+                        <div class="board">🏄 Groveller, Longboard</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -769,7 +792,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Head-on and cross-wind chop up the short close-outs.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -786,7 +808,7 @@
                             <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">57%</div>
+                            <div class="surf-value">51%</div>
                             <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
@@ -796,19 +818,18 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Small refracted waves barely breaking; cross wind doesn't help.</div>
                     </div>
             </div>
         </div></div>
-<div class="timeframe-content" data-tf="12–3pm" style="display:none;">
+<div class="timeframe-content" data-tf="12–3pm" data-day="today" style="display:none;">
         <div class="section">
-            <h2>🏆 Today&#39;s Recommendations</h2>
+            <h2>🏆 Recommendations for Tue 30th June</h2>
             <div class="rec-card">
                 <div class="rec-beaches">Dee Why, Curl Curl</div>
                 <div class="rec-wave">3-4 ft</div>
                 <div class="rec-stars">★★½☆☆</div>
                 <div class="board-rec">🏄 Mid-Length, Funboard</div>
-                <div class="rec-detail">🧢 Water is cool (19.7°C) so you'll need a 3/2 steamer.</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
             </div>
         </div>
         <div class="conditions-grid">
@@ -824,7 +845,7 @@
                 </div>
                 <div class="condition-item">
                     <span class="label">Temp:</span>
-                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
                 </div>
             </div>
             <div class="section">
@@ -875,7 +896,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 High tide fattens the already weak oblique waves; X-off wind keeps them clean.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -902,7 +922,6 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Cross wind and high tide make for fuller waves, but still peeling well.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -929,7 +948,6 @@
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 High tide slows close-outs; cross wind offers some push but still dumpy.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -938,7 +956,7 @@
                     </div>
                     <div class="surf-info">
                         <div class="surf-detail">
-                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-value">1-2 ft</div>
                             <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
                         </div>
                         <div class="surf-detail">
@@ -946,7 +964,7 @@
                             <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">67%</div>
+                            <div class="surf-value">60%</div>
                             <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
@@ -956,7 +974,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 High tide and cross wind leave waves fat but still fun on the sandbanks.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -983,7 +1000,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Straight close-outs all day; cross wind only adds chop.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1000,7 +1016,7 @@
                             <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">58%</div>
+                            <div class="surf-value">52%</div>
                             <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
@@ -1010,19 +1026,18 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Onshore wind and high tide kill any quality in the small refracted waves.</div>
                     </div>
             </div>
         </div></div>
-<div class="timeframe-content" data-tf="3–6pm" style="display:none;">
+<div class="timeframe-content" data-tf="3–6pm" data-day="today" style="display:none;">
         <div class="section">
-            <h2>🏆 Today&#39;s Recommendations</h2>
+            <h2>🏆 Recommendations for Tue 30th June</h2>
             <div class="rec-card">
                 <div class="rec-beaches">Dee Why, Curl Curl</div>
                 <div class="rec-wave">3-4 ft</div>
                 <div class="rec-stars">★★½☆☆</div>
                 <div class="board-rec">🏄 Mid-Length, Funboard</div>
-                <div class="rec-detail">🧢 Water is cool (19.7°C) so you'll need a 3/2 steamer.</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
             </div>
         </div>
         <div class="conditions-grid">
@@ -1038,7 +1053,7 @@
                 </div>
                 <div class="condition-item">
                     <span class="label">Temp:</span>
-                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
                 </div>
             </div>
             <div class="section">
@@ -1089,7 +1104,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Extremely oblique swell barely breaks; X-off wind makes for clean but tiny waves.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1116,7 +1130,6 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Cross wind and dropping tide tighten up the peelers.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1143,7 +1156,6 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Dropping tide and slight angle improve shape; cross wind manageable.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1160,7 +1172,7 @@
                             <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">62%</div>
+                            <div class="surf-value">56%</div>
                             <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
@@ -1170,7 +1182,6 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Dropping tide gives more punch; cross wind holds it together.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1197,7 +1208,6 @@
                     </div>
                     <div class="stars">★☆☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Dead-straight swell and cross wind produce close-outs and chop.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1214,7 +1224,7 @@
                             <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
                         </div>
                         <div class="surf-detail">
-                            <div class="surf-value">62%</div>
+                            <div class="surf-value">56%</div>
                             <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
                         </div>
                         <div class="surf-detail">
@@ -1224,13 +1234,844 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Onshore breeze and small swell make for messy, weak waves.</div>
+                    </div>
+            </div>
+        </div></div>
+<div class="timeframe-content" data-tf="6–9am" data-day="tomorrow" style="display:none;">
+        <div class="section">
+            <h2>🏆 Recommendations for Wed 1st July</h2>
+            <div class="rec-card">
+                <div class="rec-beaches">Dee Why, Curl Curl</div>
+                <div class="rec-wave">2-3 ft</div>
+                <div class="rec-stars">★★☆☆☆</div>
+                <div class="board-rec">🏄 Groveller, Fish, Funboard</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
+            </div>
+        </div>
+        <div class="conditions-grid">
+            <div class="section">
+                <h2>🌊 Water Conditions</h2>
+                <div class="condition-item">
+                    <span class="label">Swell:</span>
+                    <span class="value">0.7m @ 8s from 99° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Tide:</span>
+                    <span class="value">0.5m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
+            </div>
+            <div class="section">
+                <h2>🌤️ Weather</h2>
+                <div class="condition-item">
+                    <span class="label">Wind:</span>
+                    <span class="value">12 km/h (7 kt) NNW<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Air:</span>
+                    <span class="value">13°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Rain:</span>
+                    <span class="value">0%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🏖️ Beach Conditions</h2>
+            <div class="beach-grid">
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Long Reef</span>
+                        <span class="beach-aspect">158° (SSE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">59°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Dee Why</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">36°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Curl Curl</span>
+                        <span class="beach-aspect">112° (ESE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">13°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Freshwater</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">1-2 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">35°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">64%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                        <div class="board">🏄 Funboard, Longboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>North Steyne</span>
+                        <span class="beach-aspect">90° (E)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>South Steyne</span>
+                        <span class="beach-aspect">68° (ENE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">1-2 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">53%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Funboard, Longboard</div>
+                    </div>
+            </div>
+        </div></div>
+<div class="timeframe-content" data-tf="9–12pm" data-day="tomorrow" style="display:none;">
+        <div class="section">
+            <h2>🏆 Recommendations for Wed 1st July</h2>
+            <div class="rec-card">
+                <div class="rec-beaches">Dee Why, Curl Curl</div>
+                <div class="rec-wave">2-3 ft</div>
+                <div class="rec-stars">★★☆☆☆</div>
+                <div class="board-rec">🏄 Groveller, Fish, Funboard</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
+            </div>
+        </div>
+        <div class="conditions-grid">
+            <div class="section">
+                <h2>🌊 Water Conditions</h2>
+                <div class="condition-item">
+                    <span class="label">Swell:</span>
+                    <span class="value">0.7m @ 8s from 99° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Tide:</span>
+                    <span class="value">-0.8m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
+            </div>
+            <div class="section">
+                <h2>🌤️ Weather</h2>
+                <div class="condition-item">
+                    <span class="label">Wind:</span>
+                    <span class="value">15 km/h (8 kt) NNW<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Air:</span>
+                    <span class="value">18°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Rain:</span>
+                    <span class="value">0%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🏖️ Beach Conditions</h2>
+            <div class="beach-grid">
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Long Reef</span>
+                        <span class="beach-aspect">158° (SSE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">59°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Dee Why</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">36°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Curl Curl</span>
+                        <span class="beach-aspect">112° (ESE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">13°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Freshwater</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">1-2 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">35°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">64%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                        <div class="board">🏄 Funboard, Longboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>North Steyne</span>
+                        <span class="beach-aspect">90° (E)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">9°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>South Steyne</span>
+                        <span class="beach-aspect">68° (ENE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">1-2 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">53%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Funboard, Longboard</div>
+                    </div>
+            </div>
+        </div></div>
+<div class="timeframe-content" data-tf="12–3pm" data-day="tomorrow" style="display:none;">
+        <div class="section">
+            <h2>🏆 Recommendations for Wed 1st July</h2>
+            <div class="rec-card">
+                <div class="rec-beaches">Dee Why, Curl Curl</div>
+                <div class="rec-wave">2-3 ft</div>
+                <div class="rec-stars">★★☆☆☆</div>
+                <div class="board-rec">🏄 Groveller, Fish, Funboard</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
+            </div>
+        </div>
+        <div class="conditions-grid">
+            <div class="section">
+                <h2>🌊 Water Conditions</h2>
+                <div class="condition-item">
+                    <span class="label">Swell:</span>
+                    <span class="value">0.6m @ 8s from 97° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Tide:</span>
+                    <span class="value">-1.3m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
+            </div>
+            <div class="section">
+                <h2>🌤️ Weather</h2>
+                <div class="condition-item">
+                    <span class="label">Wind:</span>
+                    <span class="value">16 km/h (9 kt) NNW<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Air:</span>
+                    <span class="value">21°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Rain:</span>
+                    <span class="value">0%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🏖️ Beach Conditions</h2>
+            <div class="beach-grid">
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Long Reef</span>
+                        <span class="beach-aspect">158° (SSE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">61°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Offshore</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Dee Why</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">38°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Curl Curl</span>
+                        <span class="beach-aspect">112° (ESE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">15°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Groveller, Fish, Funboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Freshwater</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">1-2 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">35°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">61%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★½☆☆☆</div>
+                        <div class="board">🏄 Funboard, Longboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>North Steyne</span>
+                        <span class="beach-aspect">90° (E)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">7°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Funboard, Longboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>South Steyne</span>
+                        <span class="beach-aspect">68° (ENE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">1-2 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">55%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Funboard, Longboard</div>
+                    </div>
+            </div>
+        </div></div>
+<div class="timeframe-content" data-tf="3–6pm" data-day="tomorrow" style="display:none;">
+        <div class="section">
+            <h2>🏆 Recommendations for Wed 1st July</h2>
+            <div class="rec-card">
+                <div class="rec-beaches">Dee Why, Curl Curl, South Steyne</div>
+                <div class="rec-wave">2-3 ft</div>
+                <div class="rec-stars">★★☆☆☆</div>
+                <div class="board-rec">🏄 Mid-Length, Funboard</div>
+                <div class="rec-detail">🧢 Water is cool (19.4°C) so you'll need a 3/2 steamer.</div>
+            </div>
+        </div>
+        <div class="conditions-grid">
+            <div class="section">
+                <h2>🌊 Water Conditions</h2>
+                <div class="condition-item">
+                    <span class="label">Swell:</span>
+                    <span class="value">0.7m @ 7s from 90° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Tide:</span>
+                    <span class="value">1.0m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Temp:</span>
+                    <span class="value">19.4°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+                </div>
+            </div>
+            <div class="section">
+                <h2>🌤️ Weather</h2>
+                <div class="condition-item">
+                    <span class="label">Wind:</span>
+                    <span class="value">11 km/h (6 kt) NNE<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Air:</span>
+                    <span class="value">20°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+                </div>
+                <div class="condition-item">
+                    <span class="label">Rain:</span>
+                    <span class="value">0%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🏖️ Beach Conditions</h2>
+            <div class="beach-grid">
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Long Reef</span>
+                        <span class="beach-aspect">158° (SSE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">68°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Mid-Length, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Dee Why</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">45°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Mid-Length, Funboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>Curl Curl</span>
+                        <span class="beach-aspect">112° (ESE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Mid-Length, Funboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>Freshwater</span>
+                        <span class="beach-aspect">135° (SE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">1-2 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">35°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">49%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-Off</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Groveller, Longboard</div>
+                    </div>
+                <div class="beach-card">
+                    <div class="beach-name">
+                        <span>North Steyne</span>
+                        <span class="beach-aspect">90° (E)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">0°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">Cross</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★☆☆☆☆</div>
+                        <div class="board">🏄 Groveller, Longboard</div>
+                    </div>
+                <div class="beach-card beach-card-best">
+                    <div class="beach-name">
+                        <span>South Steyne</span>
+                        <span class="beach-aspect">68° (ENE)</span>
+                    </div>
+                    <div class="surf-info">
+                        <div class="surf-detail">
+                            <div class="surf-value">2-3 ft</div>
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">22°</div>
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">100%</div>
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+                        <div class="surf-detail">
+                            <div class="surf-value">X-On</div>
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+                    </div>
+                    <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
+                        <div class="board">🏄 Mid-Length, Funboard</div>
                     </div>
             </div>
         </div></div>
 
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-30 15:11:22 AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-30 18:01:02 AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>
@@ -1242,19 +2083,52 @@
     </div>
 
     <script>
-        function showTimeframe(label) {
+        function showDay(day) {
+            document.querySelectorAll('.day-btn').forEach(el => el.classList.remove('active'));
+            document.querySelector('.day-btn[data-day="' + day + '"]').classList.add('active');
+            document.querySelectorAll('.tf-btn').forEach(el => {
+                el.style.display = el.getAttribute('data-day') === day ? '' : 'none';
+            });
             document.querySelectorAll('.timeframe-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.tf-btn').forEach(el => el.classList.remove('active'));
-            const content = document.querySelector('.timeframe-content[data-tf="' + label + '"]');
-            if (content) content.style.display = 'block';
-            const btn = document.querySelector('.tf-btn[data-btn="' + label + '"]');
-            if (btn) btn.classList.add('active');
+            const first = document.querySelector('.timeframe-content[data-day="' + day + '"]');
+            if (first) {
+                first.style.display = 'block';
+                const label = first.getAttribute('data-tf');
+                document.querySelectorAll('.tf-btn').forEach(el => {
+                    el.classList.remove('active');
+                    if (el.getAttribute('data-btn') === label && el.getAttribute('data-day') === day) {
+                        el.classList.add('active');
+                    }
+                });
+            }
+            try { localStorage.setItem('surfcheckDay', day); } catch(e) {}
+        }
+
+        function showTimeframe(label) {
+            const activeDay = document.querySelector('.day-btn.active')?.getAttribute('data-day') || 'today';
+            document.querySelectorAll('.timeframe-content').forEach(el => {
+                el.style.display = (el.getAttribute('data-tf') === label && el.getAttribute('data-day') === activeDay) ? 'block' : 'none';
+            });
+            document.querySelectorAll('.tf-btn').forEach(el => {
+                el.classList.remove('active');
+                if (el.getAttribute('data-btn') === label && el.getAttribute('data-day') === activeDay) {
+                    el.classList.add('active');
+                }
+            });
             try { localStorage.setItem('surfcheckTimeframe', label); } catch(e) {}
         }
+
         document.addEventListener('DOMContentLoaded', function() {
+            const savedDay = (function(){ try { return localStorage.getItem('surfcheckDay'); } catch(e){ return null; } })();
+            if (savedDay && document.querySelector('.timeframe-content[data-day="' + savedDay + '"]')) {
+                showDay(savedDay);
+            }
             const saved = (function(){ try { return localStorage.getItem('surfcheckTimeframe'); } catch(e){ return null; } })();
-            if (saved && document.querySelector('.timeframe-content[data-tf="' + saved + '"]')) {
-                showTimeframe(saved);
+            if (saved) {
+                const activeDay = document.querySelector('.day-btn.active')?.getAttribute('data-day') || 'today';
+                if (document.querySelector('.timeframe-content[data-tf="' + saved + '"][data-day="' + activeDay + '"]')) {
+                    showTimeframe(saved);
+                }
             }
         });
     </script>

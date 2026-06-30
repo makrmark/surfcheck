@@ -135,7 +135,6 @@ def fetch_weather_forecast():
         "longitude": LOCATION["longitude"],
         "hourly": "uv_index,temperature_2m,precipitation_probability",
         "timezone": "Australia/Sydney",
-        "forecast_days": 1
     }
     try:
         response = requests.get(url, params=params, timeout=10)
@@ -242,11 +241,14 @@ def get_tide_trend(current_height, past_height, future_height):
         return "changing"
 
 
-def _diffraction_coefficient(shadow_angle):
+def _diffraction_coefficient(shadow_angle, wave_period=10):
     """
     Diffraction coefficient Kd from Wiegel's curves for a beach 5–10 wavelengths
     from the headland tip.  Maps shadow angle (degrees past the direct window edge)
     to the fraction of offshore wave height that reaches the beach.
+    
+    Adjusted for wave period: longer-period groundswell diffracts more (higher Kd),
+    shorter-period windswell diffracts less (lower Kd). Reference period = 10s.
     """
     if shadow_angle <= 0:
         return 1.0  # inside the direct window, no diffraction loss
@@ -265,14 +267,24 @@ def _diffraction_coefficient(shadow_angle):
         x2, y2 = curve[i + 1]
         if x1 <= shadow_angle <= x2:
             t = (shadow_angle - x1) / (x2 - x1)
-            return y1 + t * (y2 - y1)
+            kd = y1 + t * (y2 - y1)
+            break
+    else:
+        # Extrapolate beyond 90° using the slope from the last two points, floor at 0
+        x1, y1 = curve[-2]
+        x2, y2 = curve[-1]
+        slope = (y2 - y1) / (x2 - x1)
+        kd = y2 + slope * (shadow_angle - x2)
+        kd = max(0.0, kd)
 
-    # Extrapolate beyond 90° using the slope from the last two points, floor at 0
-    x1, y1 = curve[-2]
-    x2, y2 = curve[-1]
-    slope = (y2 - y1) / (x2 - x1)
-    result = y2 + slope * (shadow_angle - x2)
-    return max(0.0, result)
+    # Period-dependent adjustment: longer waves wrap around headlands more
+    # L = gT²/2π, so r/L ∝ 1/T².  Scale factor from the Wiegel r/L curves.
+    # Reference period 10s gives factor 1.0
+    period_factor = 0.6 + 0.04 * wave_period  # 0.84 at 6s, 1.0 at 10s, 1.24 at 16s
+    period_factor = max(0.7, min(1.3, period_factor))
+    kd *= period_factor
+
+    return max(0.0, min(1.0, kd))
 
 
 def _angle_of_attack_factor(attack_angle):
@@ -493,7 +505,7 @@ def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wa
     else:
         shadow_angle = diff - right_offset
 
-    kd = _diffraction_coefficient(shadow_angle)
+    kd = _diffraction_coefficient(shadow_angle, wave_period)
     shoal = shoal_factor(wave_period)
     effective = offshore_height * kd * shoal
 
@@ -503,7 +515,7 @@ def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wa
 
 
 def calculate_exposure_percent(wave_direction, beach_aspect,
-                               left_offset=10, right_offset=10):
+                               wave_period, left_offset=10, right_offset=10):
     """
     Beach exposure percentage = Kd × 100 (how much swell reaches the beach).
     """
@@ -514,7 +526,7 @@ def calculate_exposure_percent(wave_direction, beach_aspect,
         shadow_angle = abs(diff) - left_offset
     else:
         shadow_angle = diff - right_offset
-    kd = _diffraction_coefficient(shadow_angle)
+    kd = _diffraction_coefficient(shadow_angle, wave_period)
     return kd * 100
 
 
@@ -840,7 +852,7 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         effective_height = calculate_effective_height(
             wave_height, wave_direction, aspect, wave_period, left_off, right_off
         )
-        exposure = calculate_exposure_percent(wave_direction, aspect, left_off, right_off)
+        exposure = calculate_exposure_percent(wave_direction, aspect, wave_period, left_off, right_off)
 
         # Angle of attack — how the swell hits the beach face
         # When swell is inside the window, attack = direct angular difference.
@@ -1011,14 +1023,23 @@ def generate_report(marine_data, wind_data, tide_data):
         index = round(degrees / 22.5) % 16
         return directions[index]
 
-    # Compute conditions for each timeframe
+    # Compute conditions for each timeframe for each day
     weather_data = fetch_weather_forecast()
+    dates = [('today', today), ('tomorrow', today + datetime.timedelta(days=1))]
     all_timeframes = []
-    for tf in TIMEFRAMES:
-        cond = compute_timeframe_conditions(marine_data, wind_data, tide_data, tf["hour"], today, sydney_tz, degrees_to_compass, weather_data)
-        cond["label"] = tf["label"]
-        cond["emoji"] = tf["emoji"]
-        all_timeframes.append(cond)
+    for day_id, date in dates:
+        s_hour, s_s_hour = sunrise_sunset(date)
+        srise = f"{int(s_hour):02d}:{int((s_hour % 1) * 60):02d}"
+        sset = f"{int(s_s_hour):02d}:{int((s_s_hour % 1) * 60):02d}"
+        for tf in TIMEFRAMES:
+            cond = compute_timeframe_conditions(marine_data, wind_data, tide_data, tf["hour"], date, sydney_tz, degrees_to_compass, weather_data)
+            cond["label"] = tf["label"]
+            cond["emoji"] = tf["emoji"]
+            cond["day"] = day_id
+            cond["date"] = date
+            cond["sunrise_str"] = srise
+            cond["sunset_str"] = sset
+            all_timeframes.append(cond)
 
     # Get SST data (shared across all timeframes)
     sst_data = imos_sst.get_water_temperature()
@@ -1028,21 +1049,26 @@ def generate_report(marine_data, wind_data, tide_data):
 
 
     # Generate LLM-powered per-beach reports (all timeframes in one call)
-    llm_reports = llm_report.generate_reports(TIMEFRAMES, all_timeframes)
+    # Build expanded timeframes config with day labels
+    llm_config = []
+    for day_label in ['Today', 'Tomorrow']:
+        for tf in TIMEFRAMES:
+            config = dict(tf)
+            config['label'] = f"{day_label} {tf['label']}"
+            llm_config.append(config)
+    llm_reports = llm_report.generate_reports(llm_config, all_timeframes)
     if llm_reports:
+        # Map back from prefixed labels to original labels
         for tf in all_timeframes:
-            for bc in tf["beach_conditions"]:
-                bc["llm_note"] = llm_reports.get((tf["label"], bc["name"]), "")
-
-    # Compute today's sunrise and sunset
-    sunrise_hour, sunset_hour = sunrise_sunset(today)
-    sunrise_str = f"{int(sunrise_hour):02d}:{int((sunrise_hour % 1) * 60):02d}"
-    sunset_str = f"{int(sunset_hour):02d}:{int((sunset_hour % 1) * 60):02d}"
+            day_prefix = 'Today' if tf['day'] == 'today' else 'Tomorrow'
+            llm_label = f"{day_prefix} - {tf['label']}"
+            for bc in tf['beach_conditions']:
+                bc["llm_note"] = llm_reports.get((llm_label, bc["name"]), "")
 
     # Build the timeframe section HTML blocks
     def build_tf_section(tf, is_first):
         display = "" if is_first else "display:none;"
-        html = f'<div class="timeframe-content" data-tf="{tf["label"]}" style="{display}">'
+        html = f'<div class="timeframe-content" data-tf="{tf["label"]}" data-day="{tf["day"]}" style="{display}">'
 
         # Compute UV/hat/clothing before using them in sections
         uv_val = tf["uv_index"]
@@ -1053,9 +1079,14 @@ def generate_report(marine_data, wind_data, tide_data):
         cloth_text = clothing_text(wetsuit_rec, hat_rec, uv_val, water_temp)
 
         # Today's Recommendations section (best beaches + gear merged)
+        # Day suffix for date display
+        _d = tf["date"]
+        _suffix = "th" if 11 <= _d.day <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(_d.day % 10, "th")
+        _date_str = f"{_d.strftime('%a')} {_d.day}{_suffix} {_d.strftime('%B')}"
+
         html += f'''
         <div class="section">
-            <h2>🏆 Today&#39;s Recommendations</h2>
+            <h2>🏆 Recommendations for {_date_str}</h2>
             <div class="rec-card">
                 <div class="rec-beaches">{tf["best_beaches_str"]}</div>
                 <div class="rec-wave">{metres_to_feet_range(tf["max_effective_height"])}</div>
@@ -1109,7 +1140,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 </div>
                 <div class="condition-item">
                     <span class="label">Sunrise/set:</span>
-                    <span class="value">🌅 {sunrise_str} — 🌇 {sunset_str}<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                    <span class="value">🌅 {tf["sunrise_str"]} — 🌇 {tf["sunset_str"]}<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
                 </div>'''
         if tf["air_temp"] is not None:
             html += f'''
@@ -1230,6 +1261,31 @@ def generate_report(marine_data, wind_data, tide_data):
             color: #0066cc;
             font-size: 0.95em;
             margin: 0;
+        }}
+        .day-nav {{
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 6px;
+            width: 100%;
+        }}
+        .day-btn {{
+            padding: 4px 16px;
+            border: 1.5px solid #0066cc;
+            border-radius: 20px;
+            background: white;
+            color: #0066cc;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }}
+        .day-btn:hover {{
+            background: #e6f2ff;
+        }}
+        .day-btn.active {{
+            background: #0066cc;
+            color: white;
         }}
         .timeframe-nav {{
             display: flex;
@@ -1560,13 +1616,25 @@ def generate_report(marine_data, wind_data, tide_data):
     <header>
         <h1>🏄‍♂️ Northern Beaches Surf Check</h1>'''
 
+    # Day navigation buttons
+    html_content += '''
+        <nav class="day-nav">
+            <button class="day-btn active" data-day="today" onclick="showDay('today')">Today</button>
+            <button class="day-btn" data-day="tomorrow" onclick="showDay('tomorrow')">Tomorrow</button>
+        </nav>'''
+
     # Timeframe navigation buttons
     html_content += '''
         <nav class="timeframe-nav">'''
     for i, tf in enumerate(TIMEFRAMES):
         active_class = ' active' if i == 0 else ''
         html_content += f'''
-            <button class="tf-btn{active_class}" data-btn="{tf['label']}" onclick="showTimeframe('{tf['label']}')">{tf['emoji']} {tf['label']}</button>'''
+            <button class="tf-btn{active_class}" data-btn="{tf['label']}" data-day="today" onclick="showTimeframe('{tf['label']}')">{tf['emoji']} {tf['label']}</button>'''
+    # Duplicate for tomorrow
+    for i, tf in enumerate(TIMEFRAMES):
+        active_class = ' active' if i == 0 else ''
+        html_content += f'''
+            <button class="tf-btn{active_class}" data-btn="{tf['label']}" data-day="tomorrow" onclick="showTimeframe('{tf['label']}')" style="display:none">{tf['emoji']} {tf['label']}</button>'''
     html_content += '''
         </nav>'''
 
@@ -1574,8 +1642,14 @@ def generate_report(marine_data, wind_data, tide_data):
     </header>'''
 
     # All timeframe content blocks
+    first_today = True
     for i, tf in enumerate(all_timeframes):
-        html_content += build_tf_section(tf, i == 0)
+        is_first = (i == 0) or (i == len(TIMEFRAMES))
+        if tf["day"] == 'today':
+            is_first = (i < len(TIMEFRAMES) and i == 0)
+        else:
+            is_first = False
+        html_content += build_tf_section(tf, is_first)
 
     # Footer, watermark, and JavaScript
     html_content += f'''
@@ -1592,19 +1666,52 @@ def generate_report(marine_data, wind_data, tide_data):
     </div>
 
     <script>
-        function showTimeframe(label) {{
+        function showDay(day) {{
+            document.querySelectorAll('.day-btn').forEach(el => el.classList.remove('active'));
+            document.querySelector('.day-btn[data-day="' + day + '"]').classList.add('active');
+            document.querySelectorAll('.tf-btn').forEach(el => {{
+                el.style.display = el.getAttribute('data-day') === day ? '' : 'none';
+            }});
             document.querySelectorAll('.timeframe-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.tf-btn').forEach(el => el.classList.remove('active'));
-            const content = document.querySelector('.timeframe-content[data-tf="' + label + '"]');
-            if (content) content.style.display = 'block';
-            const btn = document.querySelector('.tf-btn[data-btn="' + label + '"]');
-            if (btn) btn.classList.add('active');
+            const first = document.querySelector('.timeframe-content[data-day="' + day + '"]');
+            if (first) {{
+                first.style.display = 'block';
+                const label = first.getAttribute('data-tf');
+                document.querySelectorAll('.tf-btn').forEach(el => {{
+                    el.classList.remove('active');
+                    if (el.getAttribute('data-btn') === label && el.getAttribute('data-day') === day) {{
+                        el.classList.add('active');
+                    }}
+                }});
+            }}
+            try {{ localStorage.setItem('surfcheckDay', day); }} catch(e) {{}}
+        }}
+
+        function showTimeframe(label) {{
+            const activeDay = document.querySelector('.day-btn.active')?.getAttribute('data-day') || 'today';
+            document.querySelectorAll('.timeframe-content').forEach(el => {{
+                el.style.display = (el.getAttribute('data-tf') === label && el.getAttribute('data-day') === activeDay) ? 'block' : 'none';
+            }});
+            document.querySelectorAll('.tf-btn').forEach(el => {{
+                el.classList.remove('active');
+                if (el.getAttribute('data-btn') === label && el.getAttribute('data-day') === activeDay) {{
+                    el.classList.add('active');
+                }}
+            }});
             try {{ localStorage.setItem('surfcheckTimeframe', label); }} catch(e) {{}}
         }}
+
         document.addEventListener('DOMContentLoaded', function() {{
+            const savedDay = (function(){{ try {{ return localStorage.getItem('surfcheckDay'); }} catch(e){{ return null; }} }})();
+            if (savedDay && document.querySelector('.timeframe-content[data-day="' + savedDay + '"]')) {{
+                showDay(savedDay);
+            }}
             const saved = (function(){{ try {{ return localStorage.getItem('surfcheckTimeframe'); }} catch(e){{ return null; }} }})();
-            if (saved && document.querySelector('.timeframe-content[data-tf="' + saved + '"]')) {{
-                showTimeframe(saved);
+            if (saved) {{
+                const activeDay = document.querySelector('.day-btn.active')?.getAttribute('data-day') || 'today';
+                if (document.querySelector('.timeframe-content[data-tf="' + saved + '"][data-day="' + activeDay + '"]')) {{
+                    showTimeframe(saved);
+                }}
             }}
         }});
     </script>

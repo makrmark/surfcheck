@@ -49,13 +49,16 @@ The real-time SST pipeline depends on `aws s3 cp --no-sign-request` being availa
 ## Planned Enhancements
 
 - [x] **Per-beach swell exposure windows** — Beach config in `beaches.json` with L/R offsets; Wiegel diffraction curves for headland shadowing beyond the window.
+- [x] **Embayment factor** — Wave quality multiplier based on beach openness (angular window between headlands) vs wave energy demand. Wide beaches (Long Reef, Curl Curl) score high; narrow beaches (Freshwater) get penalised on big-swell days. Mapped via piecewise curve from the W/Lb ratio theory. Shown as conditional emoji next to beach name.
+- [x] **LLM-powered surf notes** — One-sentence per-beach notes generated via OpenRouter explaining the factors driving conditions.
+- [x] **UV index, air temperature, rain probability** — Fetched from Open-Meteo weather API and displayed in Weather section.
+- [x] **Wetsuit & hat recommendations** — Plain-English gear text based on water temperature and UV level. Hood overrides hat in very cold conditions.
+- [x] **Today's Recommendations section** — Merged best beaches, wave height, board intersection, and gear text into one summary card.
 - [ ] **Extend tide model to 22 harmonic constituents** — AHO provides full constituent set for Fort Denison on request. Would improve accuracy at neap tides and under meteorological effects.
-- [x] **Embayment factor** — Wave quality multiplier based on beach openness (angular window between headlands) vs wave energy demand. Wide beaches (Long Reef, Curl Curl) score high; narrow beaches (Freshwater) get penalised on big-swell days. Mapped via piecewise curve from the W/Lb ratio theory. Displayed as a new "Embay." column on each beach card.
-- [ ] **Period-dependent diffraction** — Kd should vary with wave period (shorter waves diffract less). Implement `Kd = f(shadow_angle, r/L)` per Coastal Engineering Manual.
+- [x] **Period-dependent diffraction** — Kd now varies with wave period: shorter waves diffract less (Kd × 0.84 at 6s), longer waves wrap around more (Kd × 1.24 at 16s). Implemented via `period_factor = 0.6 + 0.04 × T`.
 - [ ] **Beach-specific shoal factors** — Replace uniform `shoal_factor(period)` with per-beach curves accounting for shoreface slope (steeper = more amplification).
 - [ ] **Calibrate L/R offsets per beach** — Current offsets are qualitative estimates. Cross-reference against real surf reports or wave buoys to validate.
 - [ ] **Tide graph** — Add an inline SVG tide curve for the day, generated from the harmonic model.
-- [ ] **Rain / air temperature display** — Include hourly precipitation probability and air temp from the Open-Meteo weather API in the Overall Conditions section.
 - [ ] **Wind gust data** — Add gust speed to the wind display (Open-Meteo provides `windgusts`).
 - [ ] **Multiple forecast days** — Add a day-selector alongside the timeframe selector for tomorrow and the day after.
 - [ ] **Unit test suite** — Add `pytest` tests with mocked API responses for all calculation functions.
@@ -66,7 +69,6 @@ The real-time SST pipeline depends on `aws s3 cp --no-sign-request` being availa
 
 ## Nice-to-Haves
 
-- UV index and sun protection提醒 for long sessions.
 - Surf-cam thumbnails (if publicly available APIs exist for Northern Beaches).
 - PDF/print-friendly report layout.
 - Email or SMS alert when conditions exceed a quality threshold at a favourite beach.

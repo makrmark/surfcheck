@@ -48,8 +48,9 @@ def _build_prompt(timeframes_config, all_timeframes):
         "Tone: concise, insightful, mildly colloquial \u2014 like a local surfer giving a mate "
         "the quick rundown. Use phrases like 'wraps around', 'sheltered from', 'the long period "
         "gives it punch', 'too narrow to handle', 'clean offshore holds up the face'.\n\n"
-        "Respond with valid JSON only, in this exact format:\n"
-        '{"timeframes": {"6-9am": {"Long Reef": "sentence", "Dee Why": "sentence", ...}, ...}}'
+        "Respond with valid JSON only. Use the EXACT timeframe labels from the --- headers "
+        "as keys in the JSON object. For example:\n"
+        '{"timeframes": {"Today 6-9am": {"Long Reef": "sentence", "Dee Why": "sentence", ...}, ...}}'
     )
 
     user_prompt = "Provide forecasts for these timeframes (focus on WHY the conditions are what they are):\n\n"
