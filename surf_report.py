@@ -941,45 +941,36 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
     }
 
 
-def get_wetsuit_svg(wetsuit_rec):
-    """Return inline SVG HTML for the given wetsuit recommendation."""
-    rec_lower = wetsuit_rec.lower()
-    if "boardshorts" in rec_lower or "rash vest" in rec_lower:
-        if "boardshorts" in rec_lower:
-            svg_file = os.path.join(os.path.dirname(__file__), "svgs", "boardshorts.svg")
-        else:
-            svg_file = os.path.join(os.path.dirname(__file__), "svgs", "rashguard.svg")
-    elif "spring" in rec_lower:
-        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "springsuit.svg")
-    elif "steamer" in rec_lower:
-        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "fullwetsuit.svg")
-    else:
-        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "fullwetsuit.svg")
-    try:
-        with open(svg_file) as f:
-            return f.read()
-    except (FileNotFoundError, IOError):
-        return "🩱"
+def clothing_text(wetsuit_rec, hat_rec, uv_label, uv_val, water_temp, air_temp):
+    """Generate a plain-English clothing recommendation sentence."""
+    parts = []
 
+    # Wetsuit
+    temp_desc = "warm" if water_temp >= 22 else ("mild" if water_temp >= 20 else ("cool" if water_temp >= 17 else ("cold" if water_temp >= 14 else "very cold")))
+    parts.append(f"Water is {temp_desc} ({water_temp}°C)")
 
-def get_hat_svg(hat_rec):
-    """Return inline SVG HTML for the given hat recommendation."""
-    rec_lower = hat_rec.lower()
-    if "not needed" in rec_lower or "none" in rec_lower:
-        return ""  # No hat needed, show nothing
-    if "cap" in rec_lower and "bucket" not in rec_lower and "legion" not in rec_lower:
-        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "surfcap.svg")
-    elif "bucket" in rec_lower:
-        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "buckethat.svg")
-    elif "legion" in rec_lower:
-        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "legionnaire.svg")
+    # Additional cold-water gear
+    extra = []
+    wetsuit_lower = wetsuit_rec.lower()
+    if "booties" not in wetsuit_lower and "boots" not in wetsuit_lower:
+        if air_temp is not None and air_temp < 15:
+            extra.append("booties")
+        if water_temp < 14:
+            extra.append("wetsuit hood")
+        if air_temp is not None and air_temp < 12:
+            extra.append("gloves")
+
+    if extra:
+        parts.append(f"Need {wetsuit_rec} plus {' and '.join(extra)}")
     else:
-        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "surfcap.svg")
-    try:
-        with open(svg_file) as f:
-            return f.read()
-    except (FileNotFoundError, IOError):
-        return "🧢"
+        parts.append(f"Need {wetsuit_rec}")
+
+    # Hat based on UV
+    hat_lower = hat_rec.lower()
+    if "not needed" not in hat_lower and "none" not in hat_lower:
+        parts.append(f"UV {uv_label} ({uv_val}) — {hat_rec}")
+
+    return ". ".join(parts) + "."
 
 
 def generate_report(marine_data, wind_data, tide_data):
@@ -1012,8 +1003,7 @@ def generate_report(marine_data, wind_data, tide_data):
     water_temp = sst_data["temp"]
     sst_source = sst_data["source"]
     wetsuit_rec = imos_sst.get_wetsuit_recommendation(water_temp)
-    wetsuit_svg = get_wetsuit_svg(wetsuit_rec)
-    hat_svg = None  # computed per-timeframe
+
 
     # Generate LLM-powered per-beach reports (all timeframes in one call)
     llm_reports = llm_report.generate_reports(TIMEFRAMES, all_timeframes)
@@ -1081,7 +1071,7 @@ def generate_report(marine_data, wind_data, tide_data):
         else:
             uv_label = "Low" if uv_val < 3 else ("Moderate" if uv_val < 6 else "High")
         hat_rec, _ = hat_recommendation(uv_val, tf["solar_compass"], "", [])
-        hat_svg = get_hat_svg(hat_rec)
+        cloth_text = clothing_text(wetsuit_rec, hat_rec, uv_label, uv_val, water_temp, tf["air_temp"])
         if tf["air_temp"] is not None:
             html += f'''
                 <div class="condition-item">
@@ -1099,16 +1089,7 @@ def generate_report(marine_data, wind_data, tide_data):
         </div>
         <div class="section">
             <h2>🧤 Gear</h2>
-            <div class="gear-grid">
-                <div class="gear-item">
-                    <div class="gear-icon">{wetsuit_svg}</div>
-                    <div class="gear-value">{wetsuit_rec}</div>
-                </div>
-                <div class="gear-item">
-                    <div class="gear-icon">{hat_svg}</div>
-                    <div class="gear-value">{hat_rec} (UV: {uv_label}, {uv_val})</div>
-                </div>
-            </div>
+            <p class="gear-text">{cloth_text}</p>
         </div>'''
 
         # Beach Conditions section
@@ -1457,39 +1438,14 @@ def generate_report(marine_data, wind_data, tide_data):
                 grid-template-columns: 1fr;
             }}
         }}
-        .gear-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-        }}
-        .gear-item {{
-            text-align: center;
-            padding: 15px;
+        .gear-text {{
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #333;
             background: #f0f8ff;
+            padding: 12px 16px;
             border-radius: 8px;
-        }}
-        .gear-icon {{
-            width: 80px;
-            height: 90px;
-            margin: 0 auto 6px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2em;
-        }}
-        .gear-icon svg {{
-            width: 100%;
-            height: 100%;
-        }}
-        .gear-label {{
-            font-size: 0.85em;
-            color: #666;
-            margin-bottom: 4px;
-        }}
-        .gear-value {{
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #0066cc;
+            margin: 0;
         }}
         .summary-section {{
             display: grid;
