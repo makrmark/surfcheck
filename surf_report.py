@@ -1044,16 +1044,42 @@ def generate_report(marine_data, wind_data, tide_data):
         display = "" if is_first else "display:none;"
         html = f'<div class="timeframe-content" data-tf="{tf["label"]}" style="{display}">'
 
-        # Best Beaches section
+        # Compute UV/hat/clothing before using them in sections
+        uv_val = tf["uv_index"]
+        if uv_val is None:
+            uv_val = uv_index(solar_elevation_azimuth(tf["hour"] + 0.5, today)[0])
+        uv_label = uv_label_text(uv_val)
+        hat_rec = hat_recommendation(uv_val)
+        cloth_text = clothing_text(wetsuit_rec, hat_rec, uv_val, water_temp)
+
+        # Today's Recommendations section (best beaches + gear merged)
         html += f'''
         <div class="section">
-            <h2>🏆 Best Beaches</h2>
-            <div class="summary-section">
-                <div class="summary-item" style="grid-column: 1 / -1; text-align: center;">
-                    <div class="stars" style="font-size: 1.8em; color: #ffd700; display: block; text-align: center;">{generate_stars(tf["overall_rating"])}</div>
-                    <div style="font-weight: bold; color: #b8860b; font-size: 1.2em; margin-top: 4px;">{tf["best_beaches_str"]}</div>
-                    <div style="margin-top: 6px; font-size: 0.9em; color: #555;">Biggest Break: <strong>{metres_to_feet_range(tf["max_effective_height"])}</strong></div>
-                </div>
+            <h2>🏆 Today&#39;s Recommendations</h2>
+            <div class="rec-card">
+                <div class="rec-stars">{generate_stars(tf["overall_rating"])}</div>
+                <div class="rec-beaches">{tf["best_beaches_str"]}</div>
+                <div class="rec-detail">Wave height: {metres_to_feet_range(tf["max_effective_height"])}</div>'''
+
+        # Common board recommendations across best beaches
+        best_set = {b["name"] for b in tf["best_beaches"]}
+        all_boards = []
+        for bc in tf["beach_conditions"]:
+            if bc["name"] in best_set:
+                boards = [b.strip() for b in bc["board"].split(",")]
+                all_boards.append(set(boards))
+        if all_boards:
+            common_boards = all_boards[0]
+            for s in all_boards[1:]:
+                common_boards &= s
+            if common_boards:
+                board_order = ["Shortboard", "Groveller", "Fish", "Step-Up", "Mid-Length", "Funboard", "Longboard", "Log"]
+                sorted_boards = sorted(common_boards, key=lambda x: board_order.index(x) if x in board_order else 99)
+                html += f'''
+                <div class="rec-detail">Board: {", ".join(sorted_boards)}</div>'''
+
+        html += f'''
+                <div class="rec-detail">🧤 {cloth_text}</div>
             </div>
         </div>'''
 
@@ -1085,13 +1111,6 @@ def generate_report(marine_data, wind_data, tide_data):
                     <span class="label">Sunrise/set:</span>
                     <span class="value">🌅 {sunrise_str} — 🌇 {sunset_str}<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
                 </div>'''
-        # Compute UV fallback label if forecast data missing
-        uv_val = tf["uv_index"]
-        if uv_val is None:
-            uv_val = uv_index(solar_elevation_azimuth(tf["hour"] + 0.5, today)[0])
-        uv_label = uv_label_text(uv_val)
-        hat_rec = hat_recommendation(uv_val)
-        cloth_text = clothing_text(wetsuit_rec, hat_rec, uv_val, water_temp)
         if tf["air_temp"] is not None:
             html += f'''
                 <div class="condition-item">
@@ -1106,10 +1125,6 @@ def generate_report(marine_data, wind_data, tide_data):
                 </div>'''
         html += f'''
             </div>
-        </div>
-        <div class="section">
-            <h2>🧤 Gear</h2>
-            <p class="gear-text">{cloth_text}</p>
         </div>'''
 
         # Beach Conditions section
@@ -1458,30 +1473,29 @@ def generate_report(marine_data, wind_data, tide_data):
                 grid-template-columns: 1fr;
             }}
         }}
-        .gear-text {{
-            font-size: 0.95em;
-            line-height: 1.6;
-            color: #333;
-            background: #f0f8ff;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin: 0;
-        }}
-        .summary-section {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }}
-        .summary-item {{
+        .rec-card {{
             text-align: center;
-            padding: 15px;
+            padding: 20px;
             background: #e6f2ff;
-            border-radius: 8px;
+            border-radius: 10px;
         }}
-        .summary-value {{
+        .rec-stars {{
             font-size: 1.8em;
+            color: #ffd700;
+            display: block;
+            margin-bottom: 6px;
+        }}
+        .rec-beaches {{
             font-weight: bold;
+            color: #b8860b;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+        }}
+        .rec-detail {{
+            font-size: 0.95em;
+            color: #555;
+            margin-top: 4px;
+        }}
             color: #0066cc;
         }}
         .summary-label {{
