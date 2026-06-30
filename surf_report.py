@@ -1061,7 +1061,7 @@ def generate_report(marine_data, wind_data, tide_data):
         # Map back from prefixed labels to original labels
         for tf in all_timeframes:
             day_prefix = 'Today' if tf['day'] == 'today' else 'Tomorrow'
-            llm_label = f"{day_prefix} - {tf['label']}"
+            llm_label = f"{day_prefix} {tf['label']}"
             for bc in tf['beach_conditions']:
                 bc["llm_note"] = llm_reports.get((llm_label, bc["name"]), "")
 
