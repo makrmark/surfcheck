@@ -941,7 +941,23 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
     }
 
 
-def clothing_text(wetsuit_rec, hat_rec, uv_label, uv_val, water_temp, air_temp):
+def uv_label_text(uv_val):
+    """Return WHO-standard UV category label for a given UV index value."""
+    if uv_val is None:
+        return "Unknown"
+    if uv_val < 3:
+        return "Low"
+    elif uv_val < 6:
+        return "Moderate"
+    elif uv_val < 8:
+        return "High"
+    elif uv_val < 11:
+        return "Very High"
+    else:
+        return "Extreme"
+
+
+def clothing_text(wetsuit_rec, hat_rec, uv_val, water_temp):
     """Generate a plain-English clothing recommendation sentence."""
     parts = []
 
@@ -965,14 +981,14 @@ def clothing_text(wetsuit_rec, hat_rec, uv_label, uv_val, water_temp, air_temp):
     else:
         parts.append(f"Water is {temp_desc} ({water_temp}°C) so you'll need {wetsuit_rec}")
 
-    wetsuit_lower = wetsuit_rec.lower()
     if water_temp < 14:
         # Very cold — hood replaces hat
         parts.append("Wear a wetsuit hood for head warmth")
     else:
         # Hat based on UV
         hat_lower = hat_rec.lower()
-        if "not needed" not in hat_lower and "none" not in hat_lower:
+        if "not needed" not in hat_lower and "none" not in hat_lower and uv_val is not None and uv_val > 0:
+            uv_label = uv_label_text(uv_val)
             hat_article = "an" if hat_rec.lower()[0] in ('a', 'e', 'i', 'o', 'u') else "a"
             parts.append(f"UV is {uv_label} ({uv_val}) so wear {hat_article} {hat_rec}")
 
@@ -1073,11 +1089,9 @@ def generate_report(marine_data, wind_data, tide_data):
         uv_val = tf["uv_index"]
         if uv_val is None:
             uv_val = uv_index(solar_elevation_azimuth(tf["hour"] + 0.5, today)[0])
-            uv_label = "Low" if uv_val < 3 else ("Moderate" if uv_val < 6 else "High")
-        else:
-            uv_label = "Low" if uv_val < 3 else ("Moderate" if uv_val < 6 else "High")
+        uv_label = uv_label_text(uv_val)
         hat_rec, _ = hat_recommendation(uv_val, tf["solar_compass"], "", [])
-        cloth_text = clothing_text(wetsuit_rec, hat_rec, uv_label, uv_val, water_temp, tf["air_temp"])
+        cloth_text = clothing_text(wetsuit_rec, hat_rec, uv_val, water_temp)
         if tf["air_temp"] is not None:
             html += f'''
                 <div class="condition-item">
