@@ -1086,7 +1086,7 @@ def generate_report(marine_data, wind_data, tide_data):
 
         html += f'''
         <div class="section">
-            <h2>🏆 Recommendations for {_date_str}</h2>
+            <h2>🏆 {_date_str}</h2>
             <div class="rec-card">
                 <div class="rec-beaches">{tf["best_beaches_str"]}</div>
                 <div class="rec-wave">{metres_to_feet_range(tf["max_effective_height"])}</div>
@@ -1240,8 +1240,9 @@ def generate_report(marine_data, wind_data, tide_data):
             color: #333;
             max-width: 800px;
             margin: 0 auto;
-            padding: 50px 20px 20px;
+            padding: 90px 20px 20px;
             background-color: #f0f8ff;
+            overflow-x: hidden;
         }}
         header {{
             position: fixed;
