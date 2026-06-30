@@ -127,6 +127,28 @@ def fetch_marine_forecast():
         return None
 
 
+def fetch_weather_forecast():
+    """Fetch UV index, air temperature, and precipitation forecast from Open-Meteo API."""
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": LOCATION["latitude"],
+        "longitude": LOCATION["longitude"],
+        "hourly": "uv_index,temperature_2m,precipitation_probability",
+        "timezone": "Australia/Sydney",
+        "forecast_days": 1
+    }
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        logger.info("Successfully fetched weather forecast")
+        return data
+    except Exception as e:
+        logger.error(f"Failed to fetch weather forecast: {e}")
+        return None
+
+
+
 def fetch_wind_forecast():
     """Fetch wind forecast data from Open-Meteo API."""
     url = "https://api.open-meteo.com/v1/forecast"
@@ -724,7 +746,12 @@ def metres_to_feet_range(metres):
     return f"{lower}-{upper} ft"
 
 
-def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour, today, sydney_tz, degrees_to_compass):
+def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour, today, sydney_tz, degrees_to_compass, weather_data=None):
+    """
+    Compute all surf conditions for a single target hour.
+    
+    weather_data: optional Open-Meteo forecast data with uv_index, temperature_2m, precipitation_probability.
+    """
     """
     Compute all surf conditions for a single target hour.
     
@@ -747,8 +774,28 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
     wind_speeds = wind_data['hourly']['windspeed']
     wind_directions = wind_data['hourly']['winddirection']
 
+    # Extract weather data (UV, air temp, rain probability) if available
+    air_temp = None
+    rain_prob = None
+    uv_forecast = None
+
     # Find indices for the target hour
     target_hour_str = f"{today}T{target_hour:02d}:00"
+
+    if weather_data and 'hourly' in weather_data:
+        weather_times = weather_data['hourly']['time']
+        air_temps = weather_data['hourly'].get('temperature_2m', [])
+        rain_probs = weather_data['hourly'].get('precipitation_probability', [])
+        uvs = weather_data['hourly'].get('uv_index', [])
+        try:
+            weather_idx = weather_times.index(target_hour_str)
+            air_temp = air_temps[weather_idx] if weather_idx < len(air_temps) else None
+            rain_prob = rain_probs[weather_idx] if weather_idx < len(rain_probs) else None
+            uv_forecast = uvs[weather_idx] if weather_idx < len(uvs) else None
+        except (ValueError, IndexError):
+            pass
+
+    # Find indices for marine and wind
     try:
         marine_idx = marine_times.index(target_hour_str)
         wind_idx = wind_times.index(target_hour_str)
@@ -885,10 +932,12 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         "best_beaches": best_beaches,
         "best_beaches_str": best_beaches_str,
         "max_effective_height": max_effective_height,
-        # Solar data for UV and hat recommendations (use midpoint of time period)
-        "solar_elevation": solar_elevation_azimuth(target_hour + 0.5, today)[0],
+        # Weather data from API
+        "air_temp": air_temp,
+        "rain_prob": rain_prob,
+        "uv_index": uv_forecast,
+        # Solar compass still useful for context
         "solar_compass": degrees_to_compass(solar_elevation_azimuth(target_hour + 0.5, today)[1]),
-        "uv_index": uv_index(solar_elevation_azimuth(target_hour + 0.5, today)[0]),
     }
 
 
@@ -909,9 +958,10 @@ def generate_report(marine_data, wind_data, tide_data):
         return directions[index]
 
     # Compute conditions for each timeframe
+    weather_data = fetch_weather_forecast()
     all_timeframes = []
     for tf in TIMEFRAMES:
-        cond = compute_timeframe_conditions(marine_data, wind_data, tide_data, tf["hour"], today, sydney_tz, degrees_to_compass)
+        cond = compute_timeframe_conditions(marine_data, wind_data, tide_data, tf["hour"], today, sydney_tz, degrees_to_compass, weather_data)
         cond["label"] = tf["label"]
         cond["emoji"] = tf["emoji"]
         all_timeframes.append(cond)
@@ -953,8 +1003,6 @@ def generate_report(marine_data, wind_data, tide_data):
         </div>'''
 
         # Overall Conditions section — two side-by-side cards
-        uv = tf["uv_index"]
-        hat_rec, uv_label = hat_recommendation(uv, tf["solar_compass"], "", [])
         html += f'''
         <div class="conditions-grid">
             <div class="section">
@@ -973,7 +1021,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 </div>
             </div>
             <div class="section">
-                <h2>🌤️ Atmospheric</h2>
+                <h2>🌤️ Weather</h2>
                 <div class="condition-item">
                     <span class="label">Wind:</span>
                     <span class="value">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]}<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
@@ -981,11 +1029,33 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="condition-item">
                     <span class="label">Sunrise/set:</span>
                     <span class="value">🌅 {sunrise_str} — 🌇 {sunset_str}<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
-                </div>
+                </div>'''
+        # Compute UV fallback label if forecast data missing
+        uv_val = tf["uv_index"]
+        if uv_val is None:
+            uv_val = uv_index(solar_elevation_azimuth(tf["hour"] + 0.5, today)[0])
+            uv_label = "Low" if uv_val < 3 else ("Moderate" if uv_val < 6 else "High")
+        else:
+            uv_label = "Low" if uv_val < 3 else ("Moderate" if uv_val < 6 else "High")
+        hat_rec, _ = hat_recommendation(uv_val, tf["solar_compass"], "", [])
+        html += f'''
                 <div class="condition-item">
                     <span class="label">UV:</span>
-                    <span class="value">{uv_label} ({uv}) — {tf["solar_compass"]}<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
-                </div>
+                    <span class="value">{uv_label} ({uv_val}) — {tf["solar_compass"]}<span class="tooltip">Open-Meteo UV index forecast</span></span>
+                </div>'''
+        if tf["air_temp"] is not None:
+            html += f'''
+                <div class="condition-item">
+                    <span class="label">Air:</span>
+                    <span class="value">{tf["air_temp"]:.0f}°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+                </div>'''
+        if tf["rain_prob"] is not None:
+            html += f'''
+                <div class="condition-item">
+                    <span class="label">Rain:</span>
+                    <span class="value">{tf["rain_prob"]:.0f}%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+                </div>'''
+        html += f'''
             </div>
         </div>
         <div class="section">
@@ -993,12 +1063,10 @@ def generate_report(marine_data, wind_data, tide_data):
             <div class="gear-grid">
                 <div class="gear-item">
                     <div class="gear-icon">🩱</div>
-                    <div class="gear-label">Wetsuit</div>
                     <div class="gear-value">{wetsuit_rec}</div>
                 </div>
                 <div class="gear-item">
                     <div class="gear-icon">🧢</div>
-                    <div class="gear-label">Hat</div>
                     <div class="gear-value">{hat_rec}</div>
                 </div>
             </div>
