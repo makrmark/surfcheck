@@ -961,6 +961,8 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
             "attack_angle": attack_angle,
             "tide_factor_value": tide_factor_value,
             "embayment_factor": embay_val,
+            "breaker_factor": breaker_val,
+            "slope": slope,
             "wave_quality": wave_quality,
         })
 

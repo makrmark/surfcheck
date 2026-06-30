@@ -158,11 +158,31 @@
         </table>
 
         <div class="formula">
-            effective_height = offshore_height × K<sub>d</sub> × shoal_factor(period)
+            effective_height = offshore_height × K<sub>d</sub> × shoal_factor(period, slope)
         </div>
+        <p>The shoal factor is now adjusted per beach based on shoreface slope:</p>
+        <table>
+            <tr><th>Slope class</th><th>Modifier</th><th>Beaches</th></tr>
+            <tr><td>Flat</td><td>×0.85</td><td>Long Reef, Dee Why</td></tr>
+            <tr><td>Moderate</td><td>×1.00</td><td>Curl Curl, Freshwater</td></tr>
+            <tr><td>Steep</td><td>×1.15</td><td>North Steyne, South Steyne</td></tr>
+        </table>
+        <p>This is why a 0.8m wave at Dee Why (flat) produces barely a ripple while the same swell at South Steyne (steep) generates a clean breaking wave.</p>
 
         <p>All heights are <strong>face height</strong> in Australian convention — the vertical trough-to-crest of the breaking wave.</p>
     </section>
+
+    <section>
+        <h2>🌊 Breaker Index Quality</h2>
+        <p>Even when a wave reaches the beach, it may not break cleanly. The <strong>breaker index</strong> γ<sub>b</sub> = H<sub>b</sub> / h<sub>b</sub> (wave height ÷ water depth at the break line) determines how the wave breaks. The depth at the break line is estimated from tide height and beach slope:</p>
+        <table>
+            <tr><th>γ<sub>b</sub></th><th>Break type</th><th>Quality factor</th></tr>
+            <tr><td>&lt; 0.6</td><td>Surging / doesn't break</td><td>0.4</td></tr>
+            <tr><td>0.6–0.8</td><td>Spilling / mushy</td><td>0.7</td></tr>
+            <tr><td>0.8–1.0</td><td>Plunging / clean</td><td>1.0</td></tr>
+            <tr><td>&gt; 1.0</td><td>Collapsing / dumpy</td><td>0.5</td></tr>
+        </table>
+        <p>The breaker quality factor is multiplied into the overall wave quality alongside wind, attack angle, tide, and embayment. This is why small waves on a flat beach at low tide often score lower than you'd expect from the height alone — they simply don't rear up into a breaking face.</p>
 
     <section>
         <h2>🌊 Tide Height Calculation</h2>
@@ -360,7 +380,7 @@
             <li>Tide model uses only M2 + S2 constituents — missing N2, K1, O1 introduce up to ±0.2m error</li>
             <li>Wiegel diffraction curves assume idealised headland geometry</li>
             <li>Single offshore data point for all beaches — no local wind effects</li>
-            <li>Shoaling factor is uniform across all beaches (doesn't account for beach slope)</li>
+            <li>Shoaling factor now accounts for per-beach slope (flat/moderate/steep) and breaker index quality</li>
             <li>IMOS SST query requires AWS CLI</li>
         </ul>
     </section>
