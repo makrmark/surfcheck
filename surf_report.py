@@ -962,6 +962,26 @@ def get_wetsuit_svg(wetsuit_rec):
         return "🩱"
 
 
+def get_hat_svg(hat_rec):
+    """Return inline SVG HTML for the given hat recommendation."""
+    rec_lower = hat_rec.lower()
+    if "not needed" in rec_lower or "none" in rec_lower:
+        return ""  # No hat needed, show nothing
+    if "cap" in rec_lower and "bucket" not in rec_lower and "legion" not in rec_lower:
+        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "surfcap.svg")
+    elif "bucket" in rec_lower:
+        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "buckethat.svg")
+    elif "legion" in rec_lower:
+        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "legionnaire.svg")
+    else:
+        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "surfcap.svg")
+    try:
+        with open(svg_file) as f:
+            return f.read()
+    except (FileNotFoundError, IOError):
+        return "🧢"
+
+
 def generate_report(marine_data, wind_data, tide_data):
     """Generate the complete multi-timeframe surf report HTML."""
     if not marine_data or not wind_data:
@@ -993,6 +1013,7 @@ def generate_report(marine_data, wind_data, tide_data):
     sst_source = sst_data["source"]
     wetsuit_rec = imos_sst.get_wetsuit_recommendation(water_temp)
     wetsuit_svg = get_wetsuit_svg(wetsuit_rec)
+    hat_svg = None  # computed per-timeframe
 
     # Generate LLM-powered per-beach reports (all timeframes in one call)
     llm_reports = llm_report.generate_reports(TIMEFRAMES, all_timeframes)
@@ -1060,6 +1081,7 @@ def generate_report(marine_data, wind_data, tide_data):
         else:
             uv_label = "Low" if uv_val < 3 else ("Moderate" if uv_val < 6 else "High")
         hat_rec, _ = hat_recommendation(uv_val, tf["solar_compass"], "", [])
+        hat_svg = get_hat_svg(hat_rec)
         if tf["air_temp"] is not None:
             html += f'''
                 <div class="condition-item">
@@ -1083,7 +1105,7 @@ def generate_report(marine_data, wind_data, tide_data):
                     <div class="gear-value">{wetsuit_rec}</div>
                 </div>
                 <div class="gear-item">
-                    <div class="gear-icon">🧢</div>
+                    <div class="gear-icon">{hat_svg}</div>
                     <div class="gear-value">{hat_rec} (UV: {uv_label}, {uv_val})</div>
                 </div>
             </div>

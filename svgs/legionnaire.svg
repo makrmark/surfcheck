@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="14 95 158 140">
+<defs>
+    <style>
+      .hat-body { fill: none; stroke: #1e293b; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+      .hat-accent { fill: none; stroke: #38bdf8; stroke-width: 2; }
+      .hat-line { fill: none; stroke: #38bdf8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+      .hat-strap { fill: none; stroke: #64748b; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+<g transform="translate(0, 20)">
+    
+    
+    
+    
+    <g transform="translate(105, 125)">
+      
+      <path d="M -42,10 C -48,15 -52,48 -45,62 C -35,75 35,75 45,62 C 52,48 48,15 42,10 Z" class="hat-accent" />
+      
+      <path d="M -30,25 C -35,45 -30,58 -25,66" class="hat-strap" stroke-linecap="round" />
+      <path d="M 30,25 C 35,45 30,58 25,66" class="hat-strap" stroke-linecap="round" />
+
+      
+      <path d="M -42,10 C -42,-35 42,-35 42,10 Z" class="hat-body" />
+      
+      
+      <path d="M -42,8 C -42,8 -76,14 -70,25 C -66,27 -48,16 -38,12" class="hat-body" />
+      
+      
+      <path d="M -25,-18 C 0,-10 25,-18 25,-18" class="hat-line" />
+
+      
+      <path d="M -25,25 C -20,44 0,45 0,45 C 0,45 20,44 25,25" class="hat-strap" />
+    </g>
+    
+    
+    
+    
+  </g>
+</svg>
