@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270" width="100%" height="100%">
+<defs>
+    <style>
+      .icon-bg { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; rx: 16px; }
+      .suit-body { fill: #1e293b; stroke: #0f172a; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+      .suit-accent { fill: #38bdf8; }
+      .suit-line { fill: none; stroke: #38bdf8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+      .suit-seam { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 4 3; stroke-linecap: round; }
+      .skin { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 2; }
+      .label-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; text-anchor: middle; letter-spacing: 0.5px; }
+      .sub-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 13px; font-weight: 500; fill: #64748b; text-anchor: middle; }
+    </style>
+  </defs>
+<g transform="translate(25, 20)">
+    <!-- Card Background -->
+    <rect width="210" height="270" class="icon-bg" />
+    
+    <!-- Graphic Canvas (Centered at X=105, Y=120) -->
+    <g transform="translate(105, 120)">
+      <!-- Waistband / Drawstring Area -->
+      <path d="M -45,-35 L 45,-35 L 42,-15 L -42,-15 Z" class="suit-body" />
+      <!-- Main Shorts Legs -->
+      <path d="M -42,-15 L -48,35 L -10,35 L -4,0 L 4,0 L 10,35 L 48,35 L 42,-15 Z" class="suit-body" />
+      <!-- Accent Side Panels -->
+      <path d="M -45,-35 L -42,-15 L -48,35 L -36,35 L -31,-15 L -35,-35 Z" class="suit-accent" />
+      <path d="M 45,-35 L 42,-15 L 48,35 L 36,35 L 31,-15 L 35,-35 Z" class="suit-accent" />
+      <!-- Waistband Detail Line -->
+      <path d="M -43,-23 L 43,-23" class="suit-line" />
+      <!-- Drawstring -->
+      <path d="M -5,-23 L -12,-5 M 5,-23 L 12,-5" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+      <circle cx="-12" cy="-5" r="2.5" fill="#ffffff" />
+      <circle cx="12" cy="-5" r="2.5" fill="#ffffff" />
+    </g>
+    
+    <!-- Typography -->
+    <text x="105" y="225" class="label-text">BOARDSHORTS</text>
+    <text x="105" y="248" class="sub-text">Warm Water / Surf Trunks</text>
+  </g>
+</svg>

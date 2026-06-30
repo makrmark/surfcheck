@@ -941,6 +941,27 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
     }
 
 
+def get_wetsuit_svg(wetsuit_rec):
+    """Return inline SVG HTML for the given wetsuit recommendation."""
+    rec_lower = wetsuit_rec.lower()
+    if "boardshorts" in rec_lower or "rash vest" in rec_lower:
+        if "boardshorts" in rec_lower:
+            svg_file = os.path.join(os.path.dirname(__file__), "svgs", "boardshorts.svg")
+        else:
+            svg_file = os.path.join(os.path.dirname(__file__), "svgs", "rashguard.svg")
+    elif "spring" in rec_lower:
+        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "springsuit.svg")
+    elif "steamer" in rec_lower:
+        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "fullwetsuit.svg")
+    else:
+        svg_file = os.path.join(os.path.dirname(__file__), "svgs", "fullwetsuit.svg")
+    try:
+        with open(svg_file) as f:
+            return f.read()
+    except (FileNotFoundError, IOError):
+        return "🩱"
+
+
 def generate_report(marine_data, wind_data, tide_data):
     """Generate the complete multi-timeframe surf report HTML."""
     if not marine_data or not wind_data:
@@ -971,6 +992,7 @@ def generate_report(marine_data, wind_data, tide_data):
     water_temp = sst_data["temp"]
     sst_source = sst_data["source"]
     wetsuit_rec = imos_sst.get_wetsuit_recommendation(water_temp)
+    wetsuit_svg = get_wetsuit_svg(wetsuit_rec)
 
     # Generate LLM-powered per-beach reports (all timeframes in one call)
     llm_reports = llm_report.generate_reports(TIMEFRAMES, all_timeframes)
@@ -1057,7 +1079,7 @@ def generate_report(marine_data, wind_data, tide_data):
             <h2>🧤 Gear</h2>
             <div class="gear-grid">
                 <div class="gear-item">
-                    <div class="gear-icon">🩱</div>
+                    <div class="gear-icon">{wetsuit_svg}</div>
                     <div class="gear-value">{wetsuit_rec}</div>
                 </div>
                 <div class="gear-item">
@@ -1427,6 +1449,10 @@ def generate_report(marine_data, wind_data, tide_data):
         .gear-icon {{
             font-size: 2em;
             margin-bottom: 6px;
+        }}
+        .gear-icon svg {{
+            width: 60px;
+            height: 75px;
         }}
         .gear-label {{
             font-size: 0.85em;

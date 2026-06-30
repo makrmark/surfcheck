@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270" width="100%" height="100%">
+<defs>
+    <style>
+      .icon-bg { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; rx: 16px; }
+      .suit-body { fill: #1e293b; stroke: #0f172a; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+      .suit-accent { fill: #38bdf8; }
+      .suit-line { fill: none; stroke: #38bdf8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+      .suit-seam { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 4 3; stroke-linecap: round; }
+      .skin { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 2; }
+      .label-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; text-anchor: middle; letter-spacing: 0.5px; }
+      .sub-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 13px; font-weight: 500; fill: #64748b; text-anchor: middle; }
+    </style>
+  </defs>
+<g transform="translate(495, 20)">
+    <rect width="210" height="270" class="icon-bg" />
+    
+    <g transform="translate(105, 120)">
+      <!-- Exposed Limbs (Short Sleeves & Short Legs) -->
+      <path d="M -38,-12 L -48,0 L -38,5 Z" class="skin" />
+      <path d="M 38,-12 L 48,0 L 38,5 Z" class="skin" />
+      <path d="M -20,40 L -20,60 L -2,60 L -2,40 Z" class="skin" />
+      <path d="M 20,40 L 20,60 L 2,60 L 2,40 Z" class="skin" />
+      <!-- Short Sleeves -->
+      <path d="M -25,-45 L -42,-15 L -32,-8 L -18,-25 Z" class="suit-body" />
+      <path d="M 25,-45 L 42,-15 L 32,-8 L 18,-25 Z" class="suit-body" />
+      <!-- Main Body & Short Legs -->
+      <path d="M -25,-45 L 25,-45 L 20,15 L 22,40 L 2,40 L 0,15 L -2,40 L -22,40 L -20,15 Z" class="suit-body" />
+      <!-- Collar -->
+      <path d="M -14,-45 L -12,-50 L 12,-50 L 14,-45 Z" class="suit-body" />
+      <!-- Side Accent Ergonomic Panels -->
+      <path d="M -20,15 C -15,0 -15,-20 -25,-45 L -21,-45 C -11,-20 -11,0 -16,15 Z" class="suit-accent" />
+      <path d="M 20,15 C 15,0 15,-20 25,-45 L 21,-45 C 11,-20 11,0 16,15 Z" class="suit-accent" />
+      <!-- Center Chest Zip Feature -->
+      <path d="M 0,-30 L 0,-5" class="suit-line" />
+      <circle cx="0" cy="-5" r="3" fill="#38bdf8" />
+    </g>
+    
+    <text x="105" y="225" class="label-text">SPRING SUIT</text>
+    <text x="105" y="248" class="sub-text">Shorty / Mid-Season</text>
+  </g>
+</svg>
