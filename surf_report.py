@@ -1447,12 +1447,17 @@ def generate_report(marine_data, wind_data, tide_data):
             border-radius: 8px;
         }}
         .gear-icon {{
-            font-size: 2em;
-            margin-bottom: 6px;
-        }}
-        .gear-icon svg {{
             width: 60px;
             height: 75px;
+            margin: 0 auto 6px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+        }}
+        .gear-icon svg {{
+            width: 100%;
+            height: 100%;
         }}
         .gear-label {{
             font-size: 0.85em;

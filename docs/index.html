@@ -292,12 +292,17 @@
             border-radius: 8px;
         }
         .gear-icon {
-            font-size: 2em;
-            margin-bottom: 6px;
-        }
-        .gear-icon svg {
             width: 60px;
             height: 75px;
+            margin: 0 auto 6px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+        }
+        .gear-icon svg {
+            width: 100%;
+            height: 100%;
         }
         .gear-label {
             font-size: 0.85em;
@@ -428,43 +433,36 @@
             <h2>🧤 Gear</h2>
             <div class="gear-grid">
                 <div class="gear-item">
-                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270" width="100%" height="100%">
+                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270">
 <defs>
     <style>
-      .icon-bg { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; rx: 16px; }
-      .suit-body { fill: #1e293b; stroke: #0f172a; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
-      .suit-accent { fill: #38bdf8; }
+      .suit-body { fill: none; stroke: #1e293b; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+      .suit-accent { fill: none; stroke: #38bdf8; stroke-width: 2; }
       .suit-line { fill: none; stroke: #38bdf8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-      .suit-seam { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 4 3; stroke-linecap: round; }
-      .skin { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 2; }
-      .label-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; text-anchor: middle; letter-spacing: 0.5px; }
-      .sub-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 13px; font-weight: 500; fill: #64748b; text-anchor: middle; }
+      .suit-seam { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 3 3; stroke-linecap: round; }
+      .skin { fill: none; stroke: #cbd5e1; stroke-width: 2; }
     </style>
   </defs>
-<g transform="translate(730, 20)">
-    <rect width="210" height="270" class="icon-bg" />
-    
+<g transform="translate(0, 20)">
+
     <g transform="translate(105, 120)">
-      <!-- Full Steamer Silhouette (Long Sleeves & Long Legs) -->
-      <!-- Arms -->
+
       <path d="M -25,-45 L -55,10 L -45,15 L -18,-25 Z" class="suit-body" />
       <path d="M 25,-45 L 55,10 L 45,15 L 18,-25 Z" class="suit-body" />
-      <!-- Main Torso & Long Legs -->
+      
       <path d="M -25,-45 L 25,-45 L 20,15 L 18,70 L 2,70 L 0,15 L -2,70 L -18,70 L -20,15 Z" class="suit-body" />
-      <!-- Collar -->
+      
       <path d="M -14,-45 L -12,-50 L 12,-50 L 14,-45 Z" class="suit-body" />
-      <!-- Strategic Thermal Chest Panel (Fluid Graphic Accent) -->
-      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" opacity="0.85" />
-      <!-- Flatlock / Blindstitched Seam Detail Lines -->
+      
+      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" />
+      
       <path d="M -18,70 L -10,15 C -5,0 -5,-20 -14,-45" class="suit-seam" />
       <path d="M 18,70 L 10,15 C 5,0 5,-20 14,-45" class="suit-seam" />
-      <!-- Knee Pad Reinforcements -->
-      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="#0f172a" />
-      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="#0f172a" />
+      
+      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
+      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
     </g>
-    
-    <text x="105" y="225" class="label-text">FULL WETSUIT</text>
-    <text x="105" y="248" class="sub-text">Steamer / Cold Water</text>
+
   </g>
 </svg></div>
                     <div class="gear-value">3/2 steamer</div>
@@ -503,7 +501,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Steep attack angle makes it close out; clean offshore but too straight.</div>
+                        <div class="forecaster-note">💬 Steep angle and short period make waves weak and crumbly, even with offshore wind.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -530,7 +528,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Ideal attack angle and clean offshore give long, peeling waves.</div>
+                        <div class="forecaster-note">💬 Ideal peel off the point with clean offshore wind holding up the face.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -557,7 +555,7 @@
                     </div>
                     <div class="stars">★★☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Nearly straight-on swell closes out; offshore wind holds it up.</div>
+                        <div class="forecaster-note">💬 Straight-on swell closes out; short period and offshore wind can't save it.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -584,7 +582,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Good angle and offshore wind produce clean, peeling waves.</div>
+                        <div class="forecaster-note">💬 Perfect peel for the narrow bay, clean offshore gives shape despite low energy.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -611,7 +609,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Straight-on swell closes out; cross-offshore wind helps a bit.</div>
+                        <div class="forecaster-note">💬 Straight-on swell with cross-offshore wind creates closeouts and weak sections.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -638,7 +636,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Sheltered by headland, small but clean with cross wind.</div>
+                        <div class="forecaster-note">💬 Sheltered by headland reduces height; cross wind makes it weak and slow.</div>
                     </div>
             </div>
         </div></div>
@@ -693,43 +691,36 @@
             <h2>🧤 Gear</h2>
             <div class="gear-grid">
                 <div class="gear-item">
-                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270" width="100%" height="100%">
+                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270">
 <defs>
     <style>
-      .icon-bg { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; rx: 16px; }
-      .suit-body { fill: #1e293b; stroke: #0f172a; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
-      .suit-accent { fill: #38bdf8; }
+      .suit-body { fill: none; stroke: #1e293b; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+      .suit-accent { fill: none; stroke: #38bdf8; stroke-width: 2; }
       .suit-line { fill: none; stroke: #38bdf8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-      .suit-seam { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 4 3; stroke-linecap: round; }
-      .skin { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 2; }
-      .label-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; text-anchor: middle; letter-spacing: 0.5px; }
-      .sub-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 13px; font-weight: 500; fill: #64748b; text-anchor: middle; }
+      .suit-seam { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 3 3; stroke-linecap: round; }
+      .skin { fill: none; stroke: #cbd5e1; stroke-width: 2; }
     </style>
   </defs>
-<g transform="translate(730, 20)">
-    <rect width="210" height="270" class="icon-bg" />
-    
+<g transform="translate(0, 20)">
+
     <g transform="translate(105, 120)">
-      <!-- Full Steamer Silhouette (Long Sleeves & Long Legs) -->
-      <!-- Arms -->
+
       <path d="M -25,-45 L -55,10 L -45,15 L -18,-25 Z" class="suit-body" />
       <path d="M 25,-45 L 55,10 L 45,15 L 18,-25 Z" class="suit-body" />
-      <!-- Main Torso & Long Legs -->
+      
       <path d="M -25,-45 L 25,-45 L 20,15 L 18,70 L 2,70 L 0,15 L -2,70 L -18,70 L -20,15 Z" class="suit-body" />
-      <!-- Collar -->
+      
       <path d="M -14,-45 L -12,-50 L 12,-50 L 14,-45 Z" class="suit-body" />
-      <!-- Strategic Thermal Chest Panel (Fluid Graphic Accent) -->
-      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" opacity="0.85" />
-      <!-- Flatlock / Blindstitched Seam Detail Lines -->
+      
+      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" />
+      
       <path d="M -18,70 L -10,15 C -5,0 -5,-20 -14,-45" class="suit-seam" />
       <path d="M 18,70 L 10,15 C 5,0 5,-20 14,-45" class="suit-seam" />
-      <!-- Knee Pad Reinforcements -->
-      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="#0f172a" />
-      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="#0f172a" />
+      
+      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
+      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
     </g>
-    
-    <text x="105" y="225" class="label-text">FULL WETSUIT</text>
-    <text x="105" y="248" class="sub-text">Steamer / Cold Water</text>
+
   </g>
 </svg></div>
                     <div class="gear-value">3/2 steamer</div>
@@ -768,7 +759,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Steep angle and short period make for weak, closeout waves.</div>
+                        <div class="forecaster-note">💬 Steep angle and short period keep waves weak despite offshore wind.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -795,7 +786,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Good angle and cross-offshore wind keep waves clean and peeling.</div>
+                        <div class="forecaster-note">💬 Consistent peel with cross-offshore wind keeping the face clean.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -822,7 +813,7 @@
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Slightly better angle but still closey; cross-offshore wind helps.</div>
+                        <div class="forecaster-note">💬 Nearly straight on, cross-offshore wind helps but swell closes out.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -849,7 +840,7 @@
                     </div>
                     <div class="stars">★★☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Sheltered from swell, small but clean with cross-offshore wind.</div>
+                        <div class="forecaster-note">💬 Lower exposure from shadow reduces size; peel still good with cross-offshore wind.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -876,7 +867,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Straight-on swell closes out; cross wind offers little help.</div>
+                        <div class="forecaster-note">💬 Straight-on swell with cross wind makes closeouts.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -903,7 +894,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Protected by headland, small but clean with cross wind.</div>
+                        <div class="forecaster-note">💬 Sheltered and small; cross wind keeps it weak and slow.</div>
                     </div>
             </div>
         </div></div>
@@ -958,43 +949,36 @@
             <h2>🧤 Gear</h2>
             <div class="gear-grid">
                 <div class="gear-item">
-                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270" width="100%" height="100%">
+                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270">
 <defs>
     <style>
-      .icon-bg { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; rx: 16px; }
-      .suit-body { fill: #1e293b; stroke: #0f172a; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
-      .suit-accent { fill: #38bdf8; }
+      .suit-body { fill: none; stroke: #1e293b; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+      .suit-accent { fill: none; stroke: #38bdf8; stroke-width: 2; }
       .suit-line { fill: none; stroke: #38bdf8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-      .suit-seam { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 4 3; stroke-linecap: round; }
-      .skin { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 2; }
-      .label-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; text-anchor: middle; letter-spacing: 0.5px; }
-      .sub-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 13px; font-weight: 500; fill: #64748b; text-anchor: middle; }
+      .suit-seam { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 3 3; stroke-linecap: round; }
+      .skin { fill: none; stroke: #cbd5e1; stroke-width: 2; }
     </style>
   </defs>
-<g transform="translate(730, 20)">
-    <rect width="210" height="270" class="icon-bg" />
-    
+<g transform="translate(0, 20)">
+
     <g transform="translate(105, 120)">
-      <!-- Full Steamer Silhouette (Long Sleeves & Long Legs) -->
-      <!-- Arms -->
+
       <path d="M -25,-45 L -55,10 L -45,15 L -18,-25 Z" class="suit-body" />
       <path d="M 25,-45 L 55,10 L 45,15 L 18,-25 Z" class="suit-body" />
-      <!-- Main Torso & Long Legs -->
+      
       <path d="M -25,-45 L 25,-45 L 20,15 L 18,70 L 2,70 L 0,15 L -2,70 L -18,70 L -20,15 Z" class="suit-body" />
-      <!-- Collar -->
+      
       <path d="M -14,-45 L -12,-50 L 12,-50 L 14,-45 Z" class="suit-body" />
-      <!-- Strategic Thermal Chest Panel (Fluid Graphic Accent) -->
-      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" opacity="0.85" />
-      <!-- Flatlock / Blindstitched Seam Detail Lines -->
+      
+      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" />
+      
       <path d="M -18,70 L -10,15 C -5,0 -5,-20 -14,-45" class="suit-seam" />
       <path d="M 18,70 L 10,15 C 5,0 5,-20 14,-45" class="suit-seam" />
-      <!-- Knee Pad Reinforcements -->
-      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="#0f172a" />
-      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="#0f172a" />
+      
+      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
+      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
     </g>
-    
-    <text x="105" y="225" class="label-text">FULL WETSUIT</text>
-    <text x="105" y="248" class="sub-text">Steamer / Cold Water</text>
+
   </g>
 </svg></div>
                     <div class="gear-value">3/2 steamer</div>
@@ -1033,7 +1017,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Steep angle and short period kill it; cross-offshore wind not enough.</div>
+                        <div class="forecaster-note">💬 Steep angle and short period; cross-offshore wind does little to improve.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1060,7 +1044,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Good angle and cross wind keep waves fun and peeling.</div>
+                        <div class="forecaster-note">💬 Cross wind neutral; peel holds up with low energy.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1087,7 +1071,7 @@
                     </div>
                     <div class="stars">★★☆☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Better angle but cross wind makes it a bit lumpy.</div>
+                        <div class="forecaster-note">💬 Straight-on swell with cross wind leads to closeouts.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1114,7 +1098,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Sheltered and small; cross wind keeps it clean enough.</div>
+                        <div class="forecaster-note">💬 Lower height from shadow; cross wind prevents clean shape.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1141,7 +1125,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Straight-on swell closes out; cross wind adds chop.</div>
+                        <div class="forecaster-note">💬 Dead straight-on with cross wind makes closeouts.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1168,7 +1152,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Sheltered, small, and cross-on wind makes it weak.</div>
+                        <div class="forecaster-note">💬 Sheltered size with cross-on wind creates messy conditions.</div>
                     </div>
             </div>
         </div></div>
@@ -1223,43 +1207,36 @@
             <h2>🧤 Gear</h2>
             <div class="gear-grid">
                 <div class="gear-item">
-                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270" width="100%" height="100%">
+                    <div class="gear-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 270">
 <defs>
     <style>
-      .icon-bg { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 2; rx: 16px; }
-      .suit-body { fill: #1e293b; stroke: #0f172a; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
-      .suit-accent { fill: #38bdf8; }
+      .suit-body { fill: none; stroke: #1e293b; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+      .suit-accent { fill: none; stroke: #38bdf8; stroke-width: 2; }
       .suit-line { fill: none; stroke: #38bdf8; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-      .suit-seam { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 4 3; stroke-linecap: round; }
-      .skin { fill: #e2e8f0; stroke: #cbd5e1; stroke-width: 2; }
-      .label-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; text-anchor: middle; letter-spacing: 0.5px; }
-      .sub-text { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 13px; font-weight: 500; fill: #64748b; text-anchor: middle; }
+      .suit-seam { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 3 3; stroke-linecap: round; }
+      .skin { fill: none; stroke: #cbd5e1; stroke-width: 2; }
     </style>
   </defs>
-<g transform="translate(730, 20)">
-    <rect width="210" height="270" class="icon-bg" />
-    
+<g transform="translate(0, 20)">
+
     <g transform="translate(105, 120)">
-      <!-- Full Steamer Silhouette (Long Sleeves & Long Legs) -->
-      <!-- Arms -->
+
       <path d="M -25,-45 L -55,10 L -45,15 L -18,-25 Z" class="suit-body" />
       <path d="M 25,-45 L 55,10 L 45,15 L 18,-25 Z" class="suit-body" />
-      <!-- Main Torso & Long Legs -->
+      
       <path d="M -25,-45 L 25,-45 L 20,15 L 18,70 L 2,70 L 0,15 L -2,70 L -18,70 L -20,15 Z" class="suit-body" />
-      <!-- Collar -->
+      
       <path d="M -14,-45 L -12,-50 L 12,-50 L 14,-45 Z" class="suit-body" />
-      <!-- Strategic Thermal Chest Panel (Fluid Graphic Accent) -->
-      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" opacity="0.85" />
-      <!-- Flatlock / Blindstitched Seam Detail Lines -->
+      
+      <path d="M -12,-35 C -15,-10 -10,10 0,12 C 10,10 15,-10 12,-35 Z" class="suit-accent" />
+      
       <path d="M -18,70 L -10,15 C -5,0 -5,-20 -14,-45" class="suit-seam" />
       <path d="M 18,70 L 10,15 C 5,0 5,-20 14,-45" class="suit-seam" />
-      <!-- Knee Pad Reinforcements -->
-      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="#0f172a" />
-      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="#0f172a" />
+      
+      <path d="M -16,35 C -10,35 -8,48 -15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
+      <path d="M 16,35 C 10,35 8,48 15,50 Z" fill="none" stroke="#1e293b" stroke-width="2" />
     </g>
-    
-    <text x="105" y="225" class="label-text">FULL WETSUIT</text>
-    <text x="105" y="248" class="sub-text">Steamer / Cold Water</text>
+
   </g>
 </svg></div>
                     <div class="gear-value">3/2 steamer</div>
@@ -1298,7 +1275,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Steep angle and short period make for poor, closeout surf.</div>
+                        <div class="forecaster-note">💬 Extreme angle makes waves weak and difficult due to short period.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1325,7 +1302,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Good angle and cross wind keep waves peeling and fun.</div>
+                        <div class="forecaster-note">💬 Good peel angle with cross wind still manageable.</div>
                     </div>
                 <div class="beach-card beach-card-best">
                     <div class="beach-name">
@@ -1352,7 +1329,7 @@
                     </div>
                     <div class="stars">★★½☆☆ <span class="best-beach-badge">🏆 Best Beach</span></div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Good angle now; cross wind adds a little texture.</div>
+                        <div class="forecaster-note">💬 Better angle now, but cross wind and short period keep it average.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1379,7 +1356,7 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Sheltered and small; cross wind keeps it rideable.</div>
+                        <div class="forecaster-note">💬 Shadow reduces height; cross wind limits quality.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1406,7 +1383,7 @@
                     </div>
                     <div class="stars">★☆☆☆☆</div>
                         <div class="board">🏄 Mid-Length, Funboard</div>
-                        <div class="forecaster-note">💬 Straight-on swell closes out; cross wind makes it messy.</div>
+                        <div class="forecaster-note">💬 Almost no peel, closeouts with cross wind.</div>
                     </div>
                 <div class="beach-card">
                     <div class="beach-name">
@@ -1433,13 +1410,13 @@
                     </div>
                     <div class="stars">★½☆☆☆</div>
                         <div class="board">🏄 Groveller, Longboard</div>
-                        <div class="forecaster-note">💬 Sheltered, small, and cross-on wind makes it weak.</div>
+                        <div class="forecaster-note">💬 Sheltered and weak with cross-on wind making it slow.</div>
                     </div>
             </div>
         </div></div>
 
     <div class="footer">
-        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-30 12:14:49 AEST</p>
+        <p class="timestamp" style="margin-bottom: 12px; font-size: 0.9em;">Generated: 2026-06-30 12:29:29 AEST</p>
         <p><a href="./about.html" style="color: #0066cc; text-decoration: none; font-size: 0.9em;">About this site →</a></p>
         <p>Northern Beaches Surf Check - Automated surf report for Sydney beaches<br>
         Data sources: Open-Meteo (marine & wind forecasts), harmonic tide model, IMOS RAMSSA SST</p>
