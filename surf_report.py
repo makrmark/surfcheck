@@ -969,7 +969,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 </div>
                 <div class="condition-item">
                     <span class="label">Temp:</span>
-                    <span class="value">{water_temp}°C — {wetsuit_rec}<span class="tooltip">{sst_source} — coastal edge SST off Northern Beaches</span></span>
+                    <span class="value">{water_temp}°C<span class="tooltip">{sst_source} — coastal edge SST off Northern Beaches</span></span>
                 </div>
             </div>
             <div class="section">
@@ -991,6 +991,11 @@ def generate_report(marine_data, wind_data, tide_data):
         <div class="section">
             <h2>🧤 Gear</h2>
             <div class="gear-grid">
+                <div class="gear-item">
+                    <div class="gear-icon">🩱</div>
+                    <div class="gear-label">Wetsuit</div>
+                    <div class="gear-value">{wetsuit_rec}</div>
+                </div>
                 <div class="gear-item">
                     <div class="gear-icon">🧢</div>
                     <div class="gear-label">Hat</div>
