@@ -1059,7 +1059,7 @@ def generate_report(marine_data, wind_data, tide_data):
             <div class="rec-card">
                 <div class="rec-stars">{generate_stars(tf["overall_rating"])}</div>
                 <div class="rec-beaches">{tf["best_beaches_str"]}</div>
-                <div class="rec-detail">Wave height: {metres_to_feet_range(tf["max_effective_height"])}</div>'''
+                <div class="rec-detail">{metres_to_feet_range(tf["max_effective_height"])}</div>'''
 
         # Common board recommendations across best beaches
         best_set = {b["name"] for b in tf["best_beaches"]}
@@ -1076,7 +1076,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 board_order = ["Shortboard", "Groveller", "Fish", "Step-Up", "Mid-Length", "Funboard", "Longboard", "Log"]
                 sorted_boards = sorted(common_boards, key=lambda x: board_order.index(x) if x in board_order else 99)
                 html += f'''
-                <div class="rec-detail">Board: {", ".join(sorted_boards)}</div>'''
+                <div class="board-rec">🏄 {", ".join(sorted_boards)}</div>'''
 
         html += f'''
                 <div class="rec-detail">🧤 {cloth_text}</div>
@@ -1448,6 +1448,16 @@ def generate_report(marine_data, wind_data, tide_data):
             padding: 2px 6px;
             border-radius: 3px;
             font-size: 0.9em;
+        }}
+        .board-rec {{
+            display: inline-block;
+            font-weight: bold;
+            color: #8b4513;
+            background: #f5deb3;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.95em;
+            margin-top: 4px;
         }}
         .forecaster-note {{
             font-size: 0.85em;
