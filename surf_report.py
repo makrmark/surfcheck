@@ -957,23 +957,24 @@ def clothing_text(wetsuit_rec, hat_rec, uv_label, uv_val, water_temp, air_temp):
     else:
         temp_desc = "very cold"
 
-    parts.append(f"Water is {temp_desc} ({water_temp}°C)")
+    # Article for wetsuit (a/an) — skip for plural names like "Boardshorts"
+    skip_article = wetsuit_rec.lower().startswith("boardshorts")
+    if not skip_article:
+        wetsuit_article = "an" if wetsuit_rec.lower()[0] in ('a', 'e', 'i', 'o', 'u') else "a"
+        parts.append(f"Water is {temp_desc} ({water_temp}°C) so you'll need {wetsuit_article} {wetsuit_rec}")
+    else:
+        parts.append(f"Water is {temp_desc} ({water_temp}°C) so you'll need {wetsuit_rec}")
 
-    # Extra cold-water gear based on water temperature
-    extra = []
     wetsuit_lower = wetsuit_rec.lower()
     if water_temp < 14:
-        # Very cold — 5/4 steamer already includes booties/gloves/hood
-        # The wetsuit_rec will be "5/4 steamer with booties, gloves, hood"
-        parts.append(f"Need {wetsuit_rec}")
-        # Hood replaces hat regardless of UV
-        parts.append("Wetsuit hood for head warmth")
+        # Very cold — hood replaces hat
+        parts.append("Wear a wetsuit hood for head warmth")
     else:
-        parts.append(f"Need {wetsuit_rec}")
         # Hat based on UV
         hat_lower = hat_rec.lower()
         if "not needed" not in hat_lower and "none" not in hat_lower:
-            parts.append(f"UV {uv_label} ({uv_val}) — {hat_rec}")
+            hat_article = "an" if hat_rec.lower()[0] in ('a', 'e', 'i', 'o', 'u') else "a"
+            parts.append(f"UV is {uv_label} ({uv_val}) so wear {hat_article} {hat_rec}")
 
     return ". ".join(parts) + "."
 
