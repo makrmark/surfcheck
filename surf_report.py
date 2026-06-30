@@ -1059,7 +1059,7 @@ def generate_report(marine_data, wind_data, tide_data):
             <div class="rec-card">
                 <div class="rec-stars">{generate_stars(tf["overall_rating"])}</div>
                 <div class="rec-beaches">{tf["best_beaches_str"]}</div>
-                <div class="rec-detail">{metres_to_feet_range(tf["max_effective_height"])}</div>'''
+                <div class="rec-wave">{metres_to_feet_range(tf["max_effective_height"])}</div>'''
 
         # Common board recommendations across best beaches
         best_set = {b["name"] for b in tf["best_beaches"]}
@@ -1504,6 +1504,12 @@ def generate_report(marine_data, wind_data, tide_data):
         .rec-detail {{
             font-size: 0.95em;
             color: #555;
+            margin-top: 4px;
+        }}
+        .rec-wave {{
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0066cc;
             margin-top: 4px;
         }}
             color: #0066cc;
