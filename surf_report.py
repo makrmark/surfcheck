@@ -979,23 +979,18 @@ def generate_report(marine_data, wind_data, tide_data):
                     <span class="value">{tf["wind_speed"]:.0f} km/h ({tf["wind_knots"]:.0f} kt) {tf["wind_compass"]}<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
                 </div>
                 <div class="condition-item">
-                    <span class="label">Sun:</span>
-                    <span class="value">🌅 {sunrise_str} — 🌇 {sunset_str} AEST<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 {sunrise_str} — 🌇 {sunset_str}<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
                 </div>
                 <div class="condition-item">
                     <span class="label">UV:</span>
-                    <span class="value">{uv_label} ({uv}) — Sun from {tf["solar_compass"]}<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
+                    <span class="value">{uv_label} ({uv}) — {tf["solar_compass"]}<span class="tooltip">Estimated UV index based on solar elevation at this time</span></span>
                 </div>
             </div>
         </div>
         <div class="section">
             <h2>🧤 Gear</h2>
             <div class="gear-grid">
-                <div class="gear-item">
-                    <div class="gear-icon">🩱</div>
-                    <div class="gear-label">Wetsuit</div>
-                    <div class="gear-value">{wetsuit_rec}</div>
-                </div>
                 <div class="gear-item">
                     <div class="gear-icon">🧢</div>
                     <div class="gear-label">Hat</div>
