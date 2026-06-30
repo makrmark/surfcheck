@@ -1057,9 +1057,9 @@ def generate_report(marine_data, wind_data, tide_data):
         <div class="section">
             <h2>🏆 Today&#39;s Recommendations</h2>
             <div class="rec-card">
-                <div class="rec-stars">{generate_stars(tf["overall_rating"])}</div>
                 <div class="rec-beaches">{tf["best_beaches_str"]}</div>
-                <div class="rec-wave">{metres_to_feet_range(tf["max_effective_height"])}</div>'''
+                <div class="rec-wave">{metres_to_feet_range(tf["max_effective_height"])}</div>
+                <div class="rec-stars">{generate_stars(tf["overall_rating"])}</div>'''
 
         # Common board recommendations across best beaches
         best_set = {b["name"] for b in tf["best_beaches"]}
@@ -1079,7 +1079,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="board-rec">🏄 {", ".join(sorted_boards)}</div>'''
 
         html += f'''
-                <div class="rec-detail">🧤 {cloth_text}</div>
+                <div class="rec-detail">🧢 {cloth_text}</div>
             </div>
         </div>'''
 
