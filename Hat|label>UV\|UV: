@@ -1,0 +1,402 @@
+        .label {
+            font-weight: 600;
+--
+        .surf-label {
+            position: relative;
+--
+        .surf-label .tooltip {
+            visibility: hidden;
+--
+        .surf-label:hover .tooltip {
+            visibility: visible;
+--
+        .surf-label {
+            font-size: 0.9em;
+--
+        .gear-label {
+            font-size: 0.85em;
+--
+        .summary-label {
+            font-size: 0.9em;
+--
+                    <span class="label">Swell:</span>
+                    <span class="value">0.9m @ 7s from 100° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+--
+                    <span class="label">Tide:</span>
+                    <span class="value">-0.5m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+--
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+--
+                    <span class="label">Wind:</span>
+                    <span class="value">5 km/h (3 kt) NW<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+--
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+--
+                    <span class="label">Air:</span>
+                    <span class="value">11°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+--
+                    <span class="label">Rain:</span>
+                    <span class="value">0%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                    <span class="label">Swell:</span>
+                    <span class="value">0.9m @ 8s from 99° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+--
+                    <span class="label">Tide:</span>
+                    <span class="value">-1.1m 🔻 Low<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+--
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+--
+                    <span class="label">Wind:</span>
+                    <span class="value">6 km/h (3 kt) N<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+--
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+--
+                    <span class="label">Air:</span>
+                    <span class="value">15°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+--
+                    <span class="label">Rain:</span>
+                    <span class="value">0%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label"> Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                    <span class="label">Swell:</span>
+                    <span class="value">0.9m @ 8s from 98° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+--
+                    <span class="label">Tide:</span>
+                    <span class="value">1.3m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+--
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+--
+                    <span class="label">Wind:</span>
+                    <span class="value">13 km/h (7 kt) NNE<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+--
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+--
+                    <span class="label">Air:</span>
+                    <span class="value">19°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+--
+                    <span class="label">Rain:</span>
+                    <span class="value">0%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                    <span class="label">Swell:</span>
+                    <span class="value">0.9m @ 7s from 95° (E)<span class="tooltip">Open-Meteo Marine API: global wave model (WW3) offshore Sydney</span></span>
+--
+                    <span class="label">Tide:</span>
+                    <span class="value">0.8m 🔺 High<span class="tooltip">Harmonic tide model (M2+S2 constituents) calibrated for Sydney Harbour</span></span>
+--
+                    <span class="label">Temp:</span>
+                    <span class="value">19.7°C<span class="tooltip">IMOS RAMSSA L4 satellite analysis — coastal edge SST off Northern Beaches</span></span>
+--
+                    <span class="label">Wind:</span>
+                    <span class="value">14 km/h (8 kt) NNE<span class="tooltip">Open-Meteo Weather API: 10m wind from GFS/ECMWF model</span></span>
+--
+                    <span class="label">Sunrise/set:</span>
+                    <span class="value">🌅 07:04 — 🌇 16:51<span class="tooltip">Sunrise/sunset times for Northern Beaches (calculated from latitude/longitude)</span></span>
+--
+                    <span class="label">Air:</span>
+                    <span class="value">18°C<span class="tooltip">Open-Meteo temperature forecast at 2m</span></span>
+--
+                    <span class="label">Rain:</span>
+                    <span class="value">2%<span class="tooltip">Open-Meteo precipitation probability forecast</span></span>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Height<span class="tooltip">Wave height at break</span></div>
+                        </div>
+--
+                            <div class="surf-label">AoA<span class="tooltip">Swell angle vs beach aspect</span></div>
+                        </div>
+--
+                            <div class="surf-label">Exposure<span class="tooltip">% swell after headland diffraction</span></div>
+                        </div>
+--
+                            <div class="surf-label">🌬️ Wind<span class="tooltip">Wind vs beach aspect</span></div>
+                        </div>
+--
+        function showTimeframe(label) {
+            document.querySelectorAll('.timeframe-content').forEach(el => el.style.display = 'none');
+--
+            const content = document.querySelector('.timeframe-content[data-tf="' + label + '"]');
+            if (content) content.style.display = 'block';
+            const btn = document.querySelector('.tf-btn[data-btn="' + label + '"]');
+            if (btn) btn.classList.add('active');
+            try { localStorage.setItem('surfcheckTimeframe', label); } catch(e) {}
+        }

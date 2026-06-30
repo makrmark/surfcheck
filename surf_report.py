@@ -1038,11 +1038,6 @@ def generate_report(marine_data, wind_data, tide_data):
         else:
             uv_label = "Low" if uv_val < 3 else ("Moderate" if uv_val < 6 else "High")
         hat_rec, _ = hat_recommendation(uv_val, tf["solar_compass"], "", [])
-        html += f'''
-                <div class="condition-item">
-                    <span class="label">UV:</span>
-                    <span class="value">{uv_label} ({uv_val}) — {tf["solar_compass"]}<span class="tooltip">Open-Meteo UV index forecast</span></span>
-                </div>'''
         if tf["air_temp"] is not None:
             html += f'''
                 <div class="condition-item">
@@ -1067,7 +1062,7 @@ def generate_report(marine_data, wind_data, tide_data):
                 </div>
                 <div class="gear-item">
                     <div class="gear-icon">🧢</div>
-                    <div class="gear-value">{hat_rec}</div>
+                    <div class="gear-value">{hat_rec} (UV: {uv_label}, {uv_val})</div>
                 </div>
             </div>
         </div>'''
