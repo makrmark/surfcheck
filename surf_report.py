@@ -31,12 +31,12 @@ TIMEFRAMES = [
 ]
 
 BEACHES = {
-    "Long Reef":     {"aspect": 158, "left_offset": 68, "right_offset": 22},
-    "Dee Why":       {"aspect": 135, "left_offset": 67.5, "right_offset": 22.5},
-    "Curl Curl":     {"aspect": 112, "left_offset": 44.5, "right_offset": 45.5},
-    "Freshwater":    {"aspect": 135, "left_offset": 35, "right_offset": 22.5},
-    "North Steyne":  {"aspect": 90,  "left_offset": 45, "right_offset": 45},
-    "South Steyne":  {"aspect": 68,  "left_offset": 45.5, "right_offset": 22},
+    "Long Reef":     {"aspect": 158, "left_offset": 68, "right_offset": 22, "slope": "flat"},
+    "Dee Why":       {"aspect": 135, "left_offset": 67.5, "right_offset": 22.5, "slope": "flat"},
+    "Curl Curl":     {"aspect": 112, "left_offset": 44.5, "right_offset": 45.5, "slope": "moderate"},
+    "Freshwater":    {"aspect": 135, "left_offset": 35, "right_offset": 22.5, "slope": "moderate"},
+    "North Steyne":  {"aspect": 90,  "left_offset": 45, "right_offset": 45, "slope": "steep"},
+    "South Steyne":  {"aspect": 68,  "left_offset": 45.5, "right_offset": 22, "slope": "steep"},
 }
 BEACH_NOTES = {
     "Long Reef": "Northernmost beach, southeast-southeast exposure",
@@ -62,6 +62,7 @@ def load_beaches_config(config_path="beaches.json"):
                 "aspect": b["primary_aspect"],
                 "left_offset": b.get("left_offset", 10),
                 "right_offset": b.get("right_offset", 10),
+                "slope": b.get("slope", "moderate"),
             }
             notes[name] = b.get("notes", "")
         if loaded:
@@ -426,18 +427,62 @@ def hat_recommendation(uv):
     else:
         return "Legionnaire's cap"
 
-def shoal_factor(period):
+def _slope_modifier(slope):
+    """Return shoaling multiplier for a given beach slope class."""
+    if slope == "flat":
+        return 0.85
+    elif slope == "steep":
+        return 1.15
+    return 1.0  # moderate is baseline
+
+
+def shoal_factor(period, slope_modifier=1.0):
     """
     Amplification from shoaling for a wave of given period (seconds).
     Longer-period waves carry more energy and amplify more as they rise before breaking.
     6s windswell ≈ no amplification.  18s+ groundswell ≈ 1.6× amplification.
+    Multiplied by slope_modifier for beach-specific shoreface slope.
     """
     if period < 6:
-        return 1.0
+        base = 1.0
     elif period >= 18:
-        return 1.6
+        base = 1.6
     else:
-        return 1.0 + (period - 6) * 0.6 / 12
+        base = 1.0 + (period - 6) * 0.6 / 12
+    return max(0.7, base * slope_modifier)
+
+
+def breaker_quality(effective_height, tide_height, slope):
+    """
+    Breaker index quality factor (0-1).
+    Estimates depth at break line from tide and slope, then computes γb = Hb/hb.
+    γb < 0.6: surging/doesn't break → poor (0.4)
+    0.6-0.8: spilling/mushy → marginal (0.7)
+    0.8-1.0: plunging/clean → excellent (1.0)
+    > 1.0: collapsing/dumpy → poor (0.5)
+    """
+    # Estimate depth at break: tide height + nearshore offset based on slope
+    if slope == "flat":
+        depth_offset = 0.5
+    elif slope == "steep":
+        depth_offset = 0.1
+    else:  # moderate
+        depth_offset = 0.3
+    
+    hb = tide_height + depth_offset
+    if hb <= 0:
+        return 0.5
+    
+    gamma = effective_height / hb
+    
+    if gamma < 0.6:
+        return 0.4
+    elif gamma < 0.8:
+        return 0.7
+    elif gamma < 1.0:
+        return 1.0
+    else:
+        return 0.5
 
 
 def embayment_factor(left_offset, right_offset, effective_height, wave_period):
@@ -489,11 +534,12 @@ def embayment_factor(left_offset, right_offset, effective_height, wave_period):
 
 
 def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wave_period,
-                              left_offset=10, right_offset=10):
+                              left_offset=10, right_offset=10, slope="moderate"):
     """
-    Effective wave height after headland shadowing and period-driven shoaling.
+    Effective wave height after headland shadowing, period-driven shoaling,
+    and beach-specific shoreface slope.
     
-    All multiplicative: offshore_swell × Kd × shoal_factor(period).
+    All multiplicative: offshore_swell × Kd × shoal_factor(period, slope_modifier).
     Swell arriving within the L/R window is fully exposed (Kd=1).
     Beyond the window, Wiegel diffraction reduces the height.
     """
@@ -506,7 +552,8 @@ def calculate_effective_height(offshore_height, wave_direction, beach_aspect, wa
         shadow_angle = diff - right_offset
 
     kd = _diffraction_coefficient(shadow_angle, wave_period)
-    shoal = shoal_factor(wave_period)
+    slope_mod = _slope_modifier(slope)
+    shoal = shoal_factor(wave_period, slope_mod)
     effective = offshore_height * kd * shoal
 
     if effective < 0.01:
@@ -849,8 +896,10 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         left_off = bconfig.get("left_offset", 10)
         right_off = bconfig.get("right_offset", 10)
 
+        slope = bconfig.get("slope", "moderate")
+
         effective_height = calculate_effective_height(
-            wave_height, wave_direction, aspect, wave_period, left_off, right_off
+            wave_height, wave_direction, aspect, wave_period, left_off, right_off, slope
         )
         exposure = calculate_exposure_percent(wave_direction, aspect, wave_period, left_off, right_off)
 
@@ -879,9 +928,12 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         # Embayment factor — how open/closed the beach is for this swell
         embay_val = embayment_factor(left_off, right_off, effective_height, wave_period)
 
-        # Wave Quality factor (0-1): product of wind, attack angle, tide, and embayment
+        # Breaker quality — how well the wave breaks on this beach slope at this tide
+        breaker_val = breaker_quality(effective_height, tide_height, slope)
+
+        # Wave Quality factor (0-1): product of wind, attack angle, tide, embayment, and breaker
         # If any factor is imperfect, quality drops — a product is stricter than an average
-        wave_quality = bw_quality * attack_factor * tide_factor_value * embay_val
+        wave_quality = bw_quality * attack_factor * tide_factor_value * embay_val * breaker_val
 
         adjusted_rating = wave_height_score * wave_quality
         adjusted_rating = max(0, min(5, adjusted_rating))

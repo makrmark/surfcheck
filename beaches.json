@@ -6,6 +6,7 @@
       "primary_aspect": 158,
       "left_offset": 68,
       "right_offset": 22,
+      "slope": "flat",
       "notes": "Northernmost beach. Wide exposure from E (90°) to S (180°). Mostly open ocean with only minor headland sheltering to the north — picks up a broad range of swell directions."
     },
     {
@@ -13,6 +14,7 @@
       "primary_aspect": 135,
       "left_offset": 67.5,
       "right_offset": 22.5,
+      "slope": "flat",
       "notes": "Southeast facing beach, sheltered by southern headland. Wide left exposure from ENE (67.5°) to primary, but tightly shadowed on the right (only to SSE at 157.5°). Best with SE or ESE swell — loses south swells quickly."
     },
     {
@@ -20,6 +22,7 @@
       "primary_aspect": 112,
       "left_offset": 44.5,
       "right_offset": 45.5,
+      "slope": "moderate",
       "notes": "East-southeast exposed beach with consistent swell. Nearly symmetrical window from ENE (67.5°) to SSE (157.5°). Good all-rounder — picks up most swell from east through south."
     },
     {
@@ -27,6 +30,7 @@
       "primary_aspect": 135,
       "left_offset": 35,
       "right_offset": 22.5,
+      "slope": "moderate",
       "notes": "Southeast facing beach, protected by northern headland. Moderate left exposure to ESE (100°) but tightly shadowed on the right beyond SSE (157.5°). Catches east and southeast swells but loses southerly swell quickly."
     },
     {
@@ -34,6 +38,7 @@
       "primary_aspect": 90,
       "left_offset": 45,
       "right_offset": 45,
+      "slope": "steep",
       "notes": "Eastern end of Manly Beach, exposed to east swells. Symmetrical window from NE (45°) to SE (135°). Wide open to any swell with an easterly component — the default north-end beach when there's east swell."
     },
     {
@@ -41,6 +46,7 @@
       "primary_aspect": 68,
       "left_offset": 45.5,
       "right_offset": 22,
+      "slope": "steep",
       "notes": "East-northeast end of Manly Beach, NE swell exposure. Window from NNE (22.5°) to E (90°). Tight right shadow — loses south swells quickly. Best with northerly or north-easterly swell."
     }
   ]
