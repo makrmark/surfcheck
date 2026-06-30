@@ -400,19 +400,19 @@ def uv_index(solar_elevation):
         return 11  # Extreme
 
 
-def hat_recommendation(uv, sun_compass, beach_names, timeframes_conditions):
+def hat_recommendation(uv):
     """
-    Recommend hat type based on UV index and sun exposure.
-    Returns (hat_type, uv_label).
+    Recommend hat type based on UV index.
+    Low UV → no hat needed.  Moderate → Cap.  High → Bucket hat.  Very High+ → Legionnaire's cap.
     """
-    if uv <= 0:
-        return ("Not needed", "None")
-    if uv <= 2:
-        return ("Cap", "Low")
-    elif uv <= 5:
-        return ("Bucket hat", "Moderate")
+    if uv is None or uv < 3:
+        return "Not needed"
+    elif uv < 6:
+        return "Cap"
+    elif uv < 8:
+        return "Bucket hat"
     else:
-        return ("Legionnaire's cap", "High")
+        return "Legionnaire's cap"
 
 def shoal_factor(period):
     """
@@ -1090,7 +1090,7 @@ def generate_report(marine_data, wind_data, tide_data):
         if uv_val is None:
             uv_val = uv_index(solar_elevation_azimuth(tf["hour"] + 0.5, today)[0])
         uv_label = uv_label_text(uv_val)
-        hat_rec, _ = hat_recommendation(uv_val, tf["solar_compass"], "", [])
+        hat_rec = hat_recommendation(uv_val)
         cloth_text = clothing_text(wetsuit_rec, hat_rec, uv_val, water_temp)
         if tf["air_temp"] is not None:
             html += f'''
