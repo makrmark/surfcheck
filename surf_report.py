@@ -1447,8 +1447,8 @@ def generate_report(marine_data, wind_data, tide_data):
             border-radius: 8px;
         }}
         .gear-icon {{
-            width: 60px;
-            height: 75px;
+            width: 80px;
+            height: 90px;
             margin: 0 auto 6px auto;
             display: flex;
             align-items: center;
