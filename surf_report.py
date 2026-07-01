@@ -1150,8 +1150,15 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="rec-wave">{metres_to_feet_range(tf["max_effective_height"])}</div>
                 <div class="rec-stars">{generate_stars(tf["overall_rating"])}</div>'''
         if tf.get("llm_assessment"):
+            # Gear emoji based on conditions
+            if water_temp < 14:
+                gear_emoji = "❄️"
+            elif hat_rec.lower() not in ("not needed", "none"):
+                gear_emoji = "☀️"
+            else:
+                gear_emoji = "👕"
             html += f'''
-                <div class="forecaster-note">💬 {tf["llm_assessment"]}</div>'''
+                <div class="forecaster-note">💬 {tf["llm_assessment"]} {gear_emoji} {cloth_text}</div>'''
 
         # Common board recommendations across best beaches
         best_set = {b["name"] for b in tf["best_beaches"]}
@@ -1168,19 +1175,9 @@ def generate_report(marine_data, wind_data, tide_data):
                 board_order = ["Shortboard", "Groveller", "Fish", "Step-Up", "Mid-Length", "Funboard", "Longboard", "Log"]
                 sorted_boards = sorted(common_boards, key=lambda x: board_order.index(x) if x in board_order else 99)
                 html += f'''
+                <hr class="rec-sep">
                 <div class="board-rec">🏄 {", ".join(sorted_boards)}</div>'''
 
-        # Gear emoji based on conditions
-        if water_temp < 14:
-            gear_emoji = "❄️"
-        elif hat_rec.lower() not in ("not needed", "none"):
-            gear_emoji = "☀️"
-        else:
-            gear_emoji = "👕"
-
-        html += f'''
-                <hr class="rec-sep">
-                <div class="rec-detail">{gear_emoji} {cloth_text}</div>'''
         html += f'''
             </div>
         </div>'''
