@@ -1170,8 +1170,17 @@ def generate_report(marine_data, wind_data, tide_data):
                 html += f'''
                 <div class="board-rec">🏄 {", ".join(sorted_boards)}</div>'''
 
+        # Gear emoji based on conditions
+        if water_temp < 14:
+            gear_emoji = "❄️"
+        elif hat_rec.lower() not in ("not needed", "none"):
+            gear_emoji = "☀️"
+        else:
+            gear_emoji = "👕"
+
         html += f'''
-                <div class="rec-detail">🧢 {cloth_text}</div>'''
+                <hr class="rec-sep">
+                <div class="rec-detail">{gear_emoji} {cloth_text}</div>'''
         html += f'''
             </div>
         </div>'''
@@ -1577,6 +1586,11 @@ def generate_report(marine_data, wind_data, tide_data):
             border-radius: 4px;
             font-size: 0.95em;
             margin-top: 4px;
+        }}
+        .rec-sep {{
+            border: none;
+            border-top: 1px solid #d0d8e0;
+            margin: 10px 0 6px 0;
         }}
         .forecaster-note {{
             font-size: 0.85em;
