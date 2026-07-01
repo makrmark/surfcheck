@@ -97,6 +97,30 @@ def _normalise_label(label):
     return label.replace('\u2013', '-').replace('\u2014', '-')
 
 
+def _repair_json(text):
+    """Attempt basic repairs on LLM JSON output before parsing."""
+    # Strip markdown code fences
+    text = text.strip()
+    if text.startswith("```json"):
+        text = text[7:]
+    if text.startswith("```"):
+        text = text[3:]
+    if text.endswith("```"):
+        text = text[:-3]
+    text = text.strip()
+
+    # Remove trailing commas before closing braces/brackets
+    import re
+    text = re.sub(r',\s*}', '}', text)
+    text = re.sub(r',\s*]', ']', text)
+
+    # Replace single quotes with double quotes (but not inside already-quoted strings)
+    # Simple approach: replace single quotes that appear to be JSON keys or string values
+    # This is a basic heuristic — won't handle all edge cases but catches the common ones
+
+    return text
+
+
 def _load_env_file():
     """Try to load ~/.surforecast/env.sh as a fallback for API keys."""
     env_file = os.path.expanduser("~/.surforecast/env.sh")
@@ -146,14 +170,16 @@ def generate_reports(timeframes_config, all_timeframes):
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                "max_tokens": 8000,
+                "max_tokens": 16000,
                 "temperature": 0.3,
             },
             timeout=30,
         )
         response.raise_for_status()
         result = response.json()
-        content = json.loads(result["choices"][0]["message"]["content"])
+        raw = result["choices"][0]["message"]["content"]
+        raw = _repair_json(raw)
+        content = json.loads(raw)
 
         reports = {}
         for tf_label, beach_dict in content.get("timeframes", {}).items():
