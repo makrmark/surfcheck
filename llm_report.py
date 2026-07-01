@@ -45,6 +45,7 @@ def _build_prompt(timeframes_config, all_timeframes):
         "'mushy / weak from refracting' (extreme angle, 60\u00b0+).\n"
         "- Wind: offshore holds up the face; onshore chops it up; cross is neutral.\n"
         "- Tide: the rising/falling cycle affects whether banks are working or fat.\n"
+        "- Final rating = height_score × (2 + quality) / 3 — height carries twice the weight of quality.\n"
         "- Quality is a product: one bad factor (e.g. onshore gale) ruins the session "
         "regardless of wave height.\n\n"
         "Tone: concise, insightful, mildly colloquial \u2014 like a local surfer giving a mate "

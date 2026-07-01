@@ -239,8 +239,12 @@
 
         <h3>Final Rating</h3>
         <div class="formula">
-            star_rating = round(wave_height_score × wave_quality × 2) / 2
+            rating = wave_height_score × (2 + wave_quality) / 3
         </div>
+        <div class="formula">
+            star_rating = round(rating × 2) / 2
+        </div>
+        <p>Wave height carries <strong>twice the weight</strong> of quality in the final rating. This prevents quality factors from overwhelming the rating on small but clean days. Inside the formula, the quality factor (a product of wind × attack × tide × embayment × breaker) ranges from 0 to 1, so the effective multiplier on height_score ranges from ⅔ (perfect quality) down to ⅓ (terrible conditions).</p>
         <p>Because quality is a <strong>product</strong> (not an average), a single bad factor heavily penalises the score — just like in real surfing where onshore wind ruins a session regardless of wave height.</p>
     </section>
 

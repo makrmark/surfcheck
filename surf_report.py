@@ -935,7 +935,9 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         # If any factor is imperfect, quality drops — a product is stricter than an average
         wave_quality = bw_quality * attack_factor * tide_factor_value * embay_val * breaker_val
 
-        adjusted_rating = wave_height_score * wave_quality
+        # Rating: height is weighted twice as much as quality
+        # score = height × (2 + quality) / 3  so height matters 2× more
+        adjusted_rating = wave_height_score * (2.0 + wave_quality) / 3.0
         adjusted_rating = max(0, min(5, adjusted_rating))
         precise_rating = adjusted_rating
         star_rating = round(precise_rating * 2) / 2
@@ -1147,6 +1149,9 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="rec-beaches">{tf["best_beaches_str"]}</div>
                 <div class="rec-wave">{metres_to_feet_range(tf["max_effective_height"])}</div>
                 <div class="rec-stars">{generate_stars(tf["overall_rating"])}</div>'''
+        if tf.get("llm_assessment"):
+            html += f'''
+                <div class="forecaster-note">💬 {tf["llm_assessment"]}</div>'''
 
         # Common board recommendations across best beaches
         best_set = {b["name"] for b in tf["best_beaches"]}
@@ -1167,9 +1172,6 @@ def generate_report(marine_data, wind_data, tide_data):
 
         html += f'''
                 <div class="rec-detail">🧢 {cloth_text}</div>'''
-        if tf.get("llm_assessment"):
-            html += f'''
-                <div class="forecaster-note">💬 {tf["llm_assessment"]}</div>'''
         html += f'''
             </div>
         </div>'''

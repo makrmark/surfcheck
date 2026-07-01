@@ -86,8 +86,8 @@ The rating is computed per-beach in two stages:
    - **Tide factor**: 1.0 for 0.5–1.5m range, linearly decreasing to 0.6 at 0m or 3.0m  
    - **Embayment factor**: how open or closed the beach is relative to the size of the swell. Wide-open beaches (Long Reef, Curl Curl) score near 1.0 on small-to-moderate days. Narrow/closed beaches (Freshwater) drop to ~0.5 on big groundswell days due to close-out risk.  
 
-**Final Rating** = `wave_height_score × wave_quality`  
-Rounded to nearest 0.5★, displayed as ★★★★☆ (full stars + optional ½).  
+**Final Rating** = `wave_height_score × (2 + wave_quality) / 3`  
+Wave height carries twice the weight of quality. Rounded to nearest 0.5★, displayed as ★★★★☆ (full stars + optional ½).  
 
 **Key property**: The product is strict — one bad factor (e.g., onshore gale at 0.15) heavily penalises the score regardless of height.  
 
