@@ -1116,6 +1116,8 @@ def generate_report(marine_data, wind_data, tide_data):
         for tf in all_timeframes:
             day_prefix = 'Today' if tf['day'] == 'today' else 'Tomorrow'
             llm_label = f"{day_prefix} {tf['label']}"
+            # Extract overall assessment from LLM
+            tf['llm_assessment'] = llm_reports.get((llm_label, 'All beaches'), '')
             for bc in tf['beach_conditions']:
                 bc["llm_note"] = llm_reports.get((llm_label, bc["name"]), "")
 
@@ -1164,7 +1166,11 @@ def generate_report(marine_data, wind_data, tide_data):
                 <div class="board-rec">🏄 {", ".join(sorted_boards)}</div>'''
 
         html += f'''
-                <div class="rec-detail">🧢 {cloth_text}</div>
+                <div class="rec-detail">🧢 {cloth_text}</div>'''
+        if tf.get("llm_assessment"):
+            html += f'''
+                <div class="forecaster-note">💬 {tf["llm_assessment"]}</div>'''
+        html += f'''
             </div>
         </div>'''
 

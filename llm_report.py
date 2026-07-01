@@ -51,11 +51,12 @@ def _build_prompt(timeframes_config, all_timeframes):
         "the quick rundown. Use phrases like 'wraps around', 'sheltered from', 'the long period "
         "gives it punch', 'too narrow to handle', 'clean offshore holds up the face'.\n\n"
         "Respond with valid JSON only. Use the EXACT timeframe labels from the --- headers "
-        "as keys in the JSON object. For example:\n"
-        '{"timeframes": {"Today 6-9am": {"Long Reef": "sentence", "Dee Why": "sentence", ...}, ...}}'
+        "as keys in the JSON object. Include an overall assessment under the key 'All beaches' "
+        "for each timeframe. For example:\n"
+        '{"timeframes": {"Today 6-9am": {"All beaches": "overall sentence", "Long Reef": "sentence", "Dee Why": "sentence", ...}, ...}}'
     )
 
-    user_prompt = "Provide forecasts for these timeframes (focus on WHY the conditions are what they are):\n\n"
+    user_prompt = "Provide forecasts for these timeframes (focus on WHY the conditions are what they are). Include a brief overall assessment under 'All beaches' for each timeframe:\n\n"
     for i, tf_conf in enumerate(timeframes_config):
         tf_data = all_timeframes[i]
         label = tf_conf["label"]
@@ -144,7 +145,7 @@ def generate_reports(timeframes_config, all_timeframes):
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                "max_tokens": 4000,
+                "max_tokens": 8000,
                 "temperature": 0.3,
             },
             timeout=30,
