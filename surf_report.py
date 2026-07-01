@@ -723,9 +723,9 @@ def get_board_recommendation(effective_height, wave_period, wave_quality=1.0):
     if adj_height < 0.3:
         boards = ["Longboard", "Log"]
     elif adj_height < 0.6:
-        boards = ["Longboard", "Funboard"]
+        boards = ["Longboard", "Fish"]
     elif adj_height < 1.0:
-        boards = ["Groveller", "Fish", "Funboard"]
+        boards = ["Groveller", "Fish"]
     elif adj_height < 1.5:
         boards = ["Shortboard", "Fish", "Mid-Length"]
     elif adj_height < 2.0:
@@ -733,17 +733,17 @@ def get_board_recommendation(effective_height, wave_period, wave_quality=1.0):
     elif adj_height < 2.5:
         boards = ["Shortboard", "Step-Up"]
     else:
-        boards = ["Step-Up"]
+        boards = ["Step-Up", "Mini-Gun"]
 
     # Short period (< 8s) — weak/mushy swell, favour more volume
     if wave_period < 8:
         if "Step-Up" in boards:
             boards = ["Shortboard", "Fish"]
         elif "Shortboard" in boards:
-            boards = ["Fish", "Funboard", "Mid-Length"]
+            boards = ["Fish", "Mid-Length"]
         elif "Fish" in boards:
-            boards = ["Mid-Length", "Funboard"]
-        elif "Funboard" in boards or "Mid-Length" in boards:
+            boards = ["Mid-Length"]
+        elif "Mid-Length" in boards:
             boards = ["Longboard", "Groveller"]
         else:
             boards = ["Longboard", "Log"]
@@ -757,12 +757,12 @@ def get_board_recommendation(effective_height, wave_period, wave_quality=1.0):
         elif adj_height < 2.5:
             boards = ["Step-Up"]
         else:
-            boards = ["Step-Up"]
+            boards = ["Step-Up", "Mini-Gun"]
 
     # Remove duplicates and sort by board size (smallest first)
     seen = set()
     ordered = []
-    for b in ["Shortboard", "Groveller", "Fish", "Step-Up", "Mid-Length", "Funboard", "Longboard", "Log"]:
+    for b in ["Shortboard", "Groveller", "Fish", "Step-Up", "Mini-Gun", "Mid-Length", "Longboard", "Log"]:
         if b in boards and b not in seen:
             ordered.append(b)
             seen.add(b)
@@ -1173,7 +1173,7 @@ def generate_report(marine_data, wind_data, tide_data):
             for s in all_boards[1:]:
                 common_boards &= s
             if common_boards:
-                board_order = ["Shortboard", "Groveller", "Fish", "Step-Up", "Mid-Length", "Funboard", "Longboard", "Log"]
+                board_order = ["Shortboard", "Groveller", "Fish", "Step-Up", "Mini-Gun", "Mid-Length", "Longboard", "Log"]
                 sorted_boards = sorted(common_boards, key=lambda x: board_order.index(x) if x in board_order else 99)
                 html += f'''
                 <hr class="rec-sep">

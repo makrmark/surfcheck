@@ -107,16 +107,16 @@ Falls back to monthly climatology if satellite data is unavailable.
 | Face Height | Feet | Boards |
 |-------------|------|--------|
 | < 0.3m | < 1 ft | Longboard, Log |
-| 0.3–0.6m | 1–2 ft | Longboard, Funboard |
-| 0.6–1.0m | 2–3 ft | Groveller, Fish, Funboard |
+| 0.3–0.6m | 1–2 ft | Longboard, Fish |
+| 0.6–1.0m | 2–3 ft | Groveller, Fish |
 | 1.0–1.5m | 3–5 ft | Shortboard, Fish, Mid-Length |
 | 1.5–2.0m | 5–7 ft | Shortboard, Mid-Length, Step-Up |
 | 2.0–2.5m | 7–8 ft | Shortboard, Step-Up |
-| > 2.5m | > 8 ft | Step-Up |
+| > 2.5m | > 8 ft | Step-Up, Mini-Gun |
 
 **Period adjustments:**
 - < 8s (windswell) → bump up one volume category
-- ≥ 12s + ≥ 1.2m (powerful groundswell) → favour Step-Up
+- ≥ 12s + ≥ 1.2m (powerful groundswell) → favour Step-Up, Mini-Gun
 
 **Quality adjustment:**
 `adj_height = effective_height × (0.7 + wave_quality × 0.3)`  
