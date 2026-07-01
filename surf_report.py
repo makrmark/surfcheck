@@ -936,8 +936,8 @@ def compute_timeframe_conditions(marine_data, wind_data, tide_data, target_hour,
         wave_quality = bw_quality * attack_factor * tide_factor_value * embay_val * breaker_val
 
         # Rating: height is weighted twice as much as quality
-        # score = height × (2 + quality) / 3  so height matters 2× more
-        adjusted_rating = wave_height_score * (2.0 + wave_quality) / 3.0
+        # score = height × (0.5 + 0.5 × quality)  so height matters 2× more than quality
+        adjusted_rating = wave_height_score * (0.5 + 0.5 * wave_quality)
         adjusted_rating = max(0, min(5, adjusted_rating))
         precise_rating = adjusted_rating
         star_rating = round(precise_rating * 2) / 2
