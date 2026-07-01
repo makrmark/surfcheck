@@ -694,14 +694,15 @@ def tide_factor(tide_height):
     """
     Calculate tide factor multiplier.
     Optimal tide range: 0.5-1.5m -> factor = 1.0
-    Outside this range, factor decreases linearly to 0.5 at 0m and 3.0m
+    Outside this range, factor decreases linearly to 0.7 at 0m and 3.0m.
+    Narrowed from 0.6 floor to 0.7 — tide alone rarely ruins a session at Northern Beaches.
     """
     if 0.5 <= tide_height <= 1.5:
         return 1.0
     elif tide_height < 0.5:
-        return 0.6 + tide_height * (1.0 - 0.6) / 0.5  # 0.6 to 1.0
+        return 0.7 + tide_height * (1.0 - 0.7) / 0.5  # 0.7 to 1.0
     else:  # tide_height > 1.5
-        return 1.0 - (tide_height - 1.5) * (1.0 - 0.6) / (3.0 - 1.5)  # 1.0 to 0.6
+        return 1.0 - (tide_height - 1.5) * (1.0 - 0.7) / (3.0 - 1.5)  # 1.0 to 0.7
 
 
 def get_board_recommendation(effective_height, wave_period, wave_quality=1.0):

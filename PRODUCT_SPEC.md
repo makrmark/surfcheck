@@ -83,7 +83,7 @@ The rating is computed per-beach in two stages:
    `wave_quality = wind_quality × attack_factor × tide_factor × embayment_factor`  
    - **Wind quality**: blend of direction (offshore → onshore) and speed, from 0.15 (gale onshore) to 1.0 (light offshore breeze)  
    - **Attack factor**: angle of swell relative to beach face — 1.0 for 15°–45° (perfect peeler), drops to 0.5 for close-out or extreme angle  
-   - **Tide factor**: 1.0 for 0.5–1.5m range, linearly decreasing to 0.6 at 0m or 3.0m  
+   - **Tide factor**: 1.0 for 0.5–1.5m range, linearly decreasing to 0.7 at 0m or 3.0m — narrowed from 0.6 floor since tide alone rarely ruins a session  
    - **Embayment factor**: how open or closed the beach is relative to the size of the swell. Wide-open beaches (Long Reef, Curl Curl) score near 1.0 on small-to-moderate days. Narrow/closed beaches (Freshwater) drop to ~0.5 on big groundswell days due to close-out risk.  
 
 **Final Rating** = `wave_height_score × (2 + wave_quality) / 3`  

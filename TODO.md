@@ -65,6 +65,11 @@ The real-time SST pipeline depends on `aws s3 cp --no-sign-request` being availa
 - [ ] **Dockerised deployment** — Package with Docker for easier setup on any host.
 - [ ] **User-configurable beaches** — Allow a JSON config file to define custom beach lists, aspects, and notes.
 
+### Quality factor weighting options (from analysis)
+- [x] **Narrowed tide factor range** — Tide factor floor raised from 0.6 to 0.7. Tide alone rarely ruins a Northern Beaches session.
+- [ ] **Exponential wind weighting** — Use `wind\u00b2` in the quality product to make wind the dominant factor (matches real-world experience).
+- [ ] **Weighted geometric mean** — Assign explicit weights per factor (wind 4, attack 3, embayment 2, breaker 1.5, tide 1) and take the weighted geometric mean. Prevents any single factor from zeroing the score while keeping important factors influential.
+
 ---
 
 ## Nice-to-Haves
